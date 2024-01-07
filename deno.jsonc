@@ -1,0 +1,9 @@
+{
+  "tasks": {
+    "start": "deno run -A --unstable main.ts"
+  },
+  "imports": {
+    "$std/": "https://deno.land/std@0.211.0/",
+    "$std/http": "https://deno.land/std@0.211.0/http/mod.ts"
+  }
+}
