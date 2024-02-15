@@ -1,10 +1,4 @@
-const { serve } = Deno;
+import { start } from './src/server/start.ts';
+import config from './configs/eac-runtime.config.ts';
 
-serve(
-  {
-    port: 6127,
-  },
-  async () => {
-    return new Response('Hello, world!');
-  }
-);
+await start(await config);

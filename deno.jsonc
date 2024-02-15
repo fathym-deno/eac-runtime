@@ -1,9 +1,39 @@
 {
   "tasks": {
-    "start": "deno run -A --unstable main.ts"
+    "dev": "deno run -A --watch=configs/,data/,routes/,static/ main.ts",
+    "start": "deno run -A main.ts"
   },
   "imports": {
-    "$std/": "https://deno.land/std@0.211.0/",
-    "$std/http": "https://deno.land/std@0.211.0/http/mod.ts"
+  },
+  "lint": {
+    "include": ["src/", "configs/"],
+    "exclude": [],
+    "rules": {
+      "tags": ["recommended"],
+      "include": ["ban-untagged-todo"],
+      "exclude": []
+    }
+  },
+  "fmt": {
+    "include": ["src/"],
+    "exclude": [],
+    "indentWidth": 2,
+    "lineWidth": 100,
+    "proseWrap": "preserve",
+    "semiColons": true,
+    "singleQuote": true,
+    "useTabs": false
+  },
+  "unstable": ["kv"],
+  "compilerOptions": {
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "dom.asynciterable",
+      "deno.ns",
+      "deno.window",
+      "deno.unstable"
+    ],
+    "strict": true
   }
 }
