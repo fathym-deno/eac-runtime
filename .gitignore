@@ -1,0 +1,13 @@
+# dotenv environment variable files
+.env
+.env.development.local
+.env.test.local
+.env.production.local
+.env.local
+
+# EaC Runtime build directory
+# _runtim/
+node_modules/
+
+# State 
+denoKv/
