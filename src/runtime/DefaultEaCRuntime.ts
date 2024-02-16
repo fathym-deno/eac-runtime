@@ -26,7 +26,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
 
       const eacSvc = await loadEaCSvc(eacApiKey);
 
-      this.eac = await eacSvc.Get(EnterpriseLookup);
+      this.eac = await eacSvc.Get(EnterpriseLookup as string);
     } else if (this.config.EaC) {
       this.eac = this.config.EaC;
     } else {
