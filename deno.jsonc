@@ -1,7 +1,13 @@
 {
   "tasks": {
     "dev": "deno run -A --watch=configs/,data/,routes/,static/ main.ts",
-    "start": "deno run -A main.ts"
+    "build": "deno task build:fmt && deno task build:lint && deno task build:dev",
+    "build:dev": "deno run -A mod.ts build",
+    "build:fmt": "deno fmt",
+    "build:lint": "deno lint",
+    "deploy": "deno task build && deno task test && ftm git",
+    "start": "deno run -A main.ts",
+    "test": "deno test -A --allow-env .env tests/tests.ts --coverage=cov"
   },
   "imports": {
   },

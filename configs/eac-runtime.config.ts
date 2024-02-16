@@ -1,8 +1,7 @@
 // import { TracingEaCRuntime } from '../src/runtime/TracingEaCRuntime.ts';
-import { TracingEaCRuntime } from '../src/runtime/TracingEaCRuntime.ts';
 import { defineEaCConfig } from '../src/runtime/config/defineEaCConfig.ts';
 import {
-EaCAIRAGChatProcessor,
+  EaCAIRAGChatProcessor,
   EaCOAuthProcessor,
   EaCProxyProcessor,
   EaCRedirectProcessor,
@@ -104,8 +103,8 @@ export default defineEaCConfig({
         Processor: {
           APIKey: Deno.env.get('AZURE_OPENAI_KEY')!,
           Endpoint: Deno.env.get('AZURE_OPENAI_ENDPOINT')!,
-          DeploymentName: "gpt-4-turbo",
-          EmbeddingDeploymentName: "text-embedding-ada-002",
+          DeploymentName: 'gpt-4-turbo',
+          EmbeddingDeploymentName: 'text-embedding-ada-002',
           ModelName: 'gpt-4',
           SearchAPIKey: Deno.env.get('AZURE_AI_SEARCH_KEY')!,
           // SearchEndpoint: Deno.env.get('AZURE_AI_SEARCH_ENDPOINT')!,
@@ -115,7 +114,7 @@ export default defineEaCConfig({
               'You are an expert data engineer, data scientist, and will help the user create a KQL query. Keeping in mind the following context:\n\n{context}',
             ],
             ['human', '{input}'],
-          ]
+          ],
         } as EaCAIRAGChatProcessor,
       },
       dashboard: {

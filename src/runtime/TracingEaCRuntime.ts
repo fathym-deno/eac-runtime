@@ -18,14 +18,14 @@ export const tracingMiddleware: EaCRuntimeHandler = async (req, ctx) => {
   }
 
   return resp;
-}
+};
 
 export class TracingEaCRuntime extends DefaultEaCRuntime {
   protected constructPipeline(ctx: EaCRuntimeContext): EaCRuntimeHandler[] {
     const pipeline = super.constructPipeline(ctx);
 
-    pipeline.unshift(tracingMiddleware)
-    
+    pipeline.unshift(tracingMiddleware);
+
     return pipeline;
   }
 }

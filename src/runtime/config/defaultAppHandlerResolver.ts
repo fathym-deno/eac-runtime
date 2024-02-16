@@ -1,18 +1,19 @@
 import { djwt, isEaCOAuthProcessor } from '../../src.deps.ts';
 import {
-  isEaCAIRAGChatProcessor,
-  isEaCRedirectProcessor,
-  isEaCProxyProcessor,
   aiRAGChatRequest,
+  isEaCAIRAGChatProcessor,
+  isEaCProxyProcessor,
+  isEaCRedirectProcessor,
   oAuthRequest,
   proxyRequest,
-  redirectRequest
+  redirectRequest,
 } from '../../src.deps.ts';
 import { EaCApplicationProcessorConfig } from '../EaCApplicationProcessorConfig.ts';
 import { EaCRuntimeHandler } from '../EaCRuntimeHandler.ts';
 
-
-export const defaultAppHandlerResolver: (appProcCfg: EaCApplicationProcessorConfig) => EaCRuntimeHandler = (appProcCfg) => {
+export const defaultAppHandlerResolver: (
+  appProcCfg: EaCApplicationProcessorConfig,
+) => EaCRuntimeHandler = (appProcCfg) => {
   return (req, ctx) => {
     let resp: Response | Promise<Response>;
 
@@ -20,13 +21,13 @@ export const defaultAppHandlerResolver: (appProcCfg: EaCApplicationProcessorConf
       resp = redirectRequest(
         appProcCfg.Application.Processor.Redirect,
         appProcCfg.Application.Processor.PreserveMethod,
-        appProcCfg.Application.Processor.Permanent
+        appProcCfg.Application.Processor.Permanent,
       );
     } else if (isEaCProxyProcessor(appProcCfg.Application.Processor)) {
       resp = proxyRequest(
         req,
         appProcCfg.Application.Processor.ProxyRoot,
-        appProcCfg.LookupConfig.PathPattern
+        appProcCfg.LookupConfig.PathPattern,
         // ctx.Info.remoteAddr.hostname,
       );
     } else if (isEaCOAuthProcessor(appProcCfg.Application.Processor)) {
@@ -37,14 +38,14 @@ export const defaultAppHandlerResolver: (appProcCfg: EaCApplicationProcessorConf
         appProcCfg.Application.Processor.AuthorizationEndpointURI,
         appProcCfg.Application.Processor.TokenURI,
         appProcCfg.Application.Processor.Scopes,
-        async (tokens, newSessionId, oldSessionId) => {
-          const { accessToken, refreshToken, expiresIn } = tokens;
+        async (tokens, _newSessionId, _oldSessionId) => {
+          const { accessToken } = tokens;
 
-          const [header, payload, signature] = await djwt.decode(accessToken);
+          const [_header, payload, _signature] = await djwt.decode(accessToken);
 
           payload?.toString();
         },
-        appProcCfg.LookupConfig.PathPattern
+        appProcCfg.LookupConfig.PathPattern,
       );
     } else if (isEaCAIRAGChatProcessor(appProcCfg.Application.Processor)) {
       resp = aiRAGChatRequest(
@@ -58,14 +59,14 @@ export const defaultAppHandlerResolver: (appProcCfg: EaCApplicationProcessorConf
         appProcCfg.Application.Processor.InputParams,
         appProcCfg.Application.Processor.EmbeddingDeploymentName,
         appProcCfg.Application.Processor.SearchEndpoint,
-        appProcCfg.Application.Processor.SearchAPIKey
+        appProcCfg.Application.Processor.SearchAPIKey,
       );
     } else {
       resp = new Response(
         'Hello, world!\n' +
-        JSON.stringify(appProcCfg, null, 2) +
-        '\n' +
-        JSON.stringify(ctx.Info.remoteAddr, null, 2)
+          JSON.stringify(appProcCfg, null, 2) +
+          '\n' +
+          JSON.stringify(ctx.Info.remoteAddr, null, 2),
       );
     }
 
