@@ -1,10 +1,11 @@
 import { merge, colors } from '../../src.deps.ts';
 import { isPromise } from '../../utils/type-guards/isPromise.ts';
 import { DefaultEaCRuntime } from '../DefaultEaCRuntime.ts';
+import { TracingEaCRuntime } from '../TracingEaCRuntime.ts';
 import { EaCRuntimeConfig } from './EaCRuntimeConfig.ts';
 
 export const DefaultEaCConfig: EaCRuntimeConfig = {
-  Runtime: new DefaultEaCRuntime(),
+  Runtime: (cfg: EaCRuntimeConfig) => new DefaultEaCRuntime(cfg),
   Server: {
     onListen: (params) => {
       const address = colors.green(`http://localhost:${params.port}`);

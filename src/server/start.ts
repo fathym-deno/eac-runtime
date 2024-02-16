@@ -11,12 +11,14 @@ export async function start(config: EaCRuntimeConfig): Promise<void> {
   if (config.Server.port) {
     await startServer(config);
   } else {
+    const [startPort, endPort] = config.Server.StartRange || [8000, 8020];
+    
     // No port specified, check for a free port. Instead of picking just
     // any port we'll check if the next one is free for UX reasons.
     // That way the user only needs to increment a number when running
     // multiple apps vs having to remember completely different ports.
     let firstError;
-    for (let port = 8000; port < 8020; port++) {
+    for (let port = startPort; port < endPort; port++) {
       try {
         config.Server.port = port;
 
