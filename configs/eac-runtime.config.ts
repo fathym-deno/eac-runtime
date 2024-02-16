@@ -1,8 +1,17 @@
 // import { TracingEaCRuntime } from '../src/runtime/TracingEaCRuntime.ts';
 import { TracingEaCRuntime } from '../src/runtime/TracingEaCRuntime.ts';
 import { defineEaCConfig } from '../src/runtime/config/defineEaCConfig.ts';
+import {
+  EaCOAuthProcessor,
+  EaCProxyProcessor,
+  EaCRedirectProcessor,
+} from '../src/src.deps.ts';
 
 export default defineEaCConfig({
+  //   Runtime: (cfg) => new TracingEaCRuntime(cfg),
+  Server: {
+    port: 6121,
+  },
   EaC: {
     Projects: {
       marketing: {
@@ -18,13 +27,25 @@ export default defineEaCConfig({
           },
         },
         ApplicationLookups: {
-          home: {
-            PathPattern: '/*',
-            Priority: 100,
+          apiProxy: {
+            PathPattern: '/api*',
+            Priority: 200,
           },
           docs: {
             PathPattern: '/docs/*',
             Priority: 200,
+          },
+          google: {
+            PathPattern: '/google',
+            Priority: 200,
+          },
+          home: {
+            PathPattern: '/*',
+            Priority: 100,
+          },
+          oauth: {
+            PathPattern: '/oauth/*',
+            Priority: 500,
           },
           signin: {
             PathPattern: '/signin',
@@ -47,14 +68,14 @@ export default defineEaCConfig({
         ApplicationLookups: {
           dashboard: {
             PathPattern: '/*',
-            Priority: 300,
+            Priority: 100,
+          },
+          oauth: {
+            PathPattern: '/oauth/*',
+            Priority: 500,
           },
           profile: {
             PathPattern: '/profile/*',
-            Priority: 400,
-          },
-          signout: {
-            PathPattern: '/signout',
             Priority: 500,
           },
         },
@@ -67,30 +88,63 @@ export default defineEaCConfig({
           Description:
             'The home site to be used for the marketing of the project',
         },
+        Processor: {},
+      },
+      google: {
+        Details: {
+          Name: 'Google Redirect',
+          Description: 'A redirect to Google',
+        },
+        Processor: {
+          Redirect: 'http://www.google.com/',
+        } as EaCRedirectProcessor,
+      },
+      apiProxy: {
+        Details: {
+          Name: 'Simple API Proxy',
+          Description: 'A proxy',
+        },
+        Processor: {
+          ProxyRoot: 'https://reqres.in/api',
+        } as EaCProxyProcessor,
       },
       docs: {
         Details: {
           Name: 'Documentation Site',
           Description: 'The documentation site for the project',
         },
+        Processor: {},
       },
-      signin: {
+      oauth: {
         Details: {
-          Name: 'Sign In Site',
-          Description: 'The site for use in authenticating a user',
+          Name: 'OAuth Site',
+          Description: 'The site for use in OAuth workflows for a user',
         },
-      },
-      signout: {
-        Details: {
-          Name: 'Sign Out Site',
-          Description: 'The site for use in signing out a user',
-        },
+        Processor: {
+          ClientID: Deno.env.get('AZURE_ADB2C_CLIENT_ID')!,
+          ClientSecret: Deno.env.get('AZURE_ADB2C_CLIENT_SECRET'),
+          AuthorizationEndpointURI: `https://${Deno.env.get(
+            'AZURE_ADB2C_DOMAIN'
+          )}/${Deno.env.get('AZURE_ADB2C_TENANT_ID')}/${Deno.env.get(
+            'AZURE_ADB2C_POLICY'
+          )}/oauth2/v2.0/authorize`,
+          TokenURI: `https://${Deno.env.get(
+            'AZURE_ADB2C_DOMAIN'
+          )}/${Deno.env.get('AZURE_ADB2C_TENANT_ID')}/${Deno.env.get(
+            'AZURE_ADB2C_POLICY'
+          )}/oauth2/v2.0/token`,
+          Scopes: ['openid', Deno.env.get('AZURE_ADB2C_CLIENT_ID')!],
+        } as EaCOAuthProcessor,
       },
       dashboard: {
         Details: {
           Name: 'Dashboard Site',
           Description: 'The site used to display the main dashboard',
         },
+        Processor: {
+          ProxyRoot: 'http://localhost:5437',
+          // ProxyRoot: 'https://dashboard.openbiotech.co',
+        } as EaCProxyProcessor,
       },
       profile: {
         Details: {
@@ -98,11 +152,8 @@ export default defineEaCConfig({
           Description:
             'The site used to for user profile display and management',
         },
+        Processor: {},
       },
     },
-  },
-  //   Runtime: (cfg) => new TracingEaCRuntime(cfg),
-  Server: {
-    port: 6120,
   },
 });

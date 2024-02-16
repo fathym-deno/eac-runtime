@@ -1,6 +1,8 @@
 export * as colors from 'https://deno.land/std@0.216.0/fmt/colors.ts';
 export * from 'https://deno.land/std@0.216.0/http/mod.ts';
-export * from 'https://deno.land/x/fathym_common@v0.0.139/mod.ts';
+export * as djwt from 'https://deno.land/x/djwt@v3.0.0/mod.ts';
+export * from '../../reference-architecture/mod.ts';
+// export * from 'https://deno.land/x/fathym_common@v0.0.140/mod.ts';
 export * from '../../everything-as-code/mod.ts';
 // export * from 'https://deno.land/x/fathym_everything_as_code@v0.0.306-thinky/mod.ts';
 

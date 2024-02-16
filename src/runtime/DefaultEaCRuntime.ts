@@ -131,17 +131,24 @@ export class DefaultEaCRuntime implements EaCRuntime {
     }
   }
 
+  protected constructPipeline(ctx: EaCRuntimeContext): EaCRuntimeHandler[] {
+    const pipeline: EaCRuntimeHandler[] = [];
+
+    // TODO(mcgear): Add application logic middlewares to pipeline
+
+    // TODO(mcgear): Add project and application modifier middlewares to pipeline
+
+    pipeline.push(...(this.config.Middleware || []));
+
+    pipeline.push(ctx.ApplicationProcessorConfig.Handler);
+
+    return pipeline;
+  }
+
   protected establishApplicationHandler(
     appProcessorConfig: EaCApplicationProcessorConfig
   ): EaCRuntimeHandler {
-    return (req, ctx) => {
-      return new Response(
-        'Hello, world!\n' +
-          JSON.stringify(appProcessorConfig, null, 2) +
-          '\n' +
-          JSON.stringify(ctx.Info.remoteAddr, null, 2)
-      );
-    };
+    return this.config.ApplicationHandlerResolver(appProcessorConfig);
   }
 
   protected establishProjectHandler(
@@ -162,15 +169,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
 
       ctx.ApplicationProcessorConfig = appProcessorConfig;
 
-      const pipeline: EaCRuntimeHandler[] = [];
-
-      // TODO(mcgear): Add application logic middlewares to pipeline
-
-      // TODO(mcgear): Add project and application modifier middlewares to pipeline
-
-      pipeline.push(...(this.config.Middleware || []));
-
-      pipeline.push(appProcessorConfig.Handler);
+      const pipeline: EaCRuntimeHandler[] = this.constructPipeline(ctx);
 
       return this.executePipeline(pipeline, req, ctx);
     };

@@ -12,10 +12,8 @@
         "run",
         "--config",
         "./deno.jsonc",
-        "--inspect-wait",
-        "--allow-all"
-      ],
-      "attachSimplePort": 9229
+        "--inspect-wait"
+      ]
     },
     {
       "request": "launch",
@@ -28,10 +26,8 @@
         "run",
         "--config",
         "./deno.jsonc",
-        "--inspect-wait",
-        "--allow-all"
-      ],
-      "attachSimplePort": 9229
+        "--inspect-wait"
+      ]
     }
   ]
 }

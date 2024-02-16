@@ -1,19 +1,31 @@
 import { DefaultEaCRuntime } from './DefaultEaCRuntime.ts';
+import { EaCRuntimeContext } from './EaCRuntimeContext.ts';
+import { EaCRuntimeHandler } from './EaCRuntimeHandler.ts';
 
-export class TracingEaCRuntime extends DefaultEaCRuntime {
-  public async Handle(request: Request, info: Deno.ServeHandlerInfo) {
-    console.log({ request, remoteAddr: info.remoteAddr });
+export const tracingMiddleware: EaCRuntimeHandler = async (req, ctx) => {
+  console.log({ req, ctx });
 
-    const resp = await super.Handle(request, info);
+  const resp = await ctx.next();
 
+  if (resp) {
     const cloned = resp.clone();
 
     console.log({
       body: await cloned.text(),
-      resp: cloned,
-      remoteAddr: info.remoteAddr,
+      resp,
+      ctx,
     });
+  }
 
-    return resp;
+  return resp;
+}
+
+export class TracingEaCRuntime extends DefaultEaCRuntime {
+  protected constructPipeline(ctx: EaCRuntimeContext): EaCRuntimeHandler[] {
+    const pipeline = super.constructPipeline(ctx);
+
+    pipeline.unshift(tracingMiddleware)
+    
+    return pipeline;
   }
 }
