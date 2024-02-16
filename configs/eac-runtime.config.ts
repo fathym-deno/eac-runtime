@@ -108,7 +108,7 @@ export default defineEaCConfig({
           EmbeddingDeploymentName: "text-embedding-ada-002",
           ModelName: 'gpt-4',
           SearchAPIKey: Deno.env.get('AZURE_AI_SEARCH_KEY')!,
-          SearchEndpoint: Deno.env.get('AZURE_AI_SEARCH_ENDPOINT')!,
+          // SearchEndpoint: Deno.env.get('AZURE_AI_SEARCH_ENDPOINT')!,
           Messages: [
             [
               'system',
