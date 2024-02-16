@@ -2,6 +2,7 @@
 import { TracingEaCRuntime } from '../src/runtime/TracingEaCRuntime.ts';
 import { defineEaCConfig } from '../src/runtime/config/defineEaCConfig.ts';
 import {
+EaCAIRAGChatProcessor,
   EaCOAuthProcessor,
   EaCProxyProcessor,
   EaCRedirectProcessor,
@@ -66,6 +67,10 @@ export default defineEaCConfig({
           },
         },
         ApplicationLookups: {
+          chat: {
+            PathPattern: '/chat*',
+            Priority: 300,
+          },
           dashboard: {
             PathPattern: '/*',
             Priority: 100,
@@ -82,11 +87,51 @@ export default defineEaCConfig({
       },
     },
     Applications: {
-      home: {
+      apiProxy: {
         Details: {
-          Name: 'Home Site',
-          Description:
-            'The home site to be used for the marketing of the project',
+          Name: 'Simple API Proxy',
+          Description: 'A proxy',
+        },
+        Processor: {
+          ProxyRoot: 'https://reqres.in/api',
+        } as EaCProxyProcessor,
+      },
+      chat: {
+        Details: {
+          Name: 'Chat Site',
+          Description: 'The chat used to display the main dashboard',
+        },
+        Processor: {
+          APIKey: Deno.env.get('AZURE_OPENAI_KEY')!,
+          Endpoint: Deno.env.get('AZURE_OPENAI_ENDPOINT')!,
+          DeploymentName: "gpt-4-turbo",
+          EmbeddingDeploymentName: "text-embedding-ada-002",
+          ModelName: 'gpt-4',
+          SearchAPIKey: Deno.env.get('AZURE_AI_SEARCH_KEY')!,
+          SearchEndpoint: Deno.env.get('AZURE_AI_SEARCH_ENDPOINT')!,
+          Messages: [
+            [
+              'system',
+              'You are an expert data engineer, data scientist, and will help the user create a KQL query. Keeping in mind the following context:\n\n{context}',
+            ],
+            ['human', '{input}'],
+          ]
+        } as EaCAIRAGChatProcessor,
+      },
+      dashboard: {
+        Details: {
+          Name: 'Dashboard Site',
+          Description: 'The site used to display the main dashboard',
+        },
+        Processor: {
+          ProxyRoot: 'http://localhost:5437',
+          // ProxyRoot: 'https://dashboard.openbiotech.co',
+        } as EaCProxyProcessor,
+      },
+      docs: {
+        Details: {
+          Name: 'Documentation Site',
+          Description: 'The documentation site for the project',
         },
         Processor: {},
       },
@@ -99,19 +144,11 @@ export default defineEaCConfig({
           Redirect: 'http://www.google.com/',
         } as EaCRedirectProcessor,
       },
-      apiProxy: {
+      home: {
         Details: {
-          Name: 'Simple API Proxy',
-          Description: 'A proxy',
-        },
-        Processor: {
-          ProxyRoot: 'https://reqres.in/api',
-        } as EaCProxyProcessor,
-      },
-      docs: {
-        Details: {
-          Name: 'Documentation Site',
-          Description: 'The documentation site for the project',
+          Name: 'Home Site',
+          Description:
+            'The home site to be used for the marketing of the project',
         },
         Processor: {},
       },
@@ -135,16 +172,6 @@ export default defineEaCConfig({
           )}/oauth2/v2.0/token`,
           Scopes: ['openid', Deno.env.get('AZURE_ADB2C_CLIENT_ID')!],
         } as EaCOAuthProcessor,
-      },
-      dashboard: {
-        Details: {
-          Name: 'Dashboard Site',
-          Description: 'The site used to display the main dashboard',
-        },
-        Processor: {
-          ProxyRoot: 'http://localhost:5437',
-          // ProxyRoot: 'https://dashboard.openbiotech.co',
-        } as EaCProxyProcessor,
       },
       profile: {
         Details: {

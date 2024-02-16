@@ -1,7 +1,9 @@
 import { djwt, isEaCOAuthProcessor } from '../../src.deps.ts';
 import {
+  isEaCAIRAGChatProcessor,
   isEaCRedirectProcessor,
   isEaCProxyProcessor,
+  aiRAGChatRequest,
   oAuthRequest,
   proxyRequest,
   redirectRequest,
@@ -14,21 +16,23 @@ import { EaCRuntimeConfig } from './EaCRuntimeConfig.ts';
 export const DefaultEaCConfig: EaCRuntimeConfig = {
   ApplicationHandlerResolver: (appProcCfg) => {
     return (req, ctx) => {
+      let resp: Response | Promise<Response>;
+
       if (isEaCRedirectProcessor(appProcCfg.Application.Processor)) {
-        return redirectRequest(
+        resp = redirectRequest(
           appProcCfg.Application.Processor.Redirect,
           appProcCfg.Application.Processor.PreserveMethod,
           appProcCfg.Application.Processor.Permanent
         );
       } else if (isEaCProxyProcessor(appProcCfg.Application.Processor)) {
-        return proxyRequest(
+        resp = proxyRequest(
           req,
           appProcCfg.Application.Processor.ProxyRoot,
           appProcCfg.LookupConfig.PathPattern
           // ctx.Info.remoteAddr.hostname,
         );
       } else if (isEaCOAuthProcessor(appProcCfg.Application.Processor)) {
-        return oAuthRequest(
+        resp = oAuthRequest(
           req,
           appProcCfg.Application.Processor.ClientID,
           appProcCfg.Application.Processor.ClientSecret,
@@ -37,21 +41,37 @@ export const DefaultEaCConfig: EaCRuntimeConfig = {
           appProcCfg.Application.Processor.Scopes,
           async (tokens, newSessionId, oldSessionId) => {
             const { accessToken, refreshToken, expiresIn } = tokens;
-      
+
             const [header, payload, signature] = await djwt.decode(accessToken);
 
             payload?.toString();
           },
           appProcCfg.LookupConfig.PathPattern
         );
+      } else if (isEaCAIRAGChatProcessor(appProcCfg.Application.Processor)) {
+        resp = aiRAGChatRequest(
+          req,
+          appProcCfg.Application.Processor.Endpoint,
+          appProcCfg.Application.Processor.APIKey,
+          appProcCfg.Application.Processor.DeploymentName,
+          appProcCfg.Application.Processor.EmbeddingDeploymentName,
+          appProcCfg.Application.Processor.ModelName,
+          appProcCfg.Application.Processor.SearchEndpoint,
+          appProcCfg.Application.Processor.SearchAPIKey,
+          appProcCfg.Application.Processor.Messages,
+          appProcCfg.Application.Processor.UseSSEFormat,
+          appProcCfg.Application.Processor.InputParams
+        );
+      } else {
+        resp = new Response(
+          'Hello, world!\n' +
+            JSON.stringify(appProcCfg, null, 2) +
+            '\n' +
+            JSON.stringify(ctx.Info.remoteAddr, null, 2)
+        );
       }
 
-      return new Response(
-        'Hello, world!\n' +
-          JSON.stringify(appProcCfg, null, 2) +
-          '\n' +
-          JSON.stringify(ctx.Info.remoteAddr, null, 2)
-      );
+      return resp;
     };
   },
   Runtime: (cfg: EaCRuntimeConfig) => new DefaultEaCRuntime(cfg),
