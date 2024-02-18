@@ -33,6 +33,7 @@ export async function establishKeepAliveMiddleware(
       return response;
     } else if (keepAliveCheckClientPattern.test(req.url)) {
       const clientUrl = new URL("./keepAliveClient.ts", import.meta.url);
+      
       const result = await transpile(clientUrl);
 
       const code = result.get(clientUrl.href);
