@@ -1,5 +1,6 @@
 export * from './config/_exports.ts';
 export * from './middleware/_exports.ts';
+export * from './defaultAppHandlerResolver.ts';
 export * from './EaCApplicationProcessorConfig.ts';
 export * from './EaCProjectProcessorConfig.ts';
 export * from './DefaultEaCRuntime.ts';

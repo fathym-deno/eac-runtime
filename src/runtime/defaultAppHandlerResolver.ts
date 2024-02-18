@@ -5,7 +5,7 @@ import {
   EaCRedirectProcessor,
   djwt,
   isEaCOAuthProcessor,
-} from '../../src.deps.ts';
+} from '../src.deps.ts';
 import {
   aiRAGChatRequest,
   isEaCAIRAGChatProcessor,
@@ -14,9 +14,9 @@ import {
   oAuthRequest,
   proxyRequest,
   redirectRequest,
-} from '../../src.deps.ts';
-import { EaCApplicationProcessorConfig } from '../EaCApplicationProcessorConfig.ts';
-import { EaCRuntimeHandler } from '../EaCRuntimeHandler.ts';
+} from '../src.deps.ts';
+import { EaCApplicationProcessorConfig } from './EaCApplicationProcessorConfig.ts';
+import { EaCRuntimeHandler } from './EaCRuntimeHandler.ts';
 
 export const defaultAppHandlerResolver: (
   appProcCfg: EaCApplicationProcessorConfig
