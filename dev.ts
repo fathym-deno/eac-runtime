@@ -6,7 +6,12 @@ Deno.env.set('EAC_RUNTIME_DEV', 'true');
 
 const devCfg = await config;
 
-const keepAliveMiddleware = await establishKeepAliveMiddleware('/_eac/alive', () => crypto.randomUUID())
+const revision = crypto.randomUUID();
+
+const keepAliveMiddleware = await establishKeepAliveMiddleware(
+  '/_eac/alive',
+  () => revision
+);
 
 devCfg.Middleware.unshift(keepAliveMiddleware);
 

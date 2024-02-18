@@ -1,11 +1,16 @@
-import { DOMParser, domInitParser, Element, transpile } from '../../src.deps.ts';
+import {
+  DOMParser,
+  domInitParser,
+  Element,
+  transpile,
+} from '../../src.deps.ts';
 import { EaCRuntimeHandler } from '../../runtime/EaCRuntimeHandler.ts';
 
 export async function establishKeepAliveMiddleware(
   keepAlivePath: string,
   loadRevision: () => string
 ): Promise<EaCRuntimeHandler> {
-  console.log('Configuring keep alive...')
+  console.log('Configuring keep alive...');
   await domInitParser();
 
   return async (req, ctx) => {
@@ -13,7 +18,9 @@ export async function establishKeepAliveMiddleware(
 
     const keepAliveClientPath = `${keepAlivePath}/keepAliveClient.ts`;
 
-    const keepAliveCheckClientPattern = new URLPattern({ pathname: keepAliveClientPath });
+    const keepAliveCheckClientPattern = new URLPattern({
+      pathname: keepAliveClientPath,
+    });
 
     if (
       keepAliveCheckPattern.test(req.url) &&
@@ -32,8 +39,8 @@ export async function establishKeepAliveMiddleware(
 
       return response;
     } else if (keepAliveCheckClientPattern.test(req.url)) {
-      const clientUrl = new URL("./keepAliveClient.ts", import.meta.url);
-      
+      const clientUrl = new URL('./keepAliveClient.ts', import.meta.url);
+
       const result = await transpile(clientUrl);
 
       const code = result.get(clientUrl.href);
@@ -60,13 +67,16 @@ export async function establishKeepAliveMiddleware(
         if (doc) {
           const keepAliveClientScriptNode = doc.createElement('script');
           keepAliveClientScriptNode.setAttribute('type', 'module');
-          keepAliveClientScriptNode.setAttribute('src', keepAliveClientPath);
+          keepAliveClientScriptNode.innerHTML = `import { configureKeepAlive } from '${keepAliveClientPath}';
+          
+configureKeepAlive('${keepAlivePath}');`;
+          // keepAliveClientScriptNode.setAttribute('src', keepAliveClientPath);
 
           doc.head.appendChild(keepAliveClientScriptNode);
 
           const docHtml = doc.childNodes[1] as Element;
 
-          const fullDoc = `<!DOCTYPE html>\n${docHtml.outerHTML}`
+          const fullDoc = `<!DOCTYPE html>\n${docHtml.outerHTML}`;
 
           resp = new Response(fullDoc, resp);
         }

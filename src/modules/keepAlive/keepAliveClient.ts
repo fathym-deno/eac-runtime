@@ -3,6 +3,7 @@ export function configureKeepAlive(keepAlivePath: string) {
   let revision = 0;
 
   let reconnectTimer: number;
+  
   const backoff = [
     // Wait 100ms initially, because we could also be
     // disconnected because of a form submit.
@@ -16,8 +17,8 @@ export function configureKeepAlive(keepAlivePath: string) {
     reconnectTimer = setTimeout(() => {
       if (backoffIdx === 0) {
         console.log(
-          `%c EaC Runtime %c Connection closed. Trying to reconnect...`,
-          'background-color: #86efac; color: black',
+          `%c 🐙 EaC Runtime %c Connection closed. Trying to reconnect...`,
+          'background-color: #4a918e; color: black',
           'color: inherit'
         );
       }
@@ -42,7 +43,7 @@ export function configureKeepAlive(keepAlivePath: string) {
   }
 
   function connect() {
-    const url = new URL('/_eac/alive', location.origin.replace('http', 'ws'));
+    const url = new URL(keepAlivePath, location.origin.replace('http', 'ws'));
     ws = new WebSocket(url);
 
     ws.addEventListener('open', onOpenWs);
@@ -65,10 +66,10 @@ export function configureKeepAlive(keepAlivePath: string) {
     const data = JSON.parse(e.data);
     switch (data.type) {
       case 'keep-alive': {
-        if (revision === 0) {
+        if (!revision) {
           console.log(
-            `%c EaC Runtime %c Connected to development server.`,
-            'background-color: #86efac; color: black',
+            `%c 🐙 EaC Runtime %c Connected to development server.`,
+            'background-color: #4a918e; color: black',
             'color: inherit'
           );
         }
