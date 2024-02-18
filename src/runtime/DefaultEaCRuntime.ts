@@ -1,10 +1,15 @@
-import { EaCRuntimeContext } from '../../mod.ts';
 import { djwt } from '../src.deps.ts';
-import { EverythingAsCode, EverythingAsCodeApplications, loadEaCSvc } from '../src.deps.ts';
+import {
+  EverythingAsCode,
+  EverythingAsCodeApplications,
+  loadEaCSvc,
+  merge,
+} from '../src.deps.ts';
 import { EaCRuntimeConfig } from './config/EaCRuntimeConfig.ts';
 import { EaCApplicationProcessorConfig } from './EaCApplicationProcessorConfig.ts';
 import { EaCProjectProcessorConfig } from './EaCProjectProcessorConfig.ts';
 import { EaCRuntime } from './EaCRuntime.ts';
+import { EaCRuntimeContext } from './EaCRuntimeContext.ts';
 import { EaCRuntimeHandler } from './EaCRuntimeHandler.ts';
 
 export class DefaultEaCRuntime implements EaCRuntime {
@@ -26,18 +31,20 @@ export class DefaultEaCRuntime implements EaCRuntime {
 
       const eacSvc = await loadEaCSvc(eacApiKey);
 
-      this.eac = await eacSvc.Get(EnterpriseLookup as string);
+      const eac = await eacSvc.Get(EnterpriseLookup as string);
+
+      this.eac = merge(this.config.EaC || {}, eac);
     } else if (this.config.EaC) {
       this.eac = this.config.EaC;
     } else {
       throw new Error(
-        'An EaC must be provided in the config or via a connection to an EaC Service with the EAC_API_KEY environment variable.',
+        'An EaC must be provided in the config or via a connection to an EaC Service with the EAC_API_KEY environment variable.'
       );
     }
 
     if (!this.eac.Projects) {
       throw new Error(
-        'The EaC must provide a set of projects to use in the runtime.',
+        'The EaC must provide a set of projects to use in the runtime.'
       );
     }
 
@@ -48,7 +55,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
 
   public Handle(
     request: Request,
-    info: Deno.ServeHandlerInfo,
+    info: Deno.ServeHandlerInfo
   ): Response | Promise<Response> {
     const projProcessorConfig = this.projectGraph!.find((node) => {
       return node.Patterns.some((pattern) => pattern.test(request.url));
@@ -58,10 +65,12 @@ export class DefaultEaCRuntime implements EaCRuntime {
       throw new Error(`No project is configured for '${request.url}'.`);
     }
 
-    return projProcessorConfig.Handler(request, {
+    const resp = projProcessorConfig.Handler(request, {
       Info: info,
       ProjectProcessorConfig: projProcessorConfig,
     } as EaCRuntimeContext);
+
+    return resp;
   }
 
   protected buildApplicationGraph(): void {
@@ -69,12 +78,18 @@ export class DefaultEaCRuntime implements EaCRuntime {
       this.applicationGraph = this.projectGraph!.reduce(
         (appGraph, projNode) => {
           const appLookups = Object.keys(
-            projNode.Project.ApplicationLookups || {},
+            projNode.Project.ApplicationLookups || {}
           );
 
           appGraph[projNode.ProjectLookup] = appLookups
             .map((appLookup) => {
               const app = this.eac!.Applications![appLookup];
+
+              if (!app) {
+                throw new Error(
+                  `The '${appLookup}' app configured for the project does not exist in the EaC Applications configuration.`
+                );
+              }
 
               const lookupCfg = projNode.Project.ApplicationLookups[appLookup];
 
@@ -97,7 +112,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
 
           return appGraph;
         },
-        {} as Record<string, EaCApplicationProcessorConfig[]>,
+        {} as Record<string, EaCApplicationProcessorConfig[]>
       );
     }
   }
@@ -152,13 +167,13 @@ export class DefaultEaCRuntime implements EaCRuntime {
   }
 
   protected establishApplicationHandler(
-    appProcessorConfig: EaCApplicationProcessorConfig,
+    appProcessorConfig: EaCApplicationProcessorConfig
   ): EaCRuntimeHandler {
     return this.config.ApplicationHandlerResolver(appProcessorConfig);
   }
 
   protected establishProjectHandler(
-    projProcessorConfig: EaCProjectProcessorConfig,
+    projProcessorConfig: EaCProjectProcessorConfig
   ): EaCRuntimeHandler {
     return (req, ctx) => {
       const appProcessorConfig = this.applicationGraph![
@@ -169,7 +184,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
 
       if (!appProcessorConfig) {
         throw new Error(
-          `No application is configured for '${req.url}' in project '${projProcessorConfig.ProjectLookup}'.`,
+          `No application is configured for '${req.url}' in project '${projProcessorConfig.ProjectLookup}'.`
         );
       }
 
@@ -184,7 +199,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
   protected executePipeline(
     pipeline: EaCRuntimeHandler[],
     request: Request,
-    ctx: EaCRuntimeContext,
+    ctx: EaCRuntimeContext
   ): Response | Promise<Response> {
     ctx.next = (req) => {
       req ??= request;

@@ -1,6 +1,6 @@
 {
   "tasks": {
-    "dev": "deno run -A --watch=configs/,data/,routes/,static/ main.ts",
+    "dev": "deno run -A --watch=configs/,data/,routes/,src/,static/ dev.ts",
     "build": "deno task build:fmt && deno task build:lint && deno task build:dev",
     "build:dev": "deno run -A mod.ts build",
     "build:fmt": "deno fmt",

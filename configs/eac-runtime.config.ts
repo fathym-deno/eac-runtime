@@ -46,11 +46,7 @@ export default defineEaCConfig({
           oauth: {
             PathPattern: '/oauth/*',
             Priority: 500,
-          },
-          signin: {
-            PathPattern: '/signin',
-            Priority: 300,
-          },
+          }
         },
       },
       dashboard: {
@@ -123,8 +119,10 @@ export default defineEaCConfig({
           Description: 'The site used to display the main dashboard',
         },
         Processor: {
-          ProxyRoot: 'http://localhost:5437',
+          // ProxyRoot: 'http://localhost:8000',
+          // ProxyRoot: 'http://localhost:5437',
           // ProxyRoot: 'https://dashboard.openbiotech.co',
+          ProxyRoot: 'https://biotech-manager-web.azurewebsites.net',
         } as EaCProxyProcessor,
       },
       docs: {

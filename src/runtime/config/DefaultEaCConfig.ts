@@ -5,6 +5,7 @@ import { defaultAppHandlerResolver } from './defaultAppHandlerResolver.ts';
 
 export const DefaultEaCConfig: EaCRuntimeConfig = {
   ApplicationHandlerResolver: defaultAppHandlerResolver,
+  Middleware: [],
   Runtime: (cfg: EaCRuntimeConfig) => new DefaultEaCRuntime(cfg),
   Server: {
     onListen: (params) => {

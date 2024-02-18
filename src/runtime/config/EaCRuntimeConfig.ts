@@ -8,7 +8,7 @@ export type EaCRuntimeConfig = {
 
   EaC?: EverythingAsCode & EverythingAsCodeApplications;
 
-  Middleware?: EaCRuntimeHandler[];
+  Middleware: EaCRuntimeHandler[];
 
   Runtime: (cfg: EaCRuntimeConfig) => EaCRuntime;
 

@@ -1,4 +1,11 @@
-import { djwt, isEaCOAuthProcessor } from '../../src.deps.ts';
+import {
+  EaCAIRAGChatProcessor,
+  EaCOAuthProcessor,
+  EaCProxyProcessor,
+  EaCRedirectProcessor,
+  djwt,
+  isEaCOAuthProcessor,
+} from '../../src.deps.ts';
 import {
   aiRAGChatRequest,
   isEaCAIRAGChatProcessor,
@@ -12,32 +19,43 @@ import { EaCApplicationProcessorConfig } from '../EaCApplicationProcessorConfig.
 import { EaCRuntimeHandler } from '../EaCRuntimeHandler.ts';
 
 export const defaultAppHandlerResolver: (
-  appProcCfg: EaCApplicationProcessorConfig,
+  appProcCfg: EaCApplicationProcessorConfig
 ) => EaCRuntimeHandler = (appProcCfg) => {
-  return (req, ctx) => {
-    let resp: Response | Promise<Response>;
+  let handler: EaCRuntimeHandler;
 
-    if (isEaCRedirectProcessor(appProcCfg.Application.Processor)) {
-      resp = redirectRequest(
-        appProcCfg.Application.Processor.Redirect,
-        appProcCfg.Application.Processor.PreserveMethod,
-        appProcCfg.Application.Processor.Permanent,
+  if (isEaCRedirectProcessor(appProcCfg.Application.Processor)) {
+    handler = (_req, _ctx) => {
+      const processor = appProcCfg.Application
+        .Processor as EaCRedirectProcessor;
+
+      return redirectRequest(
+        processor.Redirect,
+        processor.PreserveMethod,
+        processor.Permanent
       );
-    } else if (isEaCProxyProcessor(appProcCfg.Application.Processor)) {
-      resp = proxyRequest(
+    };
+  } else if (isEaCProxyProcessor(appProcCfg.Application.Processor)) {
+    handler = (req, ctx) => {
+      const processor = appProcCfg.Application.Processor as EaCProxyProcessor;
+
+      return proxyRequest(
         req,
-        appProcCfg.Application.Processor.ProxyRoot,
-        appProcCfg.LookupConfig.PathPattern,
+        processor.ProxyRoot,
+        appProcCfg.LookupConfig.PathPattern
         // ctx.Info.remoteAddr.hostname,
       );
-    } else if (isEaCOAuthProcessor(appProcCfg.Application.Processor)) {
-      resp = oAuthRequest(
+    };
+  } else if (isEaCOAuthProcessor(appProcCfg.Application.Processor)) {
+    handler = (req, ctx) => {
+      const processor = appProcCfg.Application.Processor as EaCOAuthProcessor;
+
+      return oAuthRequest(
         req,
-        appProcCfg.Application.Processor.ClientID,
-        appProcCfg.Application.Processor.ClientSecret,
-        appProcCfg.Application.Processor.AuthorizationEndpointURI,
-        appProcCfg.Application.Processor.TokenURI,
-        appProcCfg.Application.Processor.Scopes,
+        processor.ClientID,
+        processor.ClientSecret,
+        processor.AuthorizationEndpointURI,
+        processor.TokenURI,
+        processor.Scopes,
         async (tokens, _newSessionId, _oldSessionId) => {
           const { accessToken } = tokens;
 
@@ -45,31 +63,38 @@ export const defaultAppHandlerResolver: (
 
           payload?.toString();
         },
-        appProcCfg.LookupConfig.PathPattern,
+        appProcCfg.LookupConfig.PathPattern
       );
-    } else if (isEaCAIRAGChatProcessor(appProcCfg.Application.Processor)) {
-      resp = aiRAGChatRequest(
+    };
+  } else if (isEaCAIRAGChatProcessor(appProcCfg.Application.Processor)) {
+    handler = (req, ctx) => {
+      const processor = appProcCfg.Application
+        .Processor as EaCAIRAGChatProcessor;
+
+      return aiRAGChatRequest(
         req,
-        appProcCfg.Application.Processor.Endpoint,
-        appProcCfg.Application.Processor.APIKey,
-        appProcCfg.Application.Processor.DeploymentName,
-        appProcCfg.Application.Processor.ModelName,
-        appProcCfg.Application.Processor.Messages,
-        appProcCfg.Application.Processor.UseSSEFormat,
-        appProcCfg.Application.Processor.InputParams,
-        appProcCfg.Application.Processor.EmbeddingDeploymentName,
-        appProcCfg.Application.Processor.SearchEndpoint,
-        appProcCfg.Application.Processor.SearchAPIKey,
+        processor.Endpoint,
+        processor.APIKey,
+        processor.DeploymentName,
+        processor.ModelName,
+        processor.Messages,
+        processor.UseSSEFormat,
+        processor.InputParams,
+        processor.EmbeddingDeploymentName,
+        processor.SearchEndpoint,
+        processor.SearchAPIKey
       );
-    } else {
-      resp = new Response(
+    };
+  } else {
+    handler = (req, ctx) => {
+      return new Response(
         'Hello, world!\n' +
           JSON.stringify(appProcCfg, null, 2) +
           '\n' +
-          JSON.stringify(ctx.Info.remoteAddr, null, 2),
+          JSON.stringify(ctx.Info.remoteAddr, null, 2)
       );
-    }
+    };
+  }
 
-    return resp;
-  };
+  return handler;
 };
