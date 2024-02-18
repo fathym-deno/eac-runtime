@@ -9,4 +9,6 @@ export type EaCRuntimeContext = {
   next: (req?: Request) => Response | Promise<Response>;
 
   ProjectProcessorConfig: EaCProjectProcessorConfig;
+
+  Revision: number;
 };

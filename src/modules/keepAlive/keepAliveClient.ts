@@ -1,36 +1,68 @@
 export function configureKeepAlive(keepAlivePath: string) {
-  let ws: WebSocket;
-  let revision = 0;
+  let ws: WebSocket,
+    revision = 0,
+    backoffIdx = 0;
 
-  let reconnectTimer: number;
-  
-  const backoff = [
-    // Wait 100ms initially, because we could also be
-    // disconnected because of a form submit.
-    100, 150, 200, 250, 300, 350, 400, 450, 500, 500, 605, 750, 1000, 1250,
-    1500, 1750, 2000,
-  ];
-  let backoffIdx = 0;
-  function reconnect() {
-    if (ws.readyState !== ws.CLOSED) return;
+  const backgroundColor = 'background-color: #4a918e; color: black',
+    textColor = 'color: inherit';
 
-    reconnectTimer = setTimeout(() => {
-      if (backoffIdx === 0) {
-        console.log(
-          `%c 🐙 EaC Runtime %c Connection closed. Trying to reconnect...`,
-          'background-color: #4a918e; color: black',
-          'color: inherit'
-        );
+  connect();
+
+  function connect() {
+    const url = new URL(keepAlivePath, location.origin.replace('http', 'ws'));
+    ws = new WebSocket(url);
+
+    ws.addEventListener('open', onOpenWs);
+
+    ws.addEventListener('close', onCloseWs);
+
+    ws.addEventListener('message', handleMessage);
+
+    ws.addEventListener('error', handleError);
+  }
+
+  function disconnect() {
+    ws.removeEventListener('open', onOpenWs);
+
+    ws.removeEventListener('close', onCloseWs);
+
+    ws.removeEventListener('message', handleMessage);
+
+    ws.removeEventListener('error', handleError);
+
+    ws.close();
+  }
+
+  function handleMessage(e: MessageEvent) {
+    const data = JSON.parse(e.data);
+    switch (data.type) {
+      case 'keep-alive': {
+        if (revision === 0) {
+          log('Connected to development server.');
+          
+          revision = data.revision;
+        } else if (revision < data.revision) {
+          handleRefresh();
+        }
       }
-      backoffIdx++;
+    }
+  }
 
-      try {
-        connect();
-        clearTimeout(reconnectTimer);
-      } catch (_err) {
-        reconnect();
-      }
-    }, backoff[Math.min(backoffIdx, backoff.length - 1)]);
+  function handleRefresh(): void {
+    disconnect();
+
+    location.reload();
+  }
+
+  function handleError(e: Event) {
+    // deno-lint-ignore no-explicit-any
+    if (e && (e as any).code === 'ECONNREFUSED') {
+      setTimeout(connect, 1000);
+    }
+  }
+
+  function log(msg: string) {
+    console.log(`%c 🐙 EaC Runtime %c ${msg}`, backgroundColor, textColor);
   }
 
   function onOpenWs() {
@@ -39,59 +71,37 @@ export function configureKeepAlive(keepAlivePath: string) {
 
   function onCloseWs() {
     disconnect();
+
     reconnect();
   }
 
-  function connect() {
-    const url = new URL(keepAlivePath, location.origin.replace('http', 'ws'));
-    ws = new WebSocket(url);
+  function reconnect() {
+    if (ws.readyState !== ws.CLOSED) return;
 
-    ws.addEventListener('open', onOpenWs);
-    ws.addEventListener('close', onCloseWs);
-    ws.addEventListener('message', handleMessage);
-    ws.addEventListener('error', handleError);
-  }
-
-  connect();
-
-  function disconnect() {
-    ws.removeEventListener('open', onOpenWs);
-    ws.removeEventListener('close', onCloseWs);
-    ws.removeEventListener('message', handleMessage);
-    ws.removeEventListener('error', handleError);
-    ws.close();
-  }
-
-  function handleMessage(e: MessageEvent) {
-    const data = JSON.parse(e.data);
-    switch (data.type) {
-      case 'keep-alive': {
-        if (!revision) {
-          console.log(
-            `%c 🐙 EaC Runtime %c Connected to development server.`,
-            'background-color: #4a918e; color: black',
-            'color: inherit'
-          );
-        }
-
-        if (!revision) {
-          revision = data.revision;
-        } else if (revision != data.revision) {
-          disconnect();
-          // Needs reload
-          location.reload();
-        }
+    const reconnectTimer = setTimeout(() => {
+      if (backoffIdx === 0) {
+        log('Connection closed. Trying to reconnect...');
       }
-    }
+
+      backoffIdx++;
+
+      try {
+        connect();
+
+        clearTimeout(reconnectTimer);
+      } catch (_err) {
+        reconnect();
+      }
+    }, Math.max(100 * backoffIdx * 1.5, 3000));
   }
 
-  function handleError(e: Event) {
-    // TODO
-    // deno-lint-ignore no-explicit-any
-    if (e && (e as any).code === 'ECONNREFUSED') {
-      setTimeout(connect, 1000);
+  addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      disconnect();
+    } else {
+      connect();
     }
-  }
+  });
 
   // addEventListener("message", (ev) => {
   //   if (ev.origin !== location.origin) return;
@@ -101,14 +111,4 @@ export function configureKeepAlive(keepAlivePath: string) {
 
   //   document.querySelector("#fresh-error-overlay")?.remove();
   // });
-
-  // Disconnect when the tab becomes inactive and re-connect when it
-  // becomes active again
-  addEventListener('visibilitychange', () => {
-    if (document.hidden) {
-      disconnect();
-    } else {
-      connect();
-    }
-  });
 }

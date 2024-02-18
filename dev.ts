@@ -8,10 +8,7 @@ const devCfg = await config;
 
 const revision = crypto.randomUUID();
 
-const keepAliveMiddleware = await establishKeepAliveMiddleware(
-  '/_eac/alive',
-  () => revision
-);
+const keepAliveMiddleware = await establishKeepAliveMiddleware('/_eac/alive');
 
 devCfg.Middleware.unshift(keepAliveMiddleware);
 

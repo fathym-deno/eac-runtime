@@ -7,8 +7,7 @@ import {
 import { EaCRuntimeHandler } from '../../runtime/EaCRuntimeHandler.ts';
 
 export async function establishKeepAliveMiddleware(
-  keepAlivePath: string,
-  loadRevision: () => string
+  keepAlivePath: string
 ): Promise<EaCRuntimeHandler> {
   console.log('Configuring keep alive...');
   await domInitParser();
@@ -31,7 +30,7 @@ export async function establishKeepAliveMiddleware(
       socket.addEventListener('open', () => {
         socket.send(
           JSON.stringify({
-            revision: loadRevision(),
+            revision: ctx.Revision,
             type: 'keep-alive',
           })
         );
@@ -68,7 +67,7 @@ export async function establishKeepAliveMiddleware(
           const keepAliveClientScriptNode = doc.createElement('script');
           keepAliveClientScriptNode.setAttribute('type', 'module');
           keepAliveClientScriptNode.innerHTML = `import { configureKeepAlive } from '${keepAliveClientPath}';
-          
+
 configureKeepAlive('${keepAlivePath}');`;
           // keepAliveClientScriptNode.setAttribute('src', keepAliveClientPath);
 

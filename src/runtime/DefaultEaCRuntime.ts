@@ -19,7 +19,11 @@ export class DefaultEaCRuntime implements EaCRuntime {
 
   protected projectGraph?: EaCProjectProcessorConfig[];
 
-  constructor(protected config: EaCRuntimeConfig) {}
+  protected revision?: number;
+
+  constructor(protected config: EaCRuntimeConfig) {
+    this.revision = Date.now();
+  }
 
   public async Configure(): Promise<void> {
     const eacApiKey = Deno.env.get('EAC_API_KEY');
@@ -68,6 +72,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
     const resp = projProcessorConfig.Handler(request, {
       Info: info,
       ProjectProcessorConfig: projProcessorConfig,
+      Revision: this.revision,
     } as EaCRuntimeContext);
 
     return resp;
