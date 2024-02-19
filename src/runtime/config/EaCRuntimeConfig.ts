@@ -1,12 +1,14 @@
 import { EaCApplicationProcessorConfig } from '../EaCApplicationProcessorConfig.ts';
-import { EverythingAsCode, EverythingAsCodeApplications } from '../../src.deps.ts';
 import { EaCRuntime } from '../EaCRuntime.ts';
 import { EaCRuntimeHandler } from '../EaCRuntimeHandler.ts';
+import { EaCRuntimeEaC } from '../EaCRuntimeEaC.ts';
 
 export type EaCRuntimeConfig = {
-  ApplicationHandlerResolver: (appProcCfg: EaCApplicationProcessorConfig) => EaCRuntimeHandler;
+  ApplicationHandlerResolver: (
+    appProcCfg: EaCApplicationProcessorConfig
+  ) => EaCRuntimeHandler;
 
-  EaC?: EverythingAsCode & EverythingAsCodeApplications;
+  EaC?: EaCRuntimeEaC;
 
   Middleware: EaCRuntimeHandler[];
 

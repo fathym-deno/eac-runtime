@@ -1,9 +1,11 @@
 import {
   EaCAIRAGChatProcessor,
+  EaCDFSProcessor,
   EaCOAuthProcessor,
   EaCProxyProcessor,
   EaCRedirectProcessor,
   djwt,
+  isEaCDFSProcessor,
   isEaCOAuthProcessor,
 } from '../src.deps.ts';
 import {
@@ -16,7 +18,9 @@ import {
   redirectRequest,
 } from '../src.deps.ts';
 import { EaCApplicationProcessorConfig } from './EaCApplicationProcessorConfig.ts';
+import { defaultDFSFileHandlerResolver } from './defaultDFSFileHandlerResolver.ts';
 import { EaCRuntimeHandler } from './EaCRuntimeHandler.ts';
+import { DFSFileHandler } from './_exports.ts';
 
 export const defaultAppHandlerResolver: (
   appProcCfg: EaCApplicationProcessorConfig
@@ -84,6 +88,37 @@ export const defaultAppHandlerResolver: (
         processor.SearchEndpoint,
         processor.SearchAPIKey
       );
+    };
+  } else if (isEaCDFSProcessor(appProcCfg.Application.Processor)) {
+    const filesReady = new Promise<DFSFileHandler>((resolve, reject) => {
+      const processor = appProcCfg.Application.Processor as EaCDFSProcessor;
+
+      defaultDFSFileHandlerResolver(processor.DFS)
+        .then((fileHandler) => {
+          resolve(fileHandler);
+        })
+        .catch((err) => reject(err));
+    });
+
+    filesReady.then();
+
+    handler = async (req, ctx) => {
+      const processor = appProcCfg.Application.Processor as EaCDFSProcessor;
+
+      const fileHandler = await filesReady;
+
+      const pattern = new URLPattern({ pathname: appProcCfg.LookupConfig.PathPattern });
+
+      const patternResult = pattern.exec(req.url);
+  
+      const filePath = patternResult!.pathname.groups[0]!;
+
+      const file = await fileHandler.GetFileInfo(filePath, processor.DFS.DefaultFile);
+
+      // TODO(mcgear): Add appropriate headers for file response.
+      return new Response(file.Contents, {
+        headers: file.Headers
+      });
     };
   } else {
     handler = (req, ctx) => {

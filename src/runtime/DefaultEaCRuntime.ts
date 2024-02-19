@@ -1,7 +1,6 @@
-import { djwt } from '../src.deps.ts';
+import { djwt, initializeDenoKv } from '../src.deps.ts';
+import { isEaCDenoKVDatabaseDetails } from '../src.deps.ts';
 import {
-  EverythingAsCode,
-  EverythingAsCodeApplications,
   loadEaCSvc,
   merge,
 } from '../src.deps.ts';
@@ -10,18 +9,23 @@ import { EaCApplicationProcessorConfig } from './EaCApplicationProcessorConfig.t
 import { EaCProjectProcessorConfig } from './EaCProjectProcessorConfig.ts';
 import { EaCRuntime } from './EaCRuntime.ts';
 import { EaCRuntimeContext } from './EaCRuntimeContext.ts';
+import { EaCRuntimeEaC } from './EaCRuntimeEaC.ts';
 import { EaCRuntimeHandler } from './EaCRuntimeHandler.ts';
 
 export class DefaultEaCRuntime implements EaCRuntime {
   protected applicationGraph?: Record<string, EaCApplicationProcessorConfig[]>;
 
-  protected eac?: EverythingAsCode & EverythingAsCodeApplications;
+  protected databases: Record<string, unknown>;
+
+  protected eac?: EaCRuntimeEaC;
 
   protected projectGraph?: EaCProjectProcessorConfig[];
 
-  protected revision?: number;
+  protected revision: number;
 
   constructor(protected config: EaCRuntimeConfig) {
+    this.databases = {};
+
     this.revision = Date.now();
   }
 
@@ -52,6 +56,8 @@ export class DefaultEaCRuntime implements EaCRuntime {
       );
     }
 
+    this.configureDatabases();
+
     this.buildProjectGraph();
 
     this.buildApplicationGraph();
@@ -70,6 +76,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
     }
 
     const resp = projProcessorConfig.Handler(request, {
+      Databases: this.databases,
       Info: info,
       ProjectProcessorConfig: projProcessorConfig,
       Revision: this.revision,
@@ -155,6 +162,18 @@ export class DefaultEaCRuntime implements EaCRuntime {
           return b.Project.Details!.Priority - a.Project.Details!.Priority;
         });
     }
+  }
+
+  protected configureDatabases(): void {
+    const dbLookups = Object.keys(this.eac!.Databases || {});
+
+    dbLookups.forEach(async (dbLookup) => {
+      const db = this.eac!.Databases![dbLookup];
+
+      if (isEaCDenoKVDatabaseDetails(db.Details)) {
+        this.databases[dbLookup] = await initializeDenoKv(db.Details.DenoKVPath);
+      }
+    });
   }
 
   protected constructPipeline(ctx: EaCRuntimeContext): EaCRuntimeHandler[] {

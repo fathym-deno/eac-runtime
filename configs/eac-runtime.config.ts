@@ -1,5 +1,8 @@
 // import { TracingEaCRuntime } from '../src/runtime/TracingEaCRuntime.ts';
 import { defineEaCConfig } from '../src/runtime/config/defineEaCConfig.ts';
+import { EaCDenoKVDatabaseDetails } from '../src/src.deps.ts';
+import { EaCNPMDistributedFileSystem } from '../src/src.deps.ts';
+import { EaCDFSProcessor } from '../src/src.deps.ts';
 import {
   EaCAIRAGChatProcessor,
   EaCOAuthProcessor,
@@ -46,7 +49,7 @@ export default defineEaCConfig({
           oauth: {
             PathPattern: '/oauth/*',
             Priority: 500,
-          }
+          },
         },
       },
       dashboard: {
@@ -72,6 +75,10 @@ export default defineEaCConfig({
           },
           oauth: {
             PathPattern: '/oauth/*',
+            Priority: 500,
+          },
+          publicWebBlog: {
+            PathPattern: '/blog*',
             Priority: 500,
           },
           profile: {
@@ -149,6 +156,20 @@ export default defineEaCConfig({
         },
         Processor: {},
       },
+      publicWebBlog: {
+        Details: {
+          Name: 'Public Web Blog Site',
+          Description:
+            'The public web blog site to be used for the marketing of the project',
+        },
+        Processor: {
+          DFS: {
+            DefaultFile: 'index.html',
+            Package: '@lowcodeunit/public-web-blog',
+            Version: 'latest',
+          } as EaCNPMDistributedFileSystem,
+        } as EaCDFSProcessor,
+      },
       oauth: {
         Details: {
           Name: 'OAuth Site',
@@ -177,6 +198,15 @@ export default defineEaCConfig({
             'The site used to for user profile display and management',
         },
         Processor: {},
+      },
+    },
+    Databases: {
+      cache: {
+        Details: {
+          Name: 'Local Cache',
+          Description: 'The Deno KV database to use for local caching',
+          DenoKVPath: Deno.env.get("LOCAL_CACHE_DENO_KV_PATH") || undefined
+        } as EaCDenoKVDatabaseDetails,
       },
     },
   },
