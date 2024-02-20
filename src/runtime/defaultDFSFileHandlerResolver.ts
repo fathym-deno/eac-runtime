@@ -5,6 +5,14 @@ import { EaCDistributedFileSystem } from '../src.deps.ts';
 export type DFSFileInfo = {
   Contents: ReadableStream<Uint8Array>;
 
+  ContentsForWork: ReadableStream<Uint8Array>;
+
+  Headers?: Record<string, string>;
+};
+
+export type DFSFileInfoCache = {
+  Contents: string;
+
   Headers?: Record<string, string>;
 };
 
@@ -59,7 +67,7 @@ export const buildLocalDFSFileHandler = (
       const activeFileResp = fileResps.find((fileResp) => fileResp);
 
       if (activeFileResp) {
-        return { Contents: activeFileResp.readable };
+        return { Contents: activeFileResp.readable, ContentsForWork: activeFileResp.readable };
       } else if (defaultFileName) {
         throw new Error(
           `Unable to locate a local file at path ${filePath}, and no default file was found for ${defaultFileName}.`
@@ -134,10 +142,11 @@ export const buildFetchDFSFileHandler = (
       const activeFileResp = fileResps.find((fileResp) => fileResp.ok);
 
       if (activeFileResp) {
-        const usedHeaders = ['cache-control', 'age', 'date', 'etag', 'vary'];
+        const usedHeaders = ['cache-control', "content-length", 'age', 'date', 'etag', 'vary'];
 
         const dfsFileInfo: DFSFileInfo = {
-          Contents: activeFileResp.body!,
+          Contents: activeFileResp.clone().body!,
+          ContentsForWork: activeFileResp.clone().body!,
           Headers: usedHeaders.reduce((headers, uh) => {
             if (activeFileResp.headers.has(uh)) {
               headers[uh] = activeFileResp.headers.get(uh)!;
@@ -146,8 +155,6 @@ export const buildFetchDFSFileHandler = (
             return headers;
           }, {} as Record<string, string>),
         };
-
-        // TODO(mcgear): Background cache the dfsFileInfo for faster retrieval later.
 
         return dfsFileInfo;
       } else if (defaultFileName) {

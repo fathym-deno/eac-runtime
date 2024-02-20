@@ -1,4 +1,6 @@
+// deno-lint-ignore-file no-explicit-any
 import {
+  Buffer,
   EaCAIRAGChatProcessor,
   EaCDFSProcessor,
   EaCOAuthProcessor,
@@ -18,9 +20,89 @@ import {
   redirectRequest,
 } from '../src.deps.ts';
 import { EaCApplicationProcessorConfig } from './EaCApplicationProcessorConfig.ts';
-import { defaultDFSFileHandlerResolver } from './defaultDFSFileHandlerResolver.ts';
+import {
+  DFSFileInfoCache,
+  defaultDFSFileHandlerResolver,
+} from './defaultDFSFileHandlerResolver.ts';
 import { EaCRuntimeHandler } from './EaCRuntimeHandler.ts';
 import { DFSFileHandler } from './_exports.ts';
+import { DFSFileInfo } from './defaultDFSFileHandlerResolver.ts';
+
+export function concatTypedArrays(a: Uint8Array, b: Uint8Array) {
+  // a, b TypedArray of same type
+  const c = new Uint8Array(a.length + b.length);
+
+  c.set(a, 0);
+
+  c.set(b, a.length);
+
+  return c;
+}
+
+// export function concatBuffers(a: Uint8Array, b: Uint8Array) {
+//   return concatTypedArrays(
+//       new Uint8Array(a.buffer || a),
+//       new Uint8Array(b.buffer || b)
+//   ).buffer;
+// }
+
+export function denoKvCacheReadableStream(
+  kv: Deno.Kv,
+  cacheKey: Deno.KvKey,
+  stream: ReadableStream<Uint8Array>,
+  maxChunkSize = 40000
+): void {
+  if (stream) {
+    let content = new Uint8Array();
+
+    const contentChunks: Uint8Array[] = [];
+
+    const fileReader = stream.getReader();
+
+    fileReader.read().then(function processFile({ done, value }): any {
+      if (done) {
+        contentChunks.push(content);
+
+        contentChunks.forEach((chunk, i) => {
+          kv.set([...cacheKey, 'Chunks', i], chunk, {
+            expireIn: 1000 * 60 * 5,
+          }).then();
+        });
+
+        return;
+      }
+
+      content = concatTypedArrays(content, value);
+
+      const contentBlob = new Blob([content]);
+
+      if (contentBlob.size > maxChunkSize) {
+        contentChunks.push(content);
+
+        content = new Uint8Array();
+      }
+
+      return fileReader.read().then(processFile);
+    });
+  }
+}
+
+export async function denoKvReadReadableStreamCache(
+  kv: Deno.Kv,
+  cacheKey: Deno.KvKey
+): Promise<Uint8Array> {
+  const cachedFileChunks = await kv.list<Uint8Array>({
+    prefix: [...cacheKey, 'Chunks'],
+  });
+
+  let content = new Uint8Array();
+
+  for await (const cachedFileChunk of cachedFileChunks) {
+    content = concatTypedArrays(content, cachedFileChunk.value!);
+  }
+
+  return content;
+}
 
 export const defaultAppHandlerResolver: (
   appProcCfg: EaCApplicationProcessorConfig
@@ -107,17 +189,74 @@ export const defaultAppHandlerResolver: (
 
       const fileHandler = await filesReady;
 
-      const pattern = new URLPattern({ pathname: appProcCfg.LookupConfig.PathPattern });
+      const pattern = new URLPattern({
+        pathname: appProcCfg.LookupConfig.PathPattern,
+      });
 
       const patternResult = pattern.exec(req.url);
-  
+
       const filePath = patternResult!.pathname.groups[0]!;
 
-      const file = await fileHandler.GetFileInfo(filePath, processor.DFS.DefaultFile);
+      const cacheDb = (await ctx.Databases['cache']) as Deno.Kv;
 
-      // TODO(mcgear): Add appropriate headers for file response.
+      let file: DFSFileInfo | undefined = undefined;
+
+      const fileCacheKey = [
+        'DFS',
+        'EaC',
+        ctx.EaC!.EnterpriseLookup!,
+        'Project',
+        ctx.ProjectProcessorConfig.ProjectLookup,
+        'Applications',
+        ctx.ApplicationProcessorConfig.ApplicationLookup,
+        'File',
+        filePath,
+      ];
+
+      if (cacheDb) {
+        const content = await denoKvReadReadableStreamCache(
+          cacheDb,
+          fileCacheKey
+        );
+
+        if (content.length > 0) {
+          const cachedHeaders = await cacheDb.get<Record<string, string>>([
+            ...fileCacheKey,
+            'Headers',
+          ]);
+
+          file = {
+            Contents: new Blob([content]).stream(),
+            Headers: cachedHeaders.value,
+          } as DFSFileInfo;
+        }
+      }
+
+      if (!file) {
+        file = await fileHandler.GetFileInfo(
+          filePath,
+          processor.DFS.DefaultFile
+        );
+
+        if (file) {
+          denoKvCacheReadableStream(
+            cacheDb,
+            fileCacheKey,
+            file.ContentsForWork
+          );
+
+          if (file.Headers) {
+            cacheDb
+              .set([...fileCacheKey, 'Headers'], file.Headers, {
+                expireIn: 1000 * 60 * 5,
+              })
+              .then();
+          }
+        }
+      }
+
       return new Response(file.Contents, {
-        headers: file.Headers
+        headers: file.Headers,
       });
     };
   } else {

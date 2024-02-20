@@ -1,10 +1,16 @@
 import { EaCApplicationProcessorConfig } from './EaCApplicationProcessorConfig.ts';
 import { EaCProjectProcessorConfig } from './EaCProjectProcessorConfig.ts';
+import { EaCRuntimeEaC } from './EaCRuntimeEaC.ts';
+import { EaCRuntimeConfig } from './config/EaCRuntimeConfig.ts';
 
 export type EaCRuntimeContext = {
   ApplicationProcessorConfig: EaCApplicationProcessorConfig;
 
-  Databases: Record<string, unknown>;
+  Config: EaCRuntimeConfig;
+
+  Databases: Record<string, Promise<unknown>>;
+
+  EaC: EaCRuntimeEaC;
 
   Info: Deno.ServeHandlerInfo;
 

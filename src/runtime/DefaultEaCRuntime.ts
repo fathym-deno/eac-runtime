@@ -1,4 +1,5 @@
 import { djwt, initializeDenoKv } from '../src.deps.ts';
+import { EaCDenoKVDatabaseDetails } from '../src.deps.ts';
 import { isEaCDenoKVDatabaseDetails } from '../src.deps.ts';
 import {
   loadEaCSvc,
@@ -15,7 +16,7 @@ import { EaCRuntimeHandler } from './EaCRuntimeHandler.ts';
 export class DefaultEaCRuntime implements EaCRuntime {
   protected applicationGraph?: Record<string, EaCApplicationProcessorConfig[]>;
 
-  protected databases: Record<string, unknown>;
+  protected databases: Record<string, Promise<unknown>>;
 
   protected eac?: EaCRuntimeEaC;
 
@@ -76,7 +77,9 @@ export class DefaultEaCRuntime implements EaCRuntime {
     }
 
     const resp = projProcessorConfig.Handler(request, {
+      Config: this.config,
       Databases: this.databases,
+      EaC: this.eac,
       Info: info,
       ProjectProcessorConfig: projProcessorConfig,
       Revision: this.revision,
@@ -171,7 +174,17 @@ export class DefaultEaCRuntime implements EaCRuntime {
       const db = this.eac!.Databases![dbLookup];
 
       if (isEaCDenoKVDatabaseDetails(db.Details)) {
-        this.databases[dbLookup] = await initializeDenoKv(db.Details.DenoKVPath);
+        const dbInit = new Promise<Deno.Kv>((resolve, reject) => {
+          const dbDetails = db.Details as EaCDenoKVDatabaseDetails;
+
+          initializeDenoKv(dbDetails.DenoKVPath).then(kv => {
+            resolve(kv);
+          });
+        });
+
+        dbInit.then();
+
+        this.databases[dbLookup] = dbInit;
       }
     });
   }
