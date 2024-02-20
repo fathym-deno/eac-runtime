@@ -5,32 +5,24 @@ import { EaCDistributedFileSystem } from '../src.deps.ts';
 export type DFSFileInfo = {
   Contents: ReadableStream<Uint8Array>;
 
-  ContentsForWork: ReadableStream<Uint8Array>;
-
-  Headers?: Record<string, string>;
-};
-
-export type DFSFileInfoCache = {
-  Contents: string;
-
   Headers?: Record<string, string>;
 };
 
 export type DFSFileHandler = {
   GetFileInfo: (
     filePath: string,
-    defaultFileName?: string
+    defaultFileName?: string,
   ) => Promise<DFSFileInfo>;
 };
 
 export const buildLocalDFSFileHandler = (
   root: string,
-  pathResolver?: (filePath: string) => string
+  pathResolver?: (filePath: string) => string,
 ): DFSFileHandler => {
   return {
     async GetFileInfo(
       filePath: string,
-      defaultFileName?: string
+      defaultFileName?: string,
     ): Promise<DFSFileInfo> {
       const resolvedPath = pathResolver ? pathResolver(filePath) : filePath;
 
@@ -42,14 +34,12 @@ export const buildLocalDFSFileHandler = (
         fileChecks.push(
           Deno.open(fullFilePath, {
             read: true,
-          })
+          }),
         );
       }
 
       if (defaultFileName) {
-        const resolvedDefaultPath = pathResolver
-          ? pathResolver(defaultFileName)
-          : defaultFileName;
+        const resolvedDefaultPath = pathResolver ? pathResolver(defaultFileName) : defaultFileName;
 
         const fullDefaultPath = path.join(root || '', resolvedDefaultPath);
 
@@ -57,7 +47,7 @@ export const buildLocalDFSFileHandler = (
           fileChecks.push(
             Deno.open(fullDefaultPath, {
               read: true,
-            })
+            }),
           );
         }
       }
@@ -67,10 +57,10 @@ export const buildLocalDFSFileHandler = (
       const activeFileResp = fileResps.find((fileResp) => fileResp);
 
       if (activeFileResp) {
-        return { Contents: activeFileResp.readable, ContentsForWork: activeFileResp.readable };
+        return { Contents: activeFileResp.readable };
       } else if (defaultFileName) {
         throw new Error(
-          `Unable to locate a local file at path ${filePath}, and no default file was found for ${defaultFileName}.`
+          `Unable to locate a local file at path ${filePath}, and no default file was found for ${defaultFileName}.`,
         );
       } else {
         throw new Error(`Unable to locate a local file at path ${filePath}.`);
@@ -81,7 +71,7 @@ export const buildLocalDFSFileHandler = (
 
 export function getFileCheckPathsToProcess(
   filePath: string,
-  defaultFileName?: string
+  defaultFileName?: string,
 ): string[] {
   const pathParts = filePath.split('/');
 
@@ -96,11 +86,11 @@ export function getFileCheckPathsToProcess(
   const fileChecks: string[] = [];
 
   do {
-    let currentPathRoot = `${pathParts.join('/')}/`.replace('//', '/');
+    const currentPathRoot = `${pathParts.join('/')}/`.replace('//', '/');
 
     const curFilePath = new URL(
       fileName,
-      new URL(currentPathRoot, 'https://notused.com/')
+      new URL(currentPathRoot, 'https://notused.com/'),
     ).pathname;
 
     fileChecks.push(curFilePath);
@@ -113,16 +103,16 @@ export function getFileCheckPathsToProcess(
 
 export const buildFetchDFSFileHandler = (
   root: string,
-  pathResolver?: (filePath: string) => string
+  pathResolver?: (filePath: string) => string,
 ): DFSFileHandler => {
   return {
     async GetFileInfo(
       filePath: string,
-      defaultFileName?: string
+      defaultFileName?: string,
     ): Promise<DFSFileInfo> {
       const fileCheckPaths = getFileCheckPathsToProcess(
         filePath,
-        defaultFileName
+        defaultFileName,
       );
 
       const fileChecks: Promise<Response>[] = [];
@@ -142,11 +132,17 @@ export const buildFetchDFSFileHandler = (
       const activeFileResp = fileResps.find((fileResp) => fileResp.ok);
 
       if (activeFileResp) {
-        const usedHeaders = ['cache-control', "content-length", 'age', 'date', 'etag', 'vary'];
+        const usedHeaders = [
+          'cache-control',
+          'content-length',
+          'age',
+          'date',
+          'etag',
+          'vary',
+        ];
 
         const dfsFileInfo: DFSFileInfo = {
           Contents: activeFileResp.clone().body!,
-          ContentsForWork: activeFileResp.clone().body!,
           Headers: usedHeaders.reduce((headers, uh) => {
             if (activeFileResp.headers.has(uh)) {
               headers[uh] = activeFileResp.headers.get(uh)!;
@@ -159,7 +155,7 @@ export const buildFetchDFSFileHandler = (
         return dfsFileInfo;
       } else if (defaultFileName) {
         throw new Error(
-          `Unable to locate a fetch file at path ${filePath}, and no default file was found for ${defaultFileName}.`
+          `Unable to locate a fetch file at path ${filePath}, and no default file was found for ${defaultFileName}.`,
         );
       } else {
         throw new Error(`Unable to locate a fetch file at path ${filePath}.`);
@@ -169,7 +165,7 @@ export const buildFetchDFSFileHandler = (
 };
 
 export async function defaultDFSFileHandlerResolver(
-  dfs: EaCDistributedFileSystem
+  dfs: EaCDistributedFileSystem,
 ): Promise<DFSFileHandler> {
   if (isEaCNPMDistributedFileSystem(dfs)) {
     const npmPackagePath = `https://registry.npmjs.org/${dfs.Package}`;
@@ -190,8 +186,7 @@ export async function defaultDFSFileHandlerResolver(
 
     const npmFilesMap = await npmFilesMapResp.json();
 
-    const fileRoot =
-      'https://www.npmjs.com/package/@lowcodeunit/public-web-blog/file/';
+    const fileRoot = 'https://www.npmjs.com/package/@lowcodeunit/public-web-blog/file/';
 
     return buildFetchDFSFileHandler(fileRoot, (filePath) => {
       if (filePath in npmFilesMap.files) {

@@ -2,7 +2,7 @@ import { EaCApplicationAsCode, EaCApplicationLookupConfiguration } from '../src.
 import { EaCRuntimeHandler } from './EaCRuntimeHandler.ts';
 
 export type EaCApplicationProcessorConfig = {
-  Handler: EaCRuntimeHandler;
+  Handlers: EaCRuntimeHandler[];
 
   LookupConfig: EaCApplicationLookupConfiguration;
 

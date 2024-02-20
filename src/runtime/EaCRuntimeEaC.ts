@@ -1,10 +1,10 @@
 import {
   EverythingAsCode,
   EverythingAsCodeApplications,
-  EverythingAsCodeDatabases
+  EverythingAsCodeDatabases,
 } from '../src.deps.ts';
 
-
-export type EaCRuntimeEaC = EverythingAsCode &
-  EverythingAsCodeApplications &
-  EverythingAsCodeDatabases;
+export type EaCRuntimeEaC =
+  & EverythingAsCode
+  & EverythingAsCodeApplications
+  & EverythingAsCodeDatabases;

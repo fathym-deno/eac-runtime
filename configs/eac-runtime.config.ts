@@ -1,17 +1,20 @@
-// import { TracingEaCRuntime } from '../src/runtime/TracingEaCRuntime.ts';
-import { defineEaCConfig } from '../src/runtime/config/defineEaCConfig.ts';
-import { EaCDenoKVDatabaseDetails } from '../src/src.deps.ts';
-import { EaCNPMDistributedFileSystem } from '../src/src.deps.ts';
-import { EaCDFSProcessor } from '../src/src.deps.ts';
 import {
   EaCAIRAGChatProcessor,
+  EaCDenoKVCacheModifierDetails,
+  EaCDenoKVDatabaseDetails,
+  EaCDFSProcessor,
+  EaCKeepAliveModifierDetails,
+  EaCNPMDistributedFileSystem,
   EaCOAuthProcessor,
   EaCProxyProcessor,
   EaCRedirectProcessor,
+  EaCTracingModifierDetails,
 } from '../src/src.deps.ts';
+import { defineEaCConfig } from '../src/runtime/config/defineEaCConfig.ts';
 
 export default defineEaCConfig({
   //   Runtime: (cfg) => new TracingEaCRuntime(cfg),
+  ModifierLookups: ['_tracing'],
   Server: {
     port: 6121,
   },
@@ -29,6 +32,7 @@ export default defineEaCConfig({
             Port: 6120,
           },
         },
+        ModifierLookups: ['keepAlive'],
         ApplicationLookups: {
           apiProxy: {
             PathPattern: '/api*',
@@ -64,6 +68,7 @@ export default defineEaCConfig({
             Port: 6121,
           },
         },
+        ModifierLookups: ['keepAlive'],
         ApplicationLookups: {
           chat: {
             PathPattern: '/chat*',
@@ -162,6 +167,7 @@ export default defineEaCConfig({
           Description:
             'The public web blog site to be used for the marketing of the project',
         },
+        ModifierLookups: ['denoKvCache'],
         Processor: {
           DFS: {
             DefaultFile: 'index.html',
@@ -205,8 +211,39 @@ export default defineEaCConfig({
         Details: {
           Name: 'Local Cache',
           Description: 'The Deno KV database to use for local caching',
-          DenoKVPath: Deno.env.get("LOCAL_CACHE_DENO_KV_PATH") || undefined
+          DenoKVPath: Deno.env.get('LOCAL_CACHE_DENO_KV_PATH') || undefined,
         } as EaCDenoKVDatabaseDetails,
+      },
+    },
+    Modifiers: {
+      denoKvCache: {
+        Details: {
+          Name: 'Deno KV Cache',
+          Description:
+            'Lightweight cache to use that stores data in a DenoKV database.',
+          DenoKVDatabaseLookup: 'cache',
+          CacheSeconds: 60 * 5,
+          Priority: 500,
+        } as EaCDenoKVCacheModifierDetails,
+      },
+      keepAlive: {
+        Details: {
+          Name: 'Deno KV Cache',
+          Description:
+            'Lightweight cache to use that stores data in a DenoKV database.',
+          KeepAlivePath: '/_eac/alive',
+          Priority: 1000,
+        } as EaCKeepAliveModifierDetails,
+      },
+      tracing: {
+        Details: {
+          Name: 'Deno KV Cache',
+          Description:
+            'Lightweight cache to use that stores data in a DenoKV database.',
+          TraceRequest: true,
+          TraceResponse: true,
+          Priority: 1500,
+        } as EaCTracingModifierDetails,
       },
     },
   },

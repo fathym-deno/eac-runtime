@@ -1,14 +1,13 @@
-// deno-lint-ignore-file no-explicit-any
 import {
-  Buffer,
+  djwt,
   EaCAIRAGChatProcessor,
   EaCDFSProcessor,
   EaCOAuthProcessor,
   EaCProxyProcessor,
   EaCRedirectProcessor,
-  djwt,
   isEaCDFSProcessor,
   isEaCOAuthProcessor,
+  mime,
 } from '../src.deps.ts';
 import {
   aiRAGChatRequest,
@@ -20,92 +19,12 @@ import {
   redirectRequest,
 } from '../src.deps.ts';
 import { EaCApplicationProcessorConfig } from './EaCApplicationProcessorConfig.ts';
-import {
-  DFSFileInfoCache,
-  defaultDFSFileHandlerResolver,
-} from './defaultDFSFileHandlerResolver.ts';
+import { defaultDFSFileHandlerResolver } from './defaultDFSFileHandlerResolver.ts';
 import { EaCRuntimeHandler } from './EaCRuntimeHandler.ts';
 import { DFSFileHandler } from './_exports.ts';
-import { DFSFileInfo } from './defaultDFSFileHandlerResolver.ts';
-
-export function concatTypedArrays(a: Uint8Array, b: Uint8Array) {
-  // a, b TypedArray of same type
-  const c = new Uint8Array(a.length + b.length);
-
-  c.set(a, 0);
-
-  c.set(b, a.length);
-
-  return c;
-}
-
-// export function concatBuffers(a: Uint8Array, b: Uint8Array) {
-//   return concatTypedArrays(
-//       new Uint8Array(a.buffer || a),
-//       new Uint8Array(b.buffer || b)
-//   ).buffer;
-// }
-
-export function denoKvCacheReadableStream(
-  kv: Deno.Kv,
-  cacheKey: Deno.KvKey,
-  stream: ReadableStream<Uint8Array>,
-  maxChunkSize = 40000
-): void {
-  if (stream) {
-    let content = new Uint8Array();
-
-    const contentChunks: Uint8Array[] = [];
-
-    const fileReader = stream.getReader();
-
-    fileReader.read().then(function processFile({ done, value }): any {
-      if (done) {
-        contentChunks.push(content);
-
-        contentChunks.forEach((chunk, i) => {
-          kv.set([...cacheKey, 'Chunks', i], chunk, {
-            expireIn: 1000 * 60 * 5,
-          }).then();
-        });
-
-        return;
-      }
-
-      content = concatTypedArrays(content, value);
-
-      const contentBlob = new Blob([content]);
-
-      if (contentBlob.size > maxChunkSize) {
-        contentChunks.push(content);
-
-        content = new Uint8Array();
-      }
-
-      return fileReader.read().then(processFile);
-    });
-  }
-}
-
-export async function denoKvReadReadableStreamCache(
-  kv: Deno.Kv,
-  cacheKey: Deno.KvKey
-): Promise<Uint8Array> {
-  const cachedFileChunks = await kv.list<Uint8Array>({
-    prefix: [...cacheKey, 'Chunks'],
-  });
-
-  let content = new Uint8Array();
-
-  for await (const cachedFileChunk of cachedFileChunks) {
-    content = concatTypedArrays(content, cachedFileChunk.value!);
-  }
-
-  return content;
-}
 
 export const defaultAppHandlerResolver: (
-  appProcCfg: EaCApplicationProcessorConfig
+  appProcCfg: EaCApplicationProcessorConfig,
 ) => EaCRuntimeHandler = (appProcCfg) => {
   let handler: EaCRuntimeHandler;
 
@@ -117,22 +36,22 @@ export const defaultAppHandlerResolver: (
       return redirectRequest(
         processor.Redirect,
         processor.PreserveMethod,
-        processor.Permanent
+        processor.Permanent,
       );
     };
   } else if (isEaCProxyProcessor(appProcCfg.Application.Processor)) {
-    handler = (req, ctx) => {
+    handler = (req, _ctx) => {
       const processor = appProcCfg.Application.Processor as EaCProxyProcessor;
 
       return proxyRequest(
         req,
         processor.ProxyRoot,
-        appProcCfg.LookupConfig.PathPattern
+        appProcCfg.LookupConfig.PathPattern,
         // ctx.Info.remoteAddr.hostname,
       );
     };
   } else if (isEaCOAuthProcessor(appProcCfg.Application.Processor)) {
-    handler = (req, ctx) => {
+    handler = (req, _ctx) => {
       const processor = appProcCfg.Application.Processor as EaCOAuthProcessor;
 
       return oAuthRequest(
@@ -149,11 +68,11 @@ export const defaultAppHandlerResolver: (
 
           payload?.toString();
         },
-        appProcCfg.LookupConfig.PathPattern
+        appProcCfg.LookupConfig.PathPattern,
       );
     };
   } else if (isEaCAIRAGChatProcessor(appProcCfg.Application.Processor)) {
-    handler = (req, ctx) => {
+    handler = (req, _ctx) => {
       const processor = appProcCfg.Application
         .Processor as EaCAIRAGChatProcessor;
 
@@ -168,7 +87,7 @@ export const defaultAppHandlerResolver: (
         processor.InputParams,
         processor.EmbeddingDeploymentName,
         processor.SearchEndpoint,
-        processor.SearchAPIKey
+        processor.SearchAPIKey,
       );
     };
   } else if (isEaCDFSProcessor(appProcCfg.Application.Processor)) {
@@ -184,7 +103,7 @@ export const defaultAppHandlerResolver: (
 
     filesReady.then();
 
-    handler = async (req, ctx) => {
+    handler = async (req, _ctx) => {
       const processor = appProcCfg.Application.Processor as EaCDFSProcessor;
 
       const fileHandler = await filesReady;
@@ -197,61 +116,27 @@ export const defaultAppHandlerResolver: (
 
       const filePath = patternResult!.pathname.groups[0]!;
 
-      const cacheDb = (await ctx.Databases['cache']) as Deno.Kv;
-
-      let file: DFSFileInfo | undefined = undefined;
-
-      const fileCacheKey = [
-        'DFS',
-        'EaC',
-        ctx.EaC!.EnterpriseLookup!,
-        'Project',
-        ctx.ProjectProcessorConfig.ProjectLookup,
-        'Applications',
-        ctx.ApplicationProcessorConfig.ApplicationLookup,
-        'File',
+      const file = await fileHandler.GetFileInfo(
         filePath,
-      ];
+        processor.DFS.DefaultFile,
+      );
 
-      if (cacheDb) {
-        const content = await denoKvReadReadableStreamCache(
-          cacheDb,
-          fileCacheKey
-        );
+      if (
+        !file.Headers ||
+        !('content-type' in file.Headers) ||
+        !('Content-Type' in file.Headers)
+      ) {
+        let mimeType = mime.getType(filePath);
 
-        if (content.length > 0) {
-          const cachedHeaders = await cacheDb.get<Record<string, string>>([
-            ...fileCacheKey,
-            'Headers',
-          ]);
-
-          file = {
-            Contents: new Blob([content]).stream(),
-            Headers: cachedHeaders.value,
-          } as DFSFileInfo;
+        if (!mimeType) {
+          mimeType = mime.getType(processor.DFS.DefaultFile || '');
         }
-      }
 
-      if (!file) {
-        file = await fileHandler.GetFileInfo(
-          filePath,
-          processor.DFS.DefaultFile
-        );
-
-        if (file) {
-          denoKvCacheReadableStream(
-            cacheDb,
-            fileCacheKey,
-            file.ContentsForWork
-          );
-
-          if (file.Headers) {
-            cacheDb
-              .set([...fileCacheKey, 'Headers'], file.Headers, {
-                expireIn: 1000 * 60 * 5,
-              })
-              .then();
-          }
+        if (mimeType) {
+          file.Headers = {
+            ...(file.Headers || {}),
+            'content-type': mimeType,
+          };
         }
       }
 
@@ -260,12 +145,12 @@ export const defaultAppHandlerResolver: (
       });
     };
   } else {
-    handler = (req, ctx) => {
+    handler = (_req, ctx) => {
       return new Response(
         'Hello, world!\n' +
           JSON.stringify(appProcCfg, null, 2) +
           '\n' +
-          JSON.stringify(ctx.Info.remoteAddr, null, 2)
+          JSON.stringify(ctx.Info.remoteAddr, null, 2),
       );
     };
   }

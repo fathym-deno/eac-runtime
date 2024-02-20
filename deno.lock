@@ -10,6 +10,7 @@
       "npm:@langchain/core": "npm:@langchain/core@0.1.27_zod@3.22.4",
       "npm:azure-kusto-data": "npm:azure-kusto-data@5.2.3",
       "npm:langchain": "npm:langchain@0.1.17_pdf-parse@1.1.1_@azure+search-documents@12.0.0_zod@3.22.4",
+      "npm:mime": "npm:mime@4.0.1",
       "npm:pdf-parse": "npm:pdf-parse@1.1.1",
       "npm:rxjs": "npm:rxjs@7.8.1"
     },
@@ -690,6 +691,10 @@
         "dependencies": {
           "mime-db": "mime-db@1.52.0"
         }
+      },
+      "mime@4.0.1": {
+        "integrity": "sha512-5lZ5tyrIfliMXzFtkYyekWbtRXObT9OWa8IwQ5uxTBDHucNNwniRqo0yInflj+iYi5CBa6qxadGzGarDfuEOxA==",
+        "dependencies": {}
       },
       "ml-array-mean@1.1.6": {
         "integrity": "sha512-MIdf7Zc8HznwIisyiJGRH9tRigg3Yf4FldW8DxKxpCCv/g5CafTw0RRu51nojVEOXuCQC7DRVVu5c7XXO/5joQ==",

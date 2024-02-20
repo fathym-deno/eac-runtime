@@ -39,7 +39,7 @@ export function configureKeepAlive(keepAlivePath: string) {
       case 'keep-alive': {
         if (revision === 0) {
           log('Connected to development server.');
-          
+
           revision = data.revision;
         } else if (revision < data.revision) {
           handleRefresh();

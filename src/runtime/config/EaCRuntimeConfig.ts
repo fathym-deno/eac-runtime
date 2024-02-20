@@ -5,12 +5,12 @@ import { EaCRuntimeEaC } from '../EaCRuntimeEaC.ts';
 
 export type EaCRuntimeConfig = {
   ApplicationHandlerResolver: (
-    appProcCfg: EaCApplicationProcessorConfig
+    appProcCfg: EaCApplicationProcessorConfig,
   ) => EaCRuntimeHandler;
 
   EaC?: EaCRuntimeEaC;
 
-  Middleware: EaCRuntimeHandler[];
+  ModifierLookups: string[];
 
   Runtime: (cfg: EaCRuntimeConfig) => EaCRuntime;
 

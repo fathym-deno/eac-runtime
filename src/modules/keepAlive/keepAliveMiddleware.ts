@@ -1,91 +1,99 @@
-import {
-  DOMParser,
-  domInitParser,
-  Element,
-  transpile,
-} from '../../src.deps.ts';
+import { DOMParser, Element, initParser, transpile } from '../../src.deps.ts';
 import { EaCRuntimeHandler } from '../../runtime/EaCRuntimeHandler.ts';
+import { EAC_RUNTIME_DEV } from '../../constants.ts';
 
-export async function establishKeepAliveMiddleware(
-  keepAlivePath: string
-): Promise<EaCRuntimeHandler> {
-  console.log('Configuring keep alive...');
-  await domInitParser();
+export function establishKeepAliveMiddleware(
+  keepAlivePath: string,
+): EaCRuntimeHandler {
+  const initCheck = new Promise<boolean>((resolve) => {
+    if (EAC_RUNTIME_DEV()) {
+      console.log('Configuring keep alive...');
+
+      initParser().then(() => resolve(true));
+    } else {
+      resolve(true);
+    }
+  });
+
+  initCheck.then();
 
   return async (req, ctx) => {
-    const keepAliveCheckPattern = new URLPattern({ pathname: keepAlivePath });
+    if (EAC_RUNTIME_DEV()) {
+      await initCheck;
 
-    const keepAliveClientPath = `${keepAlivePath}/keepAliveClient.ts`;
+      const keepAliveCheckPattern = new URLPattern({ pathname: keepAlivePath });
 
-    const keepAliveCheckClientPattern = new URLPattern({
-      pathname: keepAliveClientPath,
-    });
+      const keepAliveClientPath = `${keepAlivePath}/keepAliveClient.ts`;
 
-    if (
-      keepAliveCheckPattern.test(req.url) &&
-      req.headers.get('upgrade') === 'websocket'
-    ) {
-      const { response, socket } = Deno.upgradeWebSocket(req);
-
-      socket.addEventListener('open', () => {
-        socket.send(
-          JSON.stringify({
-            revision: ctx.Revision,
-            type: 'keep-alive',
-          })
-        );
+      const keepAliveCheckClientPattern = new URLPattern({
+        pathname: keepAliveClientPath,
       });
 
-      return response;
-    } else if (keepAliveCheckClientPattern.test(req.url)) {
-      const clientUrl = new URL('./keepAliveClient.ts', import.meta.url);
+      if (
+        keepAliveCheckPattern.test(req.url) &&
+        req.headers.get('upgrade') === 'websocket'
+      ) {
+        const { response, socket } = Deno.upgradeWebSocket(req);
 
-      const result = await transpile(clientUrl);
+        socket.addEventListener('open', () => {
+          socket.send(
+            JSON.stringify({
+              revision: ctx.Revision,
+              type: 'keep-alive',
+            }),
+          );
+        });
 
-      const code = result.get(clientUrl.href);
-      // const keepAliveClientTs = await Deno.open('./src/modules/keepAlive/keepAliveClient.ts', {
-      //   read: true,
-      // });
+        return response;
+      } else if (keepAliveCheckClientPattern.test(req.url)) {
+        const clientUrl = new URL('./keepAliveClient.ts', import.meta.url);
 
-      return new Response(code, {
-        headers: {
-          'Content-Type': 'text/javascript',
-        },
-      });
-    } else {
-      let resp = await ctx.next();
+        const result = await transpile(clientUrl);
 
-      const contType = resp.headers.get('Content-type');
+        const code = result.get(clientUrl.href);
+        // const keepAliveClientTs = await Deno.open('./src/modules/keepAlive/keepAliveClient.ts', {
+        //   read: true,
+        // });
 
-      // If resp hase `text/html` content type, add keep alive client
-      if (contType?.includes('text/html')) {
-        const htmlStr = await resp.clone().text();
+        return new Response(code, {
+          headers: {
+            'Content-Type': 'text/javascript',
+          },
+        });
+      } else {
+        let resp = await ctx.next();
 
-        const doc = new DOMParser().parseFromString(htmlStr, 'text/html');
+        const contType = resp.headers.get('Content-type');
 
-        if (doc) {
-          const keepAliveClientScriptNode = doc.createElement('script');
-          keepAliveClientScriptNode.setAttribute('type', 'module');
-          keepAliveClientScriptNode.innerHTML = `import { configureKeepAlive } from '${keepAliveClientPath}';
+        // If resp hase `text/html` content type, add keep alive client
+        if (contType?.includes('text/html')) {
+          const htmlStr = await resp.clone().text();
+
+          const doc = new DOMParser().parseFromString(htmlStr, 'text/html');
+
+          if (doc) {
+            const keepAliveClientScriptNode = doc.createElement('script');
+            keepAliveClientScriptNode.setAttribute('type', 'module');
+            keepAliveClientScriptNode.innerHTML =
+              `import { configureKeepAlive } from '${keepAliveClientPath}';
 
 configureKeepAlive('${keepAlivePath}');`;
-          // keepAliveClientScriptNode.setAttribute('src', keepAliveClientPath);
+            // keepAliveClientScriptNode.setAttribute('src', keepAliveClientPath);
 
-          doc.head.appendChild(keepAliveClientScriptNode);
+            doc.head.appendChild(keepAliveClientScriptNode);
 
-          const docHtml = doc.childNodes[1] as Element;
+            const docHtml = doc.childNodes[1] as Element;
 
-          const fullDoc = `<!DOCTYPE html>\n${docHtml.outerHTML}`;
+            const fullDoc = `<!DOCTYPE html>\n${docHtml.outerHTML}`;
 
-          resp = new Response(fullDoc, resp);
+            resp = new Response(fullDoc, resp);
+          }
         }
-      }
 
-      return resp;
+        return resp;
+      }
+    } else {
+      return ctx.next();
     }
   };
-}
-
-function initParser() {
-  throw new Error('Function not implemented.');
 }
