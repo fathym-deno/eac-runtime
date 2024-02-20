@@ -16,7 +16,7 @@ import { EaCAzureADB2CProviderDetails } from '../src/src.deps.ts';
 
 export default defineEaCConfig({
   //   Runtime: (cfg) => new TracingEaCRuntime(cfg),
-  ModifierLookups: ['_tracing'],
+  ModifierLookups: ['tracing'],
   Server: {
     port: 6121,
   },

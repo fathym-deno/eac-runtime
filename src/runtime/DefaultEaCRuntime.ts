@@ -267,11 +267,13 @@ export class DefaultEaCRuntime implements EaCRuntime {
             (am) => am.toLowerCase() === req.method.toLowerCase()
           );
 
+          const matchesRegex = !appLookupConfig.UserAgentRegex || new RegExp(appLookupConfig.UserAgentRegex).test(req.headers.get('user-agent') || '');
+
         // TODO(mcgear): How to account for IsPrivate/IsTriggerSignIn during application resolution...
         //    Maybe return a list of available apps, so their handlers can be nexted through
         //    Think through logic, as this already may be happening based on configs?...
 
-        return node.Pattern.test(req.url) && isAllowedMethod;
+        return node.Pattern.test(req.url) && isAllowedMethod && matchesRegex;
       });
 
       if (!appProcessorConfig) {
