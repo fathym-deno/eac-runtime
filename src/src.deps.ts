@@ -1,4 +1,4 @@
-export * as DenoKVOAuth from "https://raw.githubusercontent.com/fathym-deno/deno_kv_oauth/main/mod.ts";
+export * as DenoKVOAuth from 'https://raw.githubusercontent.com/fathym-deno/deno_kv_oauth/main/mod.ts';
 import * as colors from 'https://deno.land/std@0.216.0/fmt/colors.ts';
 export * as colors from 'https://deno.land/std@0.216.0/fmt/colors.ts';
 export * from 'https://deno.land/std@0.216.0/http/mod.ts';

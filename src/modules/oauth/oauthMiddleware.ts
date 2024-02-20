@@ -1,17 +1,17 @@
 import { EaCRuntimeHandler } from '../../runtime/EaCRuntimeHandler.ts';
 import {
-  redirectRequest,
-  DenoKVOAuth,
-  createOAuthHelpers,
   creatAzureADB2COAuthConfig,
+  createOAuthHelpers,
   creatOAuthConfig,
+  DenoKVOAuth,
   isEaCAzureADB2CProviderDetails,
   isEaCOAuthProviderDetails,
+  redirectRequest,
 } from '../../src.deps.ts';
 
 export function establishOAuthMiddleware(
   providerLookup: string,
-  signInPath: string
+  signInPath: string,
 ): EaCRuntimeHandler {
   return async (req, ctx) => {
     const provider = ctx.EaC.Providers![providerLookup];
@@ -25,7 +25,7 @@ export function establishOAuthMiddleware(
         provider.Details.Domain,
         provider.Details.PolicyName,
         provider.Details.TenantID,
-        provider.Details.Scopes
+        provider.Details.Scopes,
       );
     } else if (isEaCOAuthProviderDetails(provider.Details)) {
       oAuthConfig = creatOAuthConfig(
@@ -33,11 +33,11 @@ export function establishOAuthMiddleware(
         provider.Details.ClientSecret,
         provider.Details.AuthorizationEndpointURI,
         provider.Details.TokenURI,
-        provider.Details.Scopes
+        provider.Details.Scopes,
       );
     } else {
       throw new Error(
-        `The provider '${providerLookup}' type cannot be handled in the oAuthMiddleware.`
+        `The provider '${providerLookup}' type cannot be handled in the oAuthMiddleware.`,
       );
     }
 
@@ -54,11 +54,11 @@ export function establishOAuthMiddleware(
         resp = ctx.next();
       } else if (ctx.ApplicationProcessorConfig.LookupConfig.IsTriggerSignIn) {
         const url = new URL(req.url);
-      
+
         const { pathname, search } = url;
-      
+
         const successUrl = encodeURI(pathname + search);
-  
+
         resp = redirectRequest(`${signInPath}?success_url=${successUrl}`, false, false);
       } else {
         throw new Error('You are not authorized to access this endpoint.');
