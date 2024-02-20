@@ -153,6 +153,15 @@ export default defineEaCConfig({
           ProxyRoot: 'https://biotech-manager-web.azurewebsites.net',
         } as EaCProxyProcessor,
       },
+      denoInstall: {
+        Details: {
+          Name: 'Simple API Proxy',
+          Description: 'A proxy',
+        },
+        Processor: {
+          ProxyRoot: 'https://deno.land/x/fathym_eac_runtime/install.ts',
+        } as EaCProxyProcessor,
+      },
       docs: {
         Details: {
           Name: 'Documentation Site',
