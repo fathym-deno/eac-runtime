@@ -46,7 +46,9 @@ export class DefaultEaCRuntime implements EaCRuntime {
 
         this.eac = mergeWithArrays(this.config.EaC || {}, eac);
       } catch (err) {
-        console.error('Unable to connect to the EaC service, falling back to local config.');
+        console.error(
+          'Unable to connect to the EaC service, falling back to local config.'
+        );
         console.error(err);
 
         this.eac = this.config.EaC;
@@ -264,6 +266,10 @@ export class DefaultEaCRuntime implements EaCRuntime {
           appLookupConfig.AllowedMethods.some(
             (am) => am.toLowerCase() === req.method.toLowerCase()
           );
+
+        // TODO(mcgear): How to account for IsPrivate/IsTriggerSignIn during application resolution...
+        //    Maybe return a list of available apps, so their handlers can be nexted through
+        //    Think through logic, as this already may be happening based on configs?...
 
         return node.Pattern.test(req.url) && isAllowedMethod;
       });
