@@ -35,26 +35,33 @@ export class DefaultEaCRuntime implements EaCRuntime {
     const eacApiKey = Deno.env.get('EAC_API_KEY');
 
     if (eacApiKey) {
-      const [_header, payload] = await djwt.decode(eacApiKey);
+      try {
+        const [_header, payload] = await djwt.decode(eacApiKey);
 
-      const { EnterpriseLookup } = payload as Record<string, unknown>;
+        const { EnterpriseLookup } = payload as Record<string, unknown>;
 
-      const eacSvc = await loadEaCSvc(eacApiKey);
+        const eacSvc = await loadEaCSvc(eacApiKey);
 
-      const eac = await eacSvc.Get(EnterpriseLookup as string);
+        const eac = await eacSvc.Get(EnterpriseLookup as string);
 
-      this.eac = mergeWithArrays(this.config.EaC || {}, eac);
+        this.eac = mergeWithArrays(this.config.EaC || {}, eac);
+      } catch (err) {
+        console.error('Unable to connect to the EaC service, falling back to local config.');
+        console.error(err);
+
+        this.eac = this.config.EaC;
+      }
     } else if (this.config.EaC) {
       this.eac = this.config.EaC;
     } else {
       throw new Error(
-        'An EaC must be provided in the config or via a connection to an EaC Service with the EAC_API_KEY environment variable.',
+        'An EaC must be provided in the config or via a connection to an EaC Service with the EAC_API_KEY environment variable.'
       );
     }
 
-    if (!this.eac.Projects) {
+    if (!this.eac!.Projects) {
       throw new Error(
-        'The EaC must provide a set of projects to use in the runtime.',
+        'The EaC must provide a set of projects to use in the runtime.'
       );
     }
 
@@ -67,7 +74,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
 
   public Handle(
     request: Request,
-    info: Deno.ServeHandlerInfo,
+    info: Deno.ServeHandlerInfo
   ): Response | Promise<Response> {
     const projProcessorConfig = this.projectGraph!.find((node) => {
       return node.Patterns.some((pattern) => pattern.test(request.url));
@@ -94,7 +101,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
       this.applicationGraph = this.projectGraph!.reduce(
         (appGraph, projProcCfg) => {
           const appLookups = Object.keys(
-            projProcCfg.Project.ApplicationLookups || {},
+            projProcCfg.Project.ApplicationLookups || {}
           );
 
           appGraph[projProcCfg.ProjectLookup] = appLookups
@@ -103,11 +110,12 @@ export class DefaultEaCRuntime implements EaCRuntime {
 
               if (!app) {
                 throw new Error(
-                  `The '${appLookup}' app configured for the project does not exist in the EaC Applications configuration.`,
+                  `The '${appLookup}' app configured for the project does not exist in the EaC Applications configuration.`
                 );
               }
 
-              const lookupCfg = projProcCfg.Project.ApplicationLookups[appLookup];
+              const lookupCfg =
+                projProcCfg.Project.ApplicationLookups[appLookup];
 
               return {
                 Application: app,
@@ -120,7 +128,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
               const pipeline: EaCRuntimeHandler[] = this.constructPipeline(
                 projProcCfg.Project,
                 appProcCfg.Application,
-                this.eac!.Modifiers || {},
+                this.eac!.Modifiers || {}
               );
 
               pipeline.push(this.establishApplicationHandler(appProcCfg));
@@ -136,7 +144,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
 
           return appGraph;
         },
-        {} as Record<string, EaCApplicationProcessorConfig[]>,
+        {} as Record<string, EaCApplicationProcessorConfig[]>
       );
     }
   }
@@ -201,7 +209,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
   protected constructPipeline(
     project: EaCProjectAsCode,
     application: EaCApplicationAsCode,
-    modifiers: Record<string, EaCModifierAsCode>,
+    modifiers: Record<string, EaCModifierAsCode>
   ): EaCRuntimeHandler[] {
     const pipelineModifierLookups: string[] = [];
 
@@ -233,24 +241,36 @@ export class DefaultEaCRuntime implements EaCRuntime {
   }
 
   protected establishApplicationHandler(
-    appProcessorConfig: EaCApplicationProcessorConfig,
+    appProcessorConfig: EaCApplicationProcessorConfig
   ): EaCRuntimeHandler {
     return this.config.ApplicationHandlerResolver(appProcessorConfig);
   }
 
   protected establishProjectHandler(
-    projProcessorConfig: EaCProjectProcessorConfig,
+    projProcessorConfig: EaCProjectProcessorConfig
   ): EaCRuntimeHandler {
     return (req, ctx) => {
       const appProcessorConfig = this.applicationGraph![
         projProcessorConfig.ProjectLookup
       ].find((node) => {
-        return node.Pattern.test(req.url);
+        const appLookupConfig =
+          projProcessorConfig.Project.ApplicationLookups[
+            node.ApplicationLookup
+          ];
+
+        const isAllowedMethod =
+          !appLookupConfig.AllowedMethods ||
+          appLookupConfig.AllowedMethods.length === 0 ||
+          appLookupConfig.AllowedMethods.some(
+            (am) => am.toLowerCase() === req.method.toLowerCase()
+          );
+
+        return node.Pattern.test(req.url) && isAllowedMethod;
       });
 
       if (!appProcessorConfig) {
         throw new Error(
-          `No application is configured for '${req.url}' in project '${projProcessorConfig.ProjectLookup}'.`,
+          `No application is configured for '${req.url}' in project '${projProcessorConfig.ProjectLookup}'.`
         );
       }
 
@@ -259,7 +279,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
       return this.executePipeline(
         ctx.ApplicationProcessorConfig.Handlers,
         req,
-        ctx,
+        ctx
       );
     };
   }
@@ -268,7 +288,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
     pipeline: EaCRuntimeHandler[],
     request: Request,
     ctx: EaCRuntimeContext,
-    index = -1,
+    index = -1
   ): Response | Promise<Response> {
     ctx.next = async (req) => {
       req ??= request;

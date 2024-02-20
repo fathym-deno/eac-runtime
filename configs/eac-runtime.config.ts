@@ -5,12 +5,14 @@ import {
   EaCDFSProcessor,
   EaCKeepAliveModifierDetails,
   EaCNPMDistributedFileSystem,
+  EaCOAuthModifierDetails,
   EaCOAuthProcessor,
   EaCProxyProcessor,
   EaCRedirectProcessor,
   EaCTracingModifierDetails,
 } from '../src/src.deps.ts';
 import { defineEaCConfig } from '../src/runtime/config/defineEaCConfig.ts';
+import { EaCAzureADB2CProviderDetails } from '../src/src.deps.ts';
 
 export default defineEaCConfig({
   //   Runtime: (cfg) => new TracingEaCRuntime(cfg),
@@ -37,6 +39,8 @@ export default defineEaCConfig({
           apiProxy: {
             PathPattern: '/api*',
             Priority: 200,
+            IsPrivate: true,
+            IsTriggerSignIn: true,
           },
           docs: {
             PathPattern: '/docs/*',
@@ -68,15 +72,27 @@ export default defineEaCConfig({
             Port: 6121,
           },
         },
-        ModifierLookups: ['keepAlive'],
+        ModifierLookups: ['keepAlive', 'oauth'],
         ApplicationLookups: {
+          apiProxy: {
+            PathPattern: '/api*',
+            Priority: 200,
+            IsPrivate: true,
+            IsTriggerSignIn: true,
+          },
           chat: {
             PathPattern: '/chat*',
             Priority: 300,
+            IsPrivate: true,
+            IsTriggerSignIn: true,
           },
           dashboard: {
             PathPattern: '/*',
             Priority: 100,
+          },
+          google: {
+            PathPattern: '/google',
+            Priority: 200,
           },
           oauth: {
             PathPattern: '/oauth/*',
@@ -182,19 +198,7 @@ export default defineEaCConfig({
           Description: 'The site for use in OAuth workflows for a user',
         },
         Processor: {
-          ClientID: Deno.env.get('AZURE_ADB2C_CLIENT_ID')!,
-          ClientSecret: Deno.env.get('AZURE_ADB2C_CLIENT_SECRET'),
-          AuthorizationEndpointURI: `https://${Deno.env.get(
-            'AZURE_ADB2C_DOMAIN'
-          )}/${Deno.env.get('AZURE_ADB2C_TENANT_ID')}/${Deno.env.get(
-            'AZURE_ADB2C_POLICY'
-          )}/oauth2/v2.0/authorize`,
-          TokenURI: `https://${Deno.env.get(
-            'AZURE_ADB2C_DOMAIN'
-          )}/${Deno.env.get('AZURE_ADB2C_TENANT_ID')}/${Deno.env.get(
-            'AZURE_ADB2C_POLICY'
-          )}/oauth2/v2.0/token`,
-          Scopes: ['openid', Deno.env.get('AZURE_ADB2C_CLIENT_ID')!],
+          ProviderLookup: 'adb2c',
         } as EaCOAuthProcessor,
       },
       profile: {
@@ -204,6 +208,21 @@ export default defineEaCConfig({
             'The site used to for user profile display and management',
         },
         Processor: {},
+      },
+    },
+    Providers: {
+      adb2c: {
+        Details: {
+          Name: 'Azure ADB2C OAuth Provider',
+          Description:
+            'The provider used to connect with our azure adb2c instance',
+          ClientID: Deno.env.get('AZURE_ADB2C_CLIENT_ID')!,
+          ClientSecret: Deno.env.get('AZURE_ADB2C_CLIENT_SECRET')!,
+          Scopes: ['openid', Deno.env.get('AZURE_ADB2C_CLIENT_ID')!],
+          Domain: Deno.env.get('AZURE_ADB2C_DOMAIN')!,
+          PolicyName: Deno.env.get('AZURE_ADB2C_POLICY')!,
+          TenantID: Deno.env.get('AZURE_ADB2C_TENANT_ID')!,
+        } as EaCAzureADB2CProviderDetails,
       },
     },
     Databases: {
@@ -234,6 +253,15 @@ export default defineEaCConfig({
           KeepAlivePath: '/_eac/alive',
           Priority: 1000,
         } as EaCKeepAliveModifierDetails,
+      },
+      oauth: {
+        Details: {
+          Name: 'OAuth',
+          Description: 'Used to restrict user access to various applications.',
+          ProviderLookup: 'adb2c',
+          SignInPath: '/oauth/signin',
+          Priority: 1200,
+        } as EaCOAuthModifierDetails,
       },
       tracing: {
         Details: {

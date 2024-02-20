@@ -1,4 +1,7 @@
 import {
+creatAzureADB2COAuthConfig,
+  creatOAuthConfig,
+  DenoKVOAuth,
   djwt,
   EaCAIRAGChatProcessor,
   EaCDFSProcessor,
@@ -7,6 +10,7 @@ import {
   EaCRedirectProcessor,
   isEaCDFSProcessor,
   isEaCOAuthProcessor,
+  isEaCOAuthProviderDetails,
   mime,
 } from '../src.deps.ts';
 import {
@@ -22,9 +26,10 @@ import { EaCApplicationProcessorConfig } from './EaCApplicationProcessorConfig.t
 import { defaultDFSFileHandlerResolver } from './defaultDFSFileHandlerResolver.ts';
 import { EaCRuntimeHandler } from './EaCRuntimeHandler.ts';
 import { DFSFileHandler } from './_exports.ts';
+import { isEaCAzureADB2CProviderDetails } from '../src.deps.ts';
 
 export const defaultAppHandlerResolver: (
-  appProcCfg: EaCApplicationProcessorConfig,
+  appProcCfg: EaCApplicationProcessorConfig
 ) => EaCRuntimeHandler = (appProcCfg) => {
   let handler: EaCRuntimeHandler;
 
@@ -36,7 +41,7 @@ export const defaultAppHandlerResolver: (
       return redirectRequest(
         processor.Redirect,
         processor.PreserveMethod,
-        processor.Permanent,
+        processor.Permanent
       );
     };
   } else if (isEaCProxyProcessor(appProcCfg.Application.Processor)) {
@@ -46,30 +51,68 @@ export const defaultAppHandlerResolver: (
       return proxyRequest(
         req,
         processor.ProxyRoot,
-        appProcCfg.LookupConfig.PathPattern,
+        appProcCfg.LookupConfig.PathPattern
         // ctx.Info.remoteAddr.hostname,
       );
     };
   } else if (isEaCOAuthProcessor(appProcCfg.Application.Processor)) {
-    handler = (req, _ctx) => {
+    handler = (req, ctx) => {
       const processor = appProcCfg.Application.Processor as EaCOAuthProcessor;
 
-      return oAuthRequest(
-        req,
-        processor.ClientID,
-        processor.ClientSecret,
-        processor.AuthorizationEndpointURI,
-        processor.TokenURI,
-        processor.Scopes,
-        async (tokens, _newSessionId, _oldSessionId) => {
-          const { accessToken } = tokens;
+      const provider = ctx.EaC.Providers![processor.ProviderLookup];
 
-          const [_header, payload, _signature] = await djwt.decode(accessToken);
+      if (isEaCAzureADB2CProviderDetails(provider.Details)) {
+        const oAuthConfig = creatAzureADB2COAuthConfig(
+          provider.Details.ClientID,
+          provider.Details.ClientSecret,
+          provider.Details.Domain,
+          provider.Details.PolicyName,
+          provider.Details.TenantID,
+          provider.Details.Scopes
+        );
 
-          payload?.toString();
-        },
-        appProcCfg.LookupConfig.PathPattern,
-      );
+        return oAuthRequest(
+          req,
+          oAuthConfig,
+          async (tokens, _newSessionId, _oldSessionId) => {
+            const { accessToken } = tokens;
+
+            const [_header, payload, _signature] = await djwt.decode(
+              accessToken
+            );
+
+            payload?.toString();
+          },
+          appProcCfg.LookupConfig.PathPattern
+        );
+      } else if (isEaCOAuthProviderDetails(provider.Details)) {
+        const oAuthConfig = creatOAuthConfig(
+          provider.Details.ClientID,
+          provider.Details.ClientSecret,
+          provider.Details.AuthorizationEndpointURI,
+          provider.Details.TokenURI,
+          provider.Details.Scopes
+        );
+
+        return oAuthRequest(
+          req,
+          oAuthConfig,
+          async (tokens, _newSessionId, _oldSessionId) => {
+            const { accessToken } = tokens;
+
+            const [_header, payload, _signature] = await djwt.decode(
+              accessToken
+            );
+
+            payload?.toString();
+          },
+          appProcCfg.LookupConfig.PathPattern
+        );
+      } else {
+        throw new Error(
+          `The provider '${processor.ProviderLookup}' type cannot be handled.`
+        );
+      }
     };
   } else if (isEaCAIRAGChatProcessor(appProcCfg.Application.Processor)) {
     handler = (req, _ctx) => {
@@ -87,7 +130,7 @@ export const defaultAppHandlerResolver: (
         processor.InputParams,
         processor.EmbeddingDeploymentName,
         processor.SearchEndpoint,
-        processor.SearchAPIKey,
+        processor.SearchAPIKey
       );
     };
   } else if (isEaCDFSProcessor(appProcCfg.Application.Processor)) {
@@ -118,7 +161,7 @@ export const defaultAppHandlerResolver: (
 
       const file = await fileHandler.GetFileInfo(
         filePath,
-        processor.DFS.DefaultFile,
+        processor.DFS.DefaultFile
       );
 
       if (
@@ -150,7 +193,7 @@ export const defaultAppHandlerResolver: (
         'Hello, world!\n' +
           JSON.stringify(appProcCfg, null, 2) +
           '\n' +
-          JSON.stringify(ctx.Info.remoteAddr, null, 2),
+          JSON.stringify(ctx.Info.remoteAddr, null, 2)
       );
     };
   }
