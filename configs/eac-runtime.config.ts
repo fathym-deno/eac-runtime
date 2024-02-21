@@ -21,6 +21,7 @@ export default defineEaCConfig({
     port: 6121,
   },
   EaC: {
+    EnterpriseLookup: "local-eac",
     Projects: {
       marketing: {
         Details: {
