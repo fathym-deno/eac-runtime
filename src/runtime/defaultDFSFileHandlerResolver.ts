@@ -168,6 +168,13 @@ export const buildFetchDFSFileHandler = (
           `Unable to locate a fetch file at path ${filePath}, and no default file was found for ${defaultFileName}.`,
         );
       } else {
+        fileResps.forEach((fileResp) => {
+          fileResp
+            .clone()
+            .text()
+            .then((fileRespText) => console.log(fileRespText));
+        });
+
         throw new Error(`Unable to locate a fetch file at path ${filePath}.`);
       }
     },
