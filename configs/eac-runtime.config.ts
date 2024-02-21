@@ -267,7 +267,7 @@ export default defineEaCConfig({
           Description:
             'The public web blog site to be used for the marketing of the project',
         },
-        ModifierLookups: ['denoKvCache'],
+        // ModifierLookups: ['denoKvCache'],
         Processor: {
           DFS: {
             DefaultFile: 'index.html',
