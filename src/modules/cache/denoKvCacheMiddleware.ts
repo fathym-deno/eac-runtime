@@ -105,6 +105,8 @@ export function establishDenoKvCacheMiddleware(
   return async (req, ctx) => {
     const cacheDb = (await ctx.Databases[dbLookup]) as Deno.Kv;
 
+    console.log('Starting cache middleware...');
+
     const pattern = new URLPattern({
       pathname: ctx.ApplicationProcessorConfig.LookupConfig.PathPattern,
     });
@@ -128,9 +130,17 @@ export function establishDenoKvCacheMiddleware(
     let resp: Response | undefined = undefined;
 
     if (cacheDb) {
+      console.log(
+        `Lookuping up item in cache middleware: ${respCacheKey.join('|')}`,
+      );
+
       const cached = await denoKvReadReadableStreamCache(cacheDb, respCacheKey);
 
       if (cached) {
+        console.log(
+          `Return item from cache middleware: ${respCacheKey.join('|')}`,
+        );
+
         resp = new Response(cached.Contents, {
           headers: cached.Headers || {},
         });
@@ -141,6 +151,10 @@ export function establishDenoKvCacheMiddleware(
       resp = await ctx.next();
 
       if (cacheDb && resp) {
+        console.log(
+          `Storing item in cache middleware: ${respCacheKey.join('|')}`,
+        );
+
         denoKvCacheReadableStream(
           cacheDb,
           respCacheKey,
