@@ -9,7 +9,6 @@ import {
 import { defineEaCConfig } from '@fathym/eac/runtime';
 
 export default defineEaCConfig({
-  ModifierLookups: ['tracing'],
   Server: {
     port: 8000,
   },
@@ -32,8 +31,6 @@ export default defineEaCConfig({
           apiProxy: {
             PathPattern: '/api*',
             Priority: 200,
-            IsPrivate: true,
-            IsTriggerSignIn: true,
           },
           google: {
             PathPattern: '/google',
@@ -56,6 +53,7 @@ export default defineEaCConfig({
           Name: 'Simple API Proxy',
           Description: 'A proxy',
         },
+        ModifierLookups: ['tracing'],
         Processor: {
           ProxyRoot: 'https://reqres.in/api',
         } as EaCProxyProcessor,

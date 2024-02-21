@@ -20,8 +20,6 @@ export class InstallCommand implements Command {
   public async Run(): Promise<void> {
     console.log(`Installing Fathym's EaC Runtime...`);
 
-    console.log(import.meta.url);
-
     const installDirectory = path.resolve('.');
 
     // TODO(mcgear): Verify no existing files
