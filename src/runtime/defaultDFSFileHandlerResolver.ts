@@ -153,7 +153,7 @@ export const buildFetchDFSFileHandler = (
         return dfsFileInfo;
       } else if (defaultFileName) {
         fileResps.forEach((fileResp) => {
-          console.log(fileResp.headers);
+          console.log(fileResp.status);
         });
 
         throw new Error(
@@ -161,7 +161,7 @@ export const buildFetchDFSFileHandler = (
         );
       } else {
         fileResps.forEach((fileResp) => {
-          console.log(fileResp.headers);
+          console.log(fileResp.status);
         });
 
         throw new Error(`Unable to locate a fetch file at path ${filePath}.`);
