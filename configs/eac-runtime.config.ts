@@ -71,6 +71,9 @@ export default defineEaCConfig({
             Hostname: 'localhost',
             Port: 6121,
           },
+          denoDeploy: {
+            Hostname: 'eac-runtime.deno.dev',
+          },
         },
         ModifierLookups: ['keepAlive', 'oauth'],
         ApplicationLookups: {
