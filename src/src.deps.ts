@@ -12,6 +12,6 @@ export const mime = Mime;
 // export * from '../../reference-architecture/mod.ts';
 export * from 'https://deno.land/x/fathym_common@v0.0.146/mod.ts';
 // export * from '../../everything-as-code/mod.ts';
-export * from 'https://deno.land/x/fathym_everything_as_code@v0.0.319-integration/mod.ts';
+export * from 'https://deno.land/x/fathym_everything_as_code@v0.0.321-integration/mod.ts';
 
 import 'https://deno.land/std@0.216.0/dotenv/load.ts';

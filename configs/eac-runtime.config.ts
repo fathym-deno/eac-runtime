@@ -298,6 +298,7 @@ export default defineEaCConfig({
           Name: 'Local Cache',
           Description: 'The Deno KV database to use for local caching',
           DenoKVPath: Deno.env.get('LOCAL_CACHE_DENO_KV_PATH') || undefined,
+          Type: 'DenoKV',
         } as EaCDenoKVDatabaseDetails,
       },
     },
