@@ -44,7 +44,7 @@ jobs:
           deno-version: vx.x.x
 
       - name: Deno Build
-        run: deno task build-mod
+        run: deno task build
 
       - name: Set Version
         id: version
