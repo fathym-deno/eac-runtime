@@ -32,8 +32,8 @@ export default defineEaCConfig({
             PathPattern: '/api*',
             Priority: 200,
           },
-          google: {
-            PathPattern: '/google',
+          fathym: {
+            PathPattern: '/fathym',
             Priority: 200,
           },
           home: {
@@ -58,13 +58,13 @@ export default defineEaCConfig({
           ProxyRoot: 'https://reqres.in/api',
         } as EaCProxyProcessor,
       },
-      google: {
+      fathym: {
         Details: {
-          Name: 'Google Redirect',
-          Description: 'A redirect to Google',
+          Name: 'Fathym Redirect',
+          Description: 'A redirect to Fathym',
         },
         Processor: {
-          Redirect: 'http://www.google.com/',
+          Redirect: 'http://www.fathym.com/',
         } as EaCRedirectProcessor,
       },
       home: {

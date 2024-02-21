@@ -46,8 +46,8 @@ export default defineEaCConfig({
             PathPattern: '/docs/*',
             Priority: 200,
           },
-          google: {
-            PathPattern: '/google',
+          fathym: {
+            PathPattern: '/fathym',
             Priority: 200,
           },
           home: {
@@ -100,8 +100,8 @@ export default defineEaCConfig({
             Priority: 5000,
             UserAgentRegex: '^Deno*',
           },
-          google: {
-            PathPattern: '/google',
+          fathym: {
+            PathPattern: '/fathym',
             Priority: 200,
           },
           oauth: {
@@ -193,13 +193,13 @@ export default defineEaCConfig({
         },
         Processor: {},
       },
-      google: {
+      fathym: {
         Details: {
-          Name: 'Google Redirect',
-          Description: 'A redirect to Google',
+          Name: 'Fathym Redirect',
+          Description: 'A redirect to Fathym',
         },
         Processor: {
-          Redirect: 'http://www.google.com/',
+          Redirect: 'https://www.fathym.com/',
         } as EaCRedirectProcessor,
       },
       home: {
