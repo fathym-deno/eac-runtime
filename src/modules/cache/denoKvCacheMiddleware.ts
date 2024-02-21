@@ -119,6 +119,8 @@ export function establishDenoKvCacheMiddleware(
       'Response',
       'EaC',
       ctx.EaC!.EnterpriseLookup!,
+      'Revision',
+      ctx.Revision,
       'Project',
       ctx.ProjectProcessorConfig.ProjectLookup,
       'Applications',

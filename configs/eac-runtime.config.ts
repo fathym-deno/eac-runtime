@@ -309,7 +309,7 @@ export default defineEaCConfig({
           Description:
             'Lightweight cache to use that stores data in a DenoKV database.',
           DenoKVDatabaseLookup: 'cache',
-          CacheSeconds: 60 * 5,
+          CacheSeconds: 60 * 60 * 24,
           Priority: 500,
         } as EaCDenoKVCacheModifierDetails,
       },

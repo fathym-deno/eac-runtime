@@ -158,10 +158,7 @@ export const buildFetchDFSFileHandler = (
         return dfsFileInfo;
       } else if (defaultFileName) {
         fileResps.forEach((fileResp) => {
-          fileResp
-            .clone()
-            .text()
-            .then((fileRespText) => console.log(fileRespText));
+          console.log(fileResp.headers);
         });
 
         throw new Error(
@@ -169,10 +166,7 @@ export const buildFetchDFSFileHandler = (
         );
       } else {
         fileResps.forEach((fileResp) => {
-          fileResp
-            .clone()
-            .text()
-            .then((fileRespText) => console.log(fileRespText));
+          console.log(fileResp.headers);
         });
 
         throw new Error(`Unable to locate a fetch file at path ${filePath}.`);
