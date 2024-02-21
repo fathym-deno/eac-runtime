@@ -1,9 +1,11 @@
+import { delay } from 'https://deno.land/std@0.216.0/async/delay.ts';
 import {
   EaCDistributedFileSystem,
   existsSync,
   isEaCLocalDistributedFileSystem,
   isEaCNPMDistributedFileSystem,
   path,
+  STATUS_CODE,
 } from '../src.deps.ts';
 
 export type DFSFileInfo = {
@@ -118,26 +120,46 @@ export const buildFetchDFSFileHandler = (
         defaultFileName,
       );
 
-      const fileChecks: Promise<Response>[] = [];
+      let count = 0;
 
-      fileCheckPaths.forEach((fcp) => {
-        const resolvedPath = pathResolver ? pathResolver(fcp) : fcp;
+      async function loadActiveFileResp() {
+        const fileChecks: Promise<Response>[] = [];
 
-        if (resolvedPath) {
-          const fullFilePath = new URL(resolvedPath, root);
+        fileCheckPaths.forEach((fcp) => {
+          const resolvedPath = pathResolver ? pathResolver(fcp) : fcp;
 
-          fileChecks.push(fetch(fullFilePath));
+          if (resolvedPath) {
+            const fullFilePath = new URL(resolvedPath, root);
+
+            fileChecks.push(fetch(fullFilePath));
+          }
+        });
+
+        const fileResps = await Promise.all(fileChecks);
+
+        let activeFileResp = fileResps.find((fileResp) => fileResp.ok);
+
+        if (
+          count < 5 &&
+          !activeFileResp &&
+          fileResps.some(
+            (fileResp) => fileResp.status === STATUS_CODE.TooManyRequests,
+          )
+        ) {
+          count++;
+
+          await delay(count * 1000 * 2.5);
+
+          activeFileResp = await loadActiveFileResp();
         }
-      });
 
-      const fileResps = await Promise.all(fileChecks);
+        return activeFileResp;
+      }
 
-      const activeFileResp = fileResps.find((fileResp) => fileResp.ok);
+      const activeFileResp = await loadActiveFileResp();
 
       if (activeFileResp) {
-        const excludeHeaders = [
-          'content-type',
-        ];
+        const excludeHeaders = ['content-type'];
 
         const dfsFileInfo: DFSFileInfo = {
           Contents: activeFileResp.clone().body!,
@@ -152,18 +174,10 @@ export const buildFetchDFSFileHandler = (
 
         return dfsFileInfo;
       } else if (defaultFileName) {
-        fileResps.forEach((fileResp) => {
-          console.log(fileResp.status);
-        });
-
         throw new Error(
           `Unable to locate a fetch file at path ${filePath}, and no default file was found for ${defaultFileName}.`,
         );
       } else {
-        fileResps.forEach((fileResp) => {
-          console.log(fileResp.status);
-        });
-
         throw new Error(`Unable to locate a fetch file at path ${filePath}.`);
       }
     },

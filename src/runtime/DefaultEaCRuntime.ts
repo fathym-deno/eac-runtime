@@ -67,6 +67,8 @@ export class DefaultEaCRuntime implements EaCRuntime {
       );
     }
 
+    this.revision = Date.now();
+
     this.configureDatabases();
 
     this.buildProjectGraph();
