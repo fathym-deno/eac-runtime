@@ -107,6 +107,14 @@ export default defineEaCConfig({
             PathPattern: '/fathym',
             Priority: 200,
           },
+          fathymWhiteLogo: {
+            PathPattern: '/img/Fathym-logo-white-01.png',
+            Priority: 2000,
+          },
+          favicon: {
+            PathPattern: '/img/favicon.ico',
+            Priority: 2000,
+          },
           oauth: {
             PathPattern: '/oauth/*',
             Priority: 500,
@@ -204,6 +212,28 @@ export default defineEaCConfig({
         Processor: {
           Redirect: 'https://www.fathym.com/',
         } as EaCRedirectProcessor,
+      },
+      fathymWhiteLogo: {
+        Details: {
+          Name: 'Standard Fathym White Logo',
+          Description: 'The standard fathym white logo.',
+        },
+        ModifierLookups: ['denoKvCache'],
+        Processor: {
+          ProxyRoot: 'https://www.fathym.com/img/Fathym-logo-white-01.png',
+          RedirectMode: 'follow',
+        } as EaCProxyProcessor,
+      },
+      favicon: {
+        Details: {
+          Name: 'Standard Favicon',
+          Description: 'The standard favicon',
+        },
+        ModifierLookups: ['denoKvCache'],
+        Processor: {
+          ProxyRoot: 'https://www.fathym.com/img/favicon.ico',
+          RedirectMode: 'follow',
+        } as EaCProxyProcessor,
       },
       home: {
         Details: {
