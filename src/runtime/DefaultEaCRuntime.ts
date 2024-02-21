@@ -195,7 +195,15 @@ export class DefaultEaCRuntime implements EaCRuntime {
         const dbInit = new Promise<Deno.Kv>((resolve) => {
           const dbDetails = db.Details as EaCDenoKVDatabaseDetails;
 
+          console.log(
+            `Inititializing DenoKV database: ${dbDetails.DenoKVPath || '$default'}`,
+          );
+
           initializeDenoKv(dbDetails.DenoKVPath).then((kv) => {
+            console.log(
+              `Inititialized DenoKV database: ${dbDetails.DenoKVPath || '$default'}`,
+            );
+
             resolve(kv);
           });
         });
@@ -265,7 +273,9 @@ export class DefaultEaCRuntime implements EaCRuntime {
           );
 
         const matchesRegex = !appLookupConfig.UserAgentRegex ||
-          new RegExp(appLookupConfig.UserAgentRegex).test(req.headers.get('user-agent') || '');
+          new RegExp(appLookupConfig.UserAgentRegex).test(
+            req.headers.get('user-agent') || '',
+          );
 
         // TODO(mcgear): How to account for IsPrivate/IsTriggerSignIn during application resolution...
         //    Maybe return a list of available apps, so their handlers can be nexted through
