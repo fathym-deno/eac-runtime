@@ -152,7 +152,9 @@ export function establishDenoKvCacheMiddleware(
     if (!resp) {
       resp = await ctx.next();
 
-      if (cacheDb && resp) {
+      const blockedHeaders = ['cf-mitigated'];
+
+      if (cacheDb && resp && blockedHeaders.every((bh) => !resp?.headers.has(bh))) {
         console.log(
           `Storing item in cache middleware: ${respCacheKey.join('|')}`,
         );

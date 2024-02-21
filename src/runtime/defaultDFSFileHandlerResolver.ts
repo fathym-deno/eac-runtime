@@ -135,19 +135,14 @@ export const buildFetchDFSFileHandler = (
       const activeFileResp = fileResps.find((fileResp) => fileResp.ok);
 
       if (activeFileResp) {
-        const usedHeaders = [
-          'cache-control',
-          'content-length',
-          'age',
-          'date',
-          'etag',
-          'vary',
+        const excludeHeaders = [
+          'content-type',
         ];
 
         const dfsFileInfo: DFSFileInfo = {
           Contents: activeFileResp.clone().body!,
-          Headers: usedHeaders.reduce((headers, uh) => {
-            if (activeFileResp.headers.has(uh)) {
+          Headers: excludeHeaders.reduce((headers, uh) => {
+            if (!activeFileResp.headers.has(uh)) {
               headers[uh] = activeFileResp.headers.get(uh)!;
             }
 
