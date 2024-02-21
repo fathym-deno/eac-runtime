@@ -188,6 +188,9 @@ export class DefaultEaCRuntime implements EaCRuntime {
   protected async configureDatabases(): Promise<void> {
     const dbLookups = Object.keys(this.eac!.Databases || {});
 
+    console.log(`Configuring DenoKV databases`);
+    console.log(dbLookups);
+
     for (const dbLookup of dbLookups) {
       const db = this.eac!.Databases![dbLookup];
 
