@@ -103,7 +103,7 @@ export function establishDenoKvCacheMiddleware(
   console.log('Configuring cache middleware...');
 
   return async (req, ctx) => {
-    const cacheDb = ctx.Databases[dbLookup] as Deno.Kv;
+    const cacheDb = (await ctx.Databases[dbLookup]) as Deno.Kv;
 
     console.log('Starting cache middleware...');
 
