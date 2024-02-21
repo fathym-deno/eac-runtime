@@ -33,7 +33,8 @@
       "request": "launch",
       "name": "Install Program",
       "type": "node",
-      "program": "${workspaceFolder}/install.ts",
+      "program": "https://deno.land/x/fathym_eac_runtime/install.ts",
+      // "program": "${workspaceFolder}/install.ts",
       "cwd": "${workspaceFolder}/install-test",
       "runtimeExecutable": "deno.exe",
       "runtimeArgs": [

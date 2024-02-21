@@ -170,9 +170,9 @@ export default defineEaCConfig({
           Description: 'A script to use for installing the deno runtime.',
         },
         Processor: {
-          ProxyRoot: 'http://localhost:6121/deno/install.ts',
-          // ProxyRoot: 'https://deno.land/x/fathym_eac_runtime/install.ts',
-          RedirectMode: 'follow',
+          // ProxyRoot: 'http://localhost:6121/deno/install.ts',
+          ProxyRoot: 'https://deno.land/x/fathym_eac_runtime/install.ts',
+          // RedirectMode: 'follow',
         } as EaCProxyProcessor,
       },
       denoLocalInstall: {

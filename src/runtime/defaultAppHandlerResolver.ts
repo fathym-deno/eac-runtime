@@ -28,7 +28,7 @@ import { DFSFileHandler } from './_exports.ts';
 import { isEaCAzureADB2CProviderDetails } from '../src.deps.ts';
 
 export const defaultAppHandlerResolver: (
-  appProcCfg: EaCApplicationProcessorConfig
+  appProcCfg: EaCApplicationProcessorConfig,
 ) => EaCRuntimeHandler = (appProcCfg) => {
   let handler: EaCRuntimeHandler;
 
@@ -40,7 +40,7 @@ export const defaultAppHandlerResolver: (
       return redirectRequest(
         processor.Redirect,
         processor.PreserveMethod,
-        processor.Permanent
+        processor.Permanent,
       );
     };
   } else if (isEaCProxyProcessor(appProcCfg.Application.Processor)) {
@@ -51,7 +51,7 @@ export const defaultAppHandlerResolver: (
         req,
         processor.ProxyRoot,
         appProcCfg.LookupConfig.PathPattern,
-        processor.RedirectMode
+        processor.RedirectMode,
         // ctx.Info.remoteAddr.hostname,
       );
     };
@@ -68,7 +68,7 @@ export const defaultAppHandlerResolver: (
           provider.Details.Domain,
           provider.Details.PolicyName,
           provider.Details.TenantID,
-          provider.Details.Scopes
+          provider.Details.Scopes,
         );
 
         return oAuthRequest(
@@ -78,12 +78,12 @@ export const defaultAppHandlerResolver: (
             const { accessToken } = tokens;
 
             const [_header, payload, _signature] = await djwt.decode(
-              accessToken
+              accessToken,
             );
 
             payload?.toString();
           },
-          appProcCfg.LookupConfig.PathPattern
+          appProcCfg.LookupConfig.PathPattern,
         );
       } else if (isEaCOAuthProviderDetails(provider.Details)) {
         const oAuthConfig = creatOAuthConfig(
@@ -91,7 +91,7 @@ export const defaultAppHandlerResolver: (
           provider.Details.ClientSecret,
           provider.Details.AuthorizationEndpointURI,
           provider.Details.TokenURI,
-          provider.Details.Scopes
+          provider.Details.Scopes,
         );
 
         return oAuthRequest(
@@ -101,16 +101,16 @@ export const defaultAppHandlerResolver: (
             const { accessToken } = tokens;
 
             const [_header, payload, _signature] = await djwt.decode(
-              accessToken
+              accessToken,
             );
 
             payload?.toString();
           },
-          appProcCfg.LookupConfig.PathPattern
+          appProcCfg.LookupConfig.PathPattern,
         );
       } else {
         throw new Error(
-          `The provider '${processor.ProviderLookup}' type cannot be handled.`
+          `The provider '${processor.ProviderLookup}' type cannot be handled.`,
         );
       }
     };
@@ -130,7 +130,7 @@ export const defaultAppHandlerResolver: (
         processor.InputParams,
         processor.EmbeddingDeploymentName,
         processor.SearchEndpoint,
-        processor.SearchAPIKey
+        processor.SearchAPIKey,
       );
     };
   } else if (isEaCDFSProcessor(appProcCfg.Application.Processor)) {
@@ -161,7 +161,7 @@ export const defaultAppHandlerResolver: (
 
       const file = await fileHandler.GetFileInfo(
         filePath,
-        processor.DFS.DefaultFile
+        processor.DFS.DefaultFile,
       );
 
       if (
@@ -193,7 +193,7 @@ export const defaultAppHandlerResolver: (
         'Hello, world!\n' +
           JSON.stringify(appProcCfg, null, 2) +
           '\n' +
-          JSON.stringify(ctx.Info.remoteAddr, null, 2)
+          JSON.stringify(ctx.Info.remoteAddr, null, 2),
       );
     };
   }

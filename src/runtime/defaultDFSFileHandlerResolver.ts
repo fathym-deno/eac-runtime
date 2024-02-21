@@ -1,6 +1,5 @@
 import {
   EaCDistributedFileSystem,
-  exists,
   existsSync,
   isEaCLocalDistributedFileSystem,
   isEaCNPMDistributedFileSystem,
@@ -16,22 +15,22 @@ export type DFSFileInfo = {
 export type DFSFileHandler = {
   GetFileInfo: (
     filePath: string,
-    defaultFileName?: string
+    defaultFileName?: string,
   ) => Promise<DFSFileInfo>;
 };
 
 export const buildLocalDFSFileHandler = (
   root: string,
-  pathResolver?: (filePath: string) => string
+  pathResolver?: (filePath: string) => string,
 ): DFSFileHandler => {
   return {
     async GetFileInfo(
       filePath: string,
-      defaultFileName?: string
+      defaultFileName?: string,
     ): Promise<DFSFileInfo> {
       const fileCheckPaths = getFileCheckPathsToProcess(
         filePath,
-        defaultFileName
+        defaultFileName,
       );
 
       const fileChecks: Promise<Deno.FsFile>[] = [];
@@ -46,7 +45,7 @@ export const buildLocalDFSFileHandler = (
             fileChecks.push(
               Deno.open(fullFilePath, {
                 read: true,
-              })
+              }),
             );
           }
         }
@@ -64,7 +63,7 @@ export const buildLocalDFSFileHandler = (
         return dfsFileInfo;
       } else if (defaultFileName) {
         throw new Error(
-          `Unable to locate a local file at path ${filePath}, and no default file was found for ${defaultFileName}.`
+          `Unable to locate a local file at path ${filePath}, and no default file was found for ${defaultFileName}.`,
         );
       } else {
         throw new Error(`Unable to locate a local file at path ${filePath}.`);
@@ -75,7 +74,7 @@ export const buildLocalDFSFileHandler = (
 
 export function getFileCheckPathsToProcess(
   filePath: string,
-  defaultFileName?: string
+  defaultFileName?: string,
 ): string[] {
   const pathParts = filePath.split('/');
 
@@ -94,7 +93,7 @@ export function getFileCheckPathsToProcess(
 
     const curFilePath = new URL(
       fileName,
-      new URL(currentPathRoot, 'https://notused.com/')
+      new URL(currentPathRoot, 'https://notused.com/'),
     ).pathname;
 
     fileChecks.push(curFilePath);
@@ -107,16 +106,16 @@ export function getFileCheckPathsToProcess(
 
 export const buildFetchDFSFileHandler = (
   root: string,
-  pathResolver?: (filePath: string) => string
+  pathResolver?: (filePath: string) => string,
 ): DFSFileHandler => {
   return {
     async GetFileInfo(
       filePath: string,
-      defaultFileName?: string
+      defaultFileName?: string,
     ): Promise<DFSFileInfo> {
       const fileCheckPaths = getFileCheckPathsToProcess(
         filePath,
-        defaultFileName
+        defaultFileName,
       );
 
       const fileChecks: Promise<Response>[] = [];
@@ -159,7 +158,7 @@ export const buildFetchDFSFileHandler = (
         return dfsFileInfo;
       } else if (defaultFileName) {
         throw new Error(
-          `Unable to locate a fetch file at path ${filePath}, and no default file was found for ${defaultFileName}.`
+          `Unable to locate a fetch file at path ${filePath}, and no default file was found for ${defaultFileName}.`,
         );
       } else {
         throw new Error(`Unable to locate a fetch file at path ${filePath}.`);
@@ -169,7 +168,7 @@ export const buildFetchDFSFileHandler = (
 };
 
 export async function defaultDFSFileHandlerResolver(
-  dfs: EaCDistributedFileSystem
+  dfs: EaCDistributedFileSystem,
 ): Promise<DFSFileHandler> {
   if (isEaCNPMDistributedFileSystem(dfs)) {
     const npmPackagePath = `https://registry.npmjs.org/${dfs.Package}`;
@@ -190,8 +189,7 @@ export async function defaultDFSFileHandlerResolver(
 
     const npmFilesMap = await npmFilesMapResp.json();
 
-    const fileRoot =
-      'https://www.npmjs.com/package/@lowcodeunit/public-web-blog/file/';
+    const fileRoot = 'https://www.npmjs.com/package/@lowcodeunit/public-web-blog/file/';
 
     return buildFetchDFSFileHandler(fileRoot, (filePath) => {
       if (filePath in npmFilesMap.files) {

@@ -26,7 +26,7 @@ export class InstallCommand implements Command {
   protected async copyTemplateFile(
     installDirectory: string,
     filePath: string,
-    outputFilePath: string
+    outputFilePath: string,
   ): Promise<void> {
     const gitIgnoreFile = await this.openTemplateFile(filePath);
 
@@ -38,13 +38,12 @@ export class InstallCommand implements Command {
   }
 
   protected async ensureDenoConfigCreated(
-    installDirectory: string
+    installDirectory: string,
   ): Promise<void> {
     const config = {
       lock: false,
       tasks: {
-        build:
-          'deno task build:fmt && deno task build:lint && deno task build:main',
+        build: 'deno task build:fmt && deno task build:lint && deno task build:main',
         'build:dev': 'deno run -A dev.ts build',
         'build:main': 'deno run -A main.ts build',
         'build:fmt': 'deno fmt',
@@ -61,7 +60,7 @@ export class InstallCommand implements Command {
       },
       exclude: ['**/_fresh/*'],
       imports: {
-        '@fathym/eac/runtime': new URL("../../../mod.ts", import.meta.url).href,
+        '@fathym/eac/runtime': new URL('../../../mod.ts', import.meta.url).href,
       } as Record<string, string>,
       compilerOptions: {
         jsx: 'react-jsx',
@@ -73,7 +72,7 @@ export class InstallCommand implements Command {
 
     await Deno.writeTextFile(
       path.join(installDirectory, 'deno.jsonc'),
-      configStr
+      configStr,
     );
   }
 
@@ -84,7 +83,7 @@ export class InstallCommand implements Command {
   }
 
   protected async openTemplateFile(
-    filePath: string
+    filePath: string,
   ): Promise<ReadableStream<Uint8Array>> {
     const fileUrl = new URL(filePath, import.meta.url);
 

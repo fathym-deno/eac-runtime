@@ -1,7 +1,7 @@
 import { Command } from './Command.ts';
 
 export class HelpCommand implements Command {
-  public async Run(): Promise<void> {
+  public Run(): Promise<void> {
     const helpText = `eac-runtime-installer
 
     Install a new EaC Runtime project. This will create all the necessary 
@@ -24,5 +24,7 @@ export class HelpCommand implements Command {
     `;
 
     console.log(helpText);
+
+    return Promise.resolve();
   }
 }
