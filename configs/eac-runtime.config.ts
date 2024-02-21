@@ -170,8 +170,8 @@ export default defineEaCConfig({
           Description: 'A script to use for installing the deno runtime.',
         },
         Processor: {
-          Redirect: 'http://localhost:6121/deno/install.ts',
-          // Redirect: 'https://deno.land/x/fathym_eac_runtime/install.ts',
+          // Redirect: 'http://localhost:6121/deno/install.ts',
+          Redirect: 'https://deno.land/x/fathym_eac_runtime/install.ts',
         } as EaCRedirectProcessor,
       },
       denoLocalInstall: {
