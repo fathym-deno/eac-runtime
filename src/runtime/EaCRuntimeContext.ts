@@ -8,7 +8,7 @@ export type EaCRuntimeContext = {
 
   Config: EaCRuntimeConfig;
 
-  Databases: Record<string, Promise<unknown>>;
+  Databases: Record<string, unknown>;
 
   EaC: EaCRuntimeEaC;
 
