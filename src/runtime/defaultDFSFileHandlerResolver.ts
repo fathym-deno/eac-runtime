@@ -122,7 +122,7 @@ export const buildFetchDFSFileHandler = (
 
       let count = 0;
 
-      async function loadActiveFileResp() {
+      async function loadActiveFileResp(): Promise<Response | undefined> {
         const fileChecks: Promise<Response>[] = [];
 
         fileCheckPaths.forEach((fcp) => {
@@ -148,7 +148,7 @@ export const buildFetchDFSFileHandler = (
         ) {
           count++;
 
-          await delay(count * 1000 * 2.5);
+          await delay(count * 1000 * 1.5);
 
           activeFileResp = await loadActiveFileResp();
         }

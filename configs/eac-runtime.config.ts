@@ -267,7 +267,7 @@ export default defineEaCConfig({
           Description:
             'The public web blog site to be used for the marketing of the project',
         },
-        // ModifierLookups: ['denoKvCache'],
+        ModifierLookups: ['denoKvCache'],
         Processor: {
           DFS: {
             DefaultFile: 'index.html',
@@ -309,7 +309,7 @@ export default defineEaCConfig({
           Description:
             'Lightweight cache to use that stores data in a DenoKV database.',
           DenoKVDatabaseLookup: 'cache',
-          CacheSeconds: 60 * 60 * 24,
+          CacheSeconds: 60 * 5,
           Priority: 500,
         } as EaCDenoKVCacheModifierDetails,
       },
