@@ -28,6 +28,20 @@
         "./deno.jsonc",
         "--inspect-wait"
       ]
+    },
+    {
+      "request": "launch",
+      "name": "Install Program",
+      "type": "node",
+      "program": "${workspaceFolder}/install.ts",
+      "cwd": "${workspaceFolder}/install-test",
+      "runtimeExecutable": "deno.exe",
+      "runtimeArgs": [
+        "run",
+        "--config",
+        "../deno.jsonc",
+        "--inspect-wait"
+      ]
     }
   ]
 }

@@ -1,11 +1,12 @@
-import { colors, fathymGreen } from '../../src.deps.ts';
+import { colors } from '../../src.deps.ts';
 import { DefaultEaCRuntime } from '../DefaultEaCRuntime.ts';
 import { EaCRuntimeConfig } from './EaCRuntimeConfig.ts';
 import { defaultAppHandlerResolver } from '../defaultAppHandlerResolver.ts';
+import { fathymGreen } from '../../constants.ts';
 
 export const DefaultEaCConfig: EaCRuntimeConfig = {
   ApplicationHandlerResolver: defaultAppHandlerResolver,
-  Middleware: [],
+  ModifierLookups: [],
   Runtime: (cfg: EaCRuntimeConfig) => new DefaultEaCRuntime(cfg),
   Server: {
     onListen: (params) => {

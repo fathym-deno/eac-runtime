@@ -4,6 +4,7 @@ import {
   EaCDenoKVDatabaseDetails,
   EaCDFSProcessor,
   EaCKeepAliveModifierDetails,
+  EaCLocalDistributedFileSystem,
   EaCNPMDistributedFileSystem,
   EaCOAuthModifierDetails,
   EaCOAuthProcessor,
@@ -90,6 +91,16 @@ export default defineEaCConfig({
             PathPattern: '/*',
             Priority: 100,
           },
+          denoInstall: {
+            PathPattern: '/deno/install',
+            Priority: 5001,
+            UserAgentRegex: '^Deno*',
+          },
+          denoLocalInstall: {
+            PathPattern: '/deno/*',
+            Priority: 5000,
+            UserAgentRegex: '^Deno*',
+          },
           google: {
             PathPattern: '/google',
             Priority: 200,
@@ -155,12 +166,26 @@ export default defineEaCConfig({
       },
       denoInstall: {
         Details: {
-          Name: 'Simple API Proxy',
-          Description: 'A proxy',
+          Name: 'EaC Runtime Deno Install',
+          Description: 'A script to use for installing the deno runtime.',
         },
         Processor: {
-          ProxyRoot: 'https://deno.land/x/fathym_eac_runtime/install.ts',
+          ProxyRoot: 'http://localhost:6121/deno/install.ts',
+          // ProxyRoot: 'https://deno.land/x/fathym_eac_runtime/install.ts',
+          RedirectMode: 'follow',
         } as EaCProxyProcessor,
+      },
+      denoLocalInstall: {
+        Details: {
+          Name: 'EaC Runtime Local Deno Install',
+          Description: 'A script to use for installing the deno runtime.',
+        },
+        // ModifierLookups: ['denoKvCache'],
+        Processor: {
+          DFS: {
+            FileRoot: './',
+          } as EaCLocalDistributedFileSystem,
+        } as EaCDFSProcessor,
       },
       docs: {
         Details: {
@@ -186,21 +211,6 @@ export default defineEaCConfig({
         },
         Processor: {},
       },
-      publicWebBlog: {
-        Details: {
-          Name: 'Public Web Blog Site',
-          Description:
-            'The public web blog site to be used for the marketing of the project',
-        },
-        ModifierLookups: ['denoKvCache'],
-        Processor: {
-          DFS: {
-            DefaultFile: 'index.html',
-            Package: '@lowcodeunit/public-web-blog',
-            Version: 'latest',
-          } as EaCNPMDistributedFileSystem,
-        } as EaCDFSProcessor,
-      },
       oauth: {
         Details: {
           Name: 'OAuth Site',
@@ -217,6 +227,21 @@ export default defineEaCConfig({
             'The site used to for user profile display and management',
         },
         Processor: {},
+      },
+      publicWebBlog: {
+        Details: {
+          Name: 'Public Web Blog Site',
+          Description:
+            'The public web blog site to be used for the marketing of the project',
+        },
+        ModifierLookups: ['denoKvCache'],
+        Processor: {
+          DFS: {
+            DefaultFile: 'index.html',
+            Package: '@lowcodeunit/public-web-blog',
+            Version: 'latest',
+          } as EaCNPMDistributedFileSystem,
+        } as EaCDFSProcessor,
       },
     },
     Providers: {
