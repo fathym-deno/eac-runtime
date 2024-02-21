@@ -10,6 +10,8 @@
     "test": "deno test -A --allow-env .env tests/tests.ts --coverage=cov"
   },
   "imports": {
+    "@fathym/eac": "https://deno.land/x/fathym_everything_as_code@v0.0.319-integration/mod.ts",
+    "@fathym/eac/runtime": "./mod.ts"
   },
   "lint": {
     "include": ["src/", "configs/"],

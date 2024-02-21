@@ -1,5 +1,6 @@
 import {
   EaCAIRAGChatProcessor,
+  EaCAzureADB2CProviderDetails,
   EaCDenoKVCacheModifierDetails,
   EaCDenoKVDatabaseDetails,
   EaCDFSProcessor,
@@ -13,7 +14,6 @@ import {
   EaCTracingModifierDetails,
 } from '../src/src.deps.ts';
 import { defineEaCConfig } from '../src/runtime/config/defineEaCConfig.ts';
-import { EaCAzureADB2CProviderDetails } from '../src/src.deps.ts';
 
 export default defineEaCConfig({
   //   Runtime: (cfg) => new TracingEaCRuntime(cfg),
@@ -170,10 +170,9 @@ export default defineEaCConfig({
           Description: 'A script to use for installing the deno runtime.',
         },
         Processor: {
-          // ProxyRoot: 'http://localhost:6121/deno/install.ts',
-          ProxyRoot: 'https://deno.land/x/fathym_eac_runtime/install.ts',
-          // RedirectMode: 'follow',
-        } as EaCProxyProcessor,
+          Redirect: 'http://localhost:6121/deno/install.ts',
+          // Redirect: 'https://deno.land/x/fathym_eac_runtime/install.ts',
+        } as EaCRedirectProcessor,
       },
       denoLocalInstall: {
         Details: {

@@ -1,4 +1,4 @@
-import { path } from '../install.deps.ts';
+import { exists, path } from '../install.deps.ts';
 import { EaCRuntimeInstallerFlags } from '../../../install.ts';
 import { Command } from './Command.ts';
 
@@ -6,13 +6,23 @@ export class InstallCommand implements Command {
   protected filesToCreate: [string, string][];
 
   constructor(protected flags: EaCRuntimeInstallerFlags) {
-    this.filesToCreate = [['../files/.gitignore', './.gitignore']];
+    this.filesToCreate = [
+      ['../files/.gitignore', './.gitignore'],
+      ['../files/dev.ts', './dev.ts'],
+      ['../files/main.ts', './main.ts'],
+      [
+        '../files/configs/eac-runtime.config.ts',
+        './configs/eac-runtime.config.ts',
+      ],
+    ];
   }
 
   public async Run(): Promise<void> {
     console.log(`Installing Fathym's EaC Runtime...`);
 
     const installDirectory = path.resolve('.');
+
+    // TODO(mcgear): Verify no existing files
 
     if (this.flags.docker) {
       this.filesToCreate.push(['../files/DOCKERFILE', './DOCKERFILE']);
@@ -28,11 +38,17 @@ export class InstallCommand implements Command {
     filePath: string,
     outputFilePath: string,
   ): Promise<void> {
-    const gitIgnoreFile = await this.openTemplateFile(filePath);
-
     const outputTo = path.join(installDirectory, outputFilePath);
 
-    await Deno.writeFile(outputTo, gitIgnoreFile, {
+    const file = await this.openTemplateFile(filePath);
+
+    const dir = await path.dirname(outputTo);
+
+    if (!(await exists(dir))) {
+      await Deno.mkdir(dir);
+    }
+
+    await Deno.writeFile(outputTo, file, {
       create: true,
     });
   }
@@ -45,9 +61,10 @@ export class InstallCommand implements Command {
       tasks: {
         build: 'deno task build:fmt && deno task build:lint && deno task build:main',
         'build:dev': 'deno run -A dev.ts build',
-        'build:main': 'deno run -A main.ts build',
+        'build:docker': 'docker build --no-cache .',
         'build:fmt': 'deno fmt',
         'build:lint': 'deno lint',
+        'build:main': 'deno run -A main.ts build',
         deploy: 'deno task build && deno task test && ftm git',
         dev: 'deno run -A --watch=configs/,data/,routes/,src/,static/ dev.ts',
         start: 'deno run -A main.ts',
@@ -55,13 +72,15 @@ export class InstallCommand implements Command {
       },
       lint: {
         rules: {
-          tags: ['fresh', 'recommended'],
+          tags: ['recommended'],
         },
       },
-      exclude: ['**/_fresh/*'],
+      exclude: ['**/_eac/*'],
       imports: {
+        '@fathym/eac': 'https://deno.land/x/fathym_everything_as_code/mod.ts',
         '@fathym/eac/runtime': new URL('../../../mod.ts', import.meta.url).href,
       } as Record<string, string>,
+      unstable: ['kv'],
       compilerOptions: {
         jsx: 'react-jsx',
         jsxImportSource: 'preact',

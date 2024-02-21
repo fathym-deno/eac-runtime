@@ -10,7 +10,7 @@ import Mime from 'npm:mime';
 export const mime = Mime;
 
 // export * from '../../reference-architecture/mod.ts';
-export * from 'https://deno.land/x/fathym_common@v0.0.143/mod.ts';
+export * from 'https://deno.land/x/fathym_common@v0.0.144/mod.ts';
 // export * from '../../everything-as-code/mod.ts';
 export * from 'https://deno.land/x/fathym_everything_as_code@v0.0.319-integration/mod.ts';
 

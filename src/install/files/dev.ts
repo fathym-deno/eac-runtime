@@ -1,4 +1,4 @@
-import { start } from './src/server/start.ts';
+import { start } from '@fathym/eac/runtime';
 import config from './configs/eac-runtime.config.ts';
 
 Deno.env.set('EAC_RUNTIME_DEV', 'true');
