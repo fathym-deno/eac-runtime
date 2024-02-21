@@ -16,8 +16,7 @@ import {
 import { defineEaCConfig } from '../src/runtime/config/defineEaCConfig.ts';
 
 export default defineEaCConfig({
-  //   Runtime: (cfg) => new TracingEaCRuntime(cfg),
-  ModifierLookups: ['tracing'],
+  ModifierLookups: [],
   Server: {
     port: 6121,
   },
@@ -84,8 +83,8 @@ export default defineEaCConfig({
           chat: {
             PathPattern: '/chat*',
             Priority: 300,
-            IsPrivate: true,
-            IsTriggerSignIn: true,
+            // IsPrivate: true,
+            // IsTriggerSignIn: true,
           },
           dashboard: {
             PathPattern: '/*',
@@ -142,7 +141,8 @@ export default defineEaCConfig({
           EmbeddingDeploymentName: 'text-embedding-ada-002',
           ModelName: 'gpt-4',
           SearchAPIKey: Deno.env.get('AZURE_AI_SEARCH_KEY')!,
-          // SearchEndpoint: Deno.env.get('AZURE_AI_SEARCH_ENDPOINT')!,
+          SearchEndpoint: Deno.env.get('AZURE_AI_SEARCH_ENDPOINT')!,
+          UseSSEFormat: true,
           Messages: [
             [
               'system',
