@@ -57,6 +57,7 @@ export function establishKeepAliveMiddleware(
 
         return new Response(code, {
           headers: {
+            'cache-control': `public, max-age=${60 * 60 * 24 * 365}, immutable`,
             'Content-Type': 'text/javascript',
           },
         });
@@ -75,7 +76,7 @@ export function establishKeepAliveMiddleware(
             const keepAliveClientScriptNode = doc.createElement('script');
             keepAliveClientScriptNode.setAttribute('type', 'module');
             keepAliveClientScriptNode.innerHTML =
-              `import { configureKeepAlive } from '${keepAliveClientPath}';
+              `import { configureKeepAlive } from '${keepAliveClientPath}?${ctx.Revision}';
 
 configureKeepAlive('${keepAlivePath}');`;
             // keepAliveClientScriptNode.setAttribute('src', keepAliveClientPath);

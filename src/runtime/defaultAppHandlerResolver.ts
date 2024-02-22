@@ -11,6 +11,7 @@ import {
   isEaCOAuthProcessor,
   isEaCOAuthProviderDetails,
   mime,
+  processCacheControlHeaders,
 } from '../src.deps.ts';
 import {
   aiRAGChatRequest,
@@ -26,6 +27,7 @@ import { defaultDFSFileHandlerResolver } from './defaultDFSFileHandlerResolver.t
 import { EaCRuntimeHandler } from './EaCRuntimeHandler.ts';
 import { DFSFileHandler } from './_exports.ts';
 import { isEaCAzureADB2CProviderDetails } from '../src.deps.ts';
+import { EAC_RUNTIME_DEV } from '../constants.ts';
 
 export const defaultAppHandlerResolver: (
   appProcCfg: EaCApplicationProcessorConfig,
@@ -52,6 +54,8 @@ export const defaultAppHandlerResolver: (
         processor.ProxyRoot,
         appProcCfg.LookupConfig.PathPattern,
         processor.RedirectMode,
+        !EAC_RUNTIME_DEV() ? processor.CacheControl : undefined,
+        processor.ForceCache,
         // ctx.Info.remoteAddr.hostname,
       );
     };
@@ -169,10 +173,12 @@ export const defaultAppHandlerResolver: (
         !('content-type' in file.Headers) ||
         !('Content-Type' in file.Headers)
       ) {
-        let mimeType = mime.getType(filePath);
+        let mimeType = filePath.endsWith('.ts') ? 'application/typescript' : mime.getType(filePath);
 
         if (!mimeType) {
-          mimeType = mime.getType(processor.DFS.DefaultFile || '');
+          mimeType = processor.DFS.DefaultFile?.endsWith('.ts')
+            ? 'application/typescript'
+            : mime.getType(processor.DFS.DefaultFile || '');
         }
 
         if (mimeType) {
@@ -183,9 +189,19 @@ export const defaultAppHandlerResolver: (
         }
       }
 
-      return new Response(file.Contents, {
+      let resp = new Response(file.Contents, {
         headers: file.Headers,
       });
+
+      if (processor.CacheControl && !EAC_RUNTIME_DEV()) {
+        resp = processCacheControlHeaders(
+          resp,
+          processor.CacheControl,
+          processor.ForceCache,
+        );
+      }
+
+      return resp;
     };
   } else {
     handler = (_req, ctx) => {
