@@ -179,7 +179,7 @@ export default defineEaCConfig({
           // ProxyRoot: 'https://dashboard.openbiotech.co',
           ProxyRoot: 'https://biotech-manager-web.azurewebsites.net',
           CacheControl: {
-            'text\\/html': `public, max-age=${60 * 5}`,
+            'text\\/html': `private, max-age=${60 * 5}`,
             'image\\/': `public, max-age=${60 * 60 * 24 * 365}, immutable`,
             'application\\/javascript': `public, max-age=${60 * 60 * 24 * 365}, immutable`,
             'application\\/typescript': `public, max-age=${60 * 60 * 24 * 365}, immutable`,
@@ -286,7 +286,7 @@ export default defineEaCConfig({
             Version: 'latest',
           } as EaCNPMDistributedFileSystem,
           CacheControl: {
-            'text\\/html': `public, max-age=${60 * 5}`,
+            'text\\/html': `private, max-age=${60 * 5}`,
             'image\\/': `public, max-age=${60 * 60 * 24 * 365}, immutable`,
             'application\\/javascript': `public, max-age=${60 * 60 * 24 * 365}, immutable`,
             'application\\/typescript': `public, max-age=${60 * 60 * 24 * 365}, immutable`,
