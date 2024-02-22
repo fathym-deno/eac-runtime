@@ -29,7 +29,7 @@ export default defineEaCConfig({
         ModifierLookups: ['keepAlive'],
         ApplicationLookups: {
           apiProxy: {
-            PathPattern: '/api*',
+            PathPattern: '/api-reqres*',
             Priority: 200,
           },
           fathym: {
