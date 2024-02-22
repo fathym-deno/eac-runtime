@@ -331,7 +331,7 @@ export default defineEaCConfig({
           Description:
             'Lightweight cache to use that stores data in a DenoKV database for all css, js, and images.',
           DenoKVDatabaseLookup: 'cache',
-          CacheSeconds: 60 * 1, //5, //20,
+          CacheSeconds: 60 * 20,
           PathFilterRegex: `^[^\\s]*(iconset\\/icons|\\.(apng|avif|bmp|cur|gif|ico|jfif|jpg|jpeg|pjpeg|pjp|png|svg|tiff|tif|webp|js|css|))(\\?|#|$)`,
           Priority: 500,
         } as EaCDenoKVCacheModifierDetails,
@@ -342,7 +342,7 @@ export default defineEaCConfig({
           Description:
             'Lightweight cache to use that stores data in a DenoKV database for static sites.',
           DenoKVDatabaseLookup: 'cache',
-          CacheSeconds: 60 * 1, //5, //20,
+          CacheSeconds: 60 * 20,
           Priority: 500,
         } as EaCDenoKVCacheModifierDetails,
       },
