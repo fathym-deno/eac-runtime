@@ -1,11 +1,9 @@
-import { delay } from 'https://deno.land/std@0.216.0/async/delay.ts';
 import {
   EaCDistributedFileSystem,
   existsSync,
   isEaCLocalDistributedFileSystem,
   isEaCNPMDistributedFileSystem,
   path,
-  STATUS_CODE,
 } from '../src.deps.ts';
 
 export type DFSFileInfo = {
@@ -120,43 +118,21 @@ export const buildFetchDFSFileHandler = (
         defaultFileName,
       );
 
-      let count = 0;
+      const fileChecks: Promise<Response>[] = [];
 
-      async function loadActiveFileResp(): Promise<Response | undefined> {
-        const fileChecks: Promise<Response>[] = [];
+      fileCheckPaths.forEach((fcp) => {
+        const resolvedPath = pathResolver ? pathResolver(fcp) : fcp;
 
-        fileCheckPaths.forEach((fcp) => {
-          const resolvedPath = pathResolver ? pathResolver(fcp) : fcp;
+        if (resolvedPath) {
+          const fullFilePath = new URL(`.${resolvedPath}`, root);
 
-          if (resolvedPath) {
-            const fullFilePath = new URL(resolvedPath, root);
-
-            fileChecks.push(fetch(fullFilePath));
-          }
-        });
-
-        const fileResps = await Promise.all(fileChecks);
-
-        let activeFileResp = fileResps.find((fileResp) => fileResp.ok);
-
-        if (
-          count < 5 &&
-          !activeFileResp &&
-          fileResps.some(
-            (fileResp) => fileResp.status === STATUS_CODE.TooManyRequests,
-          )
-        ) {
-          count++;
-
-          await delay(count * 1000 * 1.5);
-
-          activeFileResp = await loadActiveFileResp();
+          fileChecks.push(fetch(fullFilePath));
         }
+      });
 
-        return activeFileResp;
-      }
+      const fileResps = await Promise.all(fileChecks);
 
-      const activeFileResp = await loadActiveFileResp();
+      const activeFileResp = fileResps.find((fileResp) => fileResp.ok);
 
       if (activeFileResp) {
         const excludeHeaders = ['content-type'];
@@ -184,40 +160,49 @@ export const buildFetchDFSFileHandler = (
   };
 };
 
-export async function defaultDFSFileHandlerResolver(
+export function defaultDFSFileHandlerResolver(
   dfs: EaCDistributedFileSystem,
 ): Promise<DFSFileHandler> {
+  let handler: DFSFileHandler;
+
   if (isEaCNPMDistributedFileSystem(dfs)) {
-    const npmPackagePath = `https://registry.npmjs.org/${dfs.Package}`;
+    // const npmPackagePath = `https://registry.npmjs.org/${dfs.Package}`;
 
-    const packageDetailsResp = await fetch(npmPackagePath);
+    // const packageDetailsResp = await fetch(npmPackagePath);
 
-    const packageDetails = await packageDetailsResp.json();
+    // const packageDetails = await packageDetailsResp.json();
 
-    let version = dfs.Version;
+    // let version = dfs.Version;
 
-    if (dfs.Version in packageDetails['dist-tags']) {
-      version = packageDetails['dist-tags'][dfs.Version];
-    }
+    // if (dfs.Version in packageDetails['dist-tags']) {
+    //   version = packageDetails['dist-tags'][dfs.Version];
+    // }
 
-    const fileMapPath = `https://www.npmjs.com/package/${dfs.Package}/v/${version}/index`;
+    // const fileMapPath = `https://www.npmjs.com/package/${dfs.Package}/v/${version}/index`;
 
-    const npmFilesMapResp = await fetch(fileMapPath);
+    // const npmFilesMapResp = await fetch(fileMapPath);
 
-    const npmFilesMap = await npmFilesMapResp.json();
+    // const npmFilesMap = await npmFilesMapResp.json();
 
-    const fileRoot = 'https://www.npmjs.com/package/@lowcodeunit/public-web-blog/file/';
+    // const fileRoot = 'https://www.npmjs.com/package/@lowcodeunit/public-web-blog/file/';
 
-    return buildFetchDFSFileHandler(fileRoot, (filePath) => {
-      if (filePath in npmFilesMap.files) {
-        return npmFilesMap.files[filePath].hex;
-      } else {
-        return '';
-      }
-    });
+    // return buildFetchDFSFileHandler(fileRoot, (filePath) => {
+    //   if (filePath in npmFilesMap.files) {
+    //     return npmFilesMap.files[filePath].hex;
+    //   } else {
+    //     return '';
+    //   }
+    // });
+
+    // const fileRoot = new URL(`${dfs.Package}/`, 'https://esm.sh/');
+    const fileRoot = new URL(`${dfs.Package}/`, 'https://cdn.skypack.dev/');
+
+    handler = buildFetchDFSFileHandler(fileRoot.href);
   } else if (isEaCLocalDistributedFileSystem(dfs)) {
-    return buildLocalDFSFileHandler(dfs.FileRoot);
+    handler = buildLocalDFSFileHandler(dfs.FileRoot);
   } else {
-    return buildLocalDFSFileHandler('.');
+    handler = buildLocalDFSFileHandler('.');
   }
+
+  return Promise.resolve(handler);
 }
