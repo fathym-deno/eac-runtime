@@ -10,8 +10,8 @@ import Mime from 'npm:mime';
 export const mime = Mime;
 
 // export * from '../../reference-architecture/mod.ts';
-export * from 'https://deno.land/x/fathym_common@v0.0.150/mod.ts';
+export * from 'https://deno.land/x/fathym_common@v0.0.151/mod.ts';
 // export * from '../../everything-as-code/mod.ts';
-export * from 'https://deno.land/x/fathym_everything_as_code@v0.0.321-integration/mod.ts';
+export * from 'https://deno.land/x/fathym_everything_as_code@v0.0.322-integration/mod.ts';
 
 import 'https://deno.land/std@0.216.0/dotenv/load.ts';

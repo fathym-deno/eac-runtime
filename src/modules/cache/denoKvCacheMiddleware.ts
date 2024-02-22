@@ -20,24 +20,28 @@ export function denoKvCacheReadableStream(
   stream: ReadableStream<Uint8Array>,
   cacheSeconds: number,
   headers?: Headers,
-  maxChunkSize = 40000,
+  maxChunkSize = 8000,
 ): void {
   if (stream) {
     let content = new Uint8Array();
 
-    const contentChunks: Uint8Array[] = [];
-
     const fileReader = stream.getReader();
 
-    fileReader.read().then(function processFile({ done, value }): any {
-      if (done) {
-        contentChunks.push(content);
+    let chunkCount = -1;
 
-        contentChunks.forEach((chunk, i) => {
-          kv.set([...cacheKey, 'Chunks', i], chunk, {
-            expireIn: 1000 * cacheSeconds,
-          }).then();
+    fileReader.read().then(function processFile({ done, value }): any {
+      async function cacheChunk(chunk: Uint8Array): Promise<void> {
+        ++chunkCount;
+
+        await kv.set([...cacheKey, 'Chunks', chunkCount], chunk, {
+          expireIn: 1000 * cacheSeconds,
         });
+      }
+
+      if (done) {
+        if (content.length > 0) {
+          cacheChunk(content).then();
+        }
 
         return;
       }
@@ -46,10 +50,16 @@ export function denoKvCacheReadableStream(
 
       const contentBlob = new Blob([content]);
 
-      if (contentBlob.size > maxChunkSize) {
-        contentChunks.push(content);
+      if (chunkCount < 0) {
+        cacheChunk(content.slice(0, 1)).then();
 
-        content = new Uint8Array();
+        content = content.slice(1);
+      }
+
+      if (contentBlob.size > maxChunkSize) {
+        cacheChunk(content.slice(0, maxChunkSize)).then();
+
+        content = content.slice(maxChunkSize);
       }
 
       return fileReader.read().then(processFile);
@@ -73,32 +83,46 @@ export async function denoKvReadReadableStreamCache(
   kv: Deno.Kv,
   cacheKey: Deno.KvKey,
 ): Promise<DFSFileInfo | undefined> {
-  const cachedFileChunks = await kv.list<Uint8Array>({
-    prefix: [...cacheKey, 'Chunks'],
-  });
+  const cachedFileCheck = await kv.get<Uint8Array>([...cacheKey, 'Chunks', 0]);
 
-  let content = new Uint8Array();
+  const contents = cachedFileCheck.value
+    ? new ReadableStream({
+      async start(controller) {
+        const cachedFileChunks = await kv.list<Uint8Array>({
+          prefix: [...cacheKey, 'Chunks'],
+        });
 
-  for await (const cachedFileChunk of cachedFileChunks) {
-    content = concatTypedArrays(content, cachedFileChunk.value!);
-  }
+        for await (const cachedFileChunk of cachedFileChunks) {
+          controller.enqueue(cachedFileChunk.value!);
+        }
 
-  const cachedHeaders = await kv.get<Record<string, string>>([
-    ...cacheKey,
-    'Headers',
-  ]);
-
-  return content.length > 0
-    ? {
-      Contents: new Blob([content]).stream(),
-      Headers: cachedHeaders.value || undefined,
-    }
+        controller.close();
+      },
+      cancel() {
+        // divined.cancel();
+      },
+    })
     : undefined;
+
+  if (contents) {
+    const cachedHeaders = await kv.get<Record<string, string>>([
+      ...cacheKey,
+      'Headers',
+    ]);
+
+    return {
+      Contents: contents,
+      Headers: cachedHeaders.value || undefined,
+    };
+  } else {
+    return undefined;
+  }
 }
 
 export function establishDenoKvCacheMiddleware(
   dbLookup: string,
   cacheSeconds: number,
+  pathFilterRegex?: string,
 ): EaCRuntimeHandler {
   console.log('Configuring cache middleware...');
 
@@ -111,7 +135,9 @@ export function establishDenoKvCacheMiddleware(
       pathname: ctx.ApplicationProcessorConfig.LookupConfig.PathPattern,
     });
 
-    const patternResult = pattern.exec(req.url);
+    const reqUrl = new URL(req.url);
+
+    const patternResult = pattern.exec(reqUrl.href);
 
     const reqPath = patternResult!.pathname.groups[0]!;
 
@@ -125,13 +151,17 @@ export function establishDenoKvCacheMiddleware(
       ctx.ProjectProcessorConfig.ProjectLookup,
       'Applications',
       ctx.ApplicationProcessorConfig.ApplicationLookup,
-      'File',
+      'Path',
       reqPath,
+      ...(reqUrl.search ? ['Search', reqUrl.search] : []),
+      ...(reqUrl.hash ? ['Hash', reqUrl.hash] : []),
     ];
 
     let resp: Response | undefined = undefined;
 
-    if (cacheDb) {
+    const isCachePathFiltered = !pathFilterRegex || new RegExp(pathFilterRegex, 'i').test(reqPath);
+
+    if (cacheDb && isCachePathFiltered) {
       console.log(
         `Lookuping up item in cache middleware: ${respCacheKey.join('|')}`,
       );
@@ -152,7 +182,7 @@ export function establishDenoKvCacheMiddleware(
     if (!resp) {
       resp = await ctx.next();
 
-      if (cacheDb && resp) {
+      if (cacheDb && resp?.ok && isCachePathFiltered) {
         console.log(
           `Storing item in cache middleware: ${respCacheKey.join('|')}`,
         );

@@ -21,7 +21,7 @@ export default defineEaCConfig({
     port: 6121,
   },
   EaC: {
-    EnterpriseLookup: "local-eac",
+    EnterpriseLookup: 'local-eac',
     Projects: {
       marketing: {
         Details: {
@@ -172,6 +172,7 @@ export default defineEaCConfig({
           Name: 'Dashboard Site',
           Description: 'The site used to display the main dashboard',
         },
+        ModifierLookups: ['css-js-img-cache'],
         Processor: {
           // ProxyRoot: 'http://localhost:8000',
           // ProxyRoot: 'http://localhost:5437',
@@ -194,7 +195,7 @@ export default defineEaCConfig({
           Name: 'EaC Runtime Local Deno Install',
           Description: 'A script to use for installing the deno runtime.',
         },
-        // ModifierLookups: ['denoKvCache'],
+        // ModifierLookups: ['static-cache'],
         Processor: {
           DFS: {
             FileRoot: './',
@@ -222,7 +223,7 @@ export default defineEaCConfig({
           Name: 'Standard Fathym White Logo',
           Description: 'The standard fathym white logo.',
         },
-        ModifierLookups: ['denoKvCache'],
+        ModifierLookups: ['static-cache'],
         Processor: {
           ProxyRoot: 'https://www.fathym.com/img/Fathym-logo-white-01.png',
           RedirectMode: 'follow',
@@ -233,7 +234,7 @@ export default defineEaCConfig({
           Name: 'Standard Favicon',
           Description: 'The standard favicon',
         },
-        ModifierLookups: ['denoKvCache'],
+        ModifierLookups: ['static-cache'],
         Processor: {
           ProxyRoot: 'https://www.fathym.com/img/favicon.ico',
           RedirectMode: 'follow',
@@ -270,7 +271,7 @@ export default defineEaCConfig({
           Description:
             'The public web blog site to be used for the marketing of the project',
         },
-        ModifierLookups: ['denoKvCache'],
+        ModifierLookups: ['static-cache'],
         Processor: {
           DFS: {
             DefaultFile: 'index.html',
@@ -306,16 +307,6 @@ export default defineEaCConfig({
       },
     },
     Modifiers: {
-      denoKvCache: {
-        Details: {
-          Name: 'Deno KV Cache',
-          Description:
-            'Lightweight cache to use that stores data in a DenoKV database.',
-          DenoKVDatabaseLookup: 'cache',
-          CacheSeconds: 60 * 5,
-          Priority: 500,
-        } as EaCDenoKVCacheModifierDetails,
-      },
       keepAlive: {
         Details: {
           Name: 'Deno KV Cache',
@@ -333,6 +324,27 @@ export default defineEaCConfig({
           SignInPath: '/oauth/signin',
           Priority: 1200,
         } as EaCOAuthModifierDetails,
+      },
+      'css-js-img-cache': {
+        Details: {
+          Name: 'CSS/JS/Image Cache',
+          Description:
+            'Lightweight cache to use that stores data in a DenoKV database for all css, js, and images.',
+          DenoKVDatabaseLookup: 'cache',
+          CacheSeconds: 60 * 1, //5, //20,
+          PathFilterRegex: `^[^\\s]*(iconset\\/icons|\\.(apng|avif|bmp|cur|gif|ico|jfif|jpg|jpeg|pjpeg|pjp|png|svg|tiff|tif|webp|js|css|))(\\?|#|$)`,
+          Priority: 500,
+        } as EaCDenoKVCacheModifierDetails,
+      },
+      'static-cache': {
+        Details: {
+          Name: 'Static Cache',
+          Description:
+            'Lightweight cache to use that stores data in a DenoKV database for static sites.',
+          DenoKVDatabaseLookup: 'cache',
+          CacheSeconds: 60 * 1, //5, //20,
+          Priority: 500,
+        } as EaCDenoKVCacheModifierDetails,
       },
       tracing: {
         Details: {

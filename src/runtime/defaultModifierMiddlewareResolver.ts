@@ -20,6 +20,7 @@ export const defaultModifierMiddlewareResolver: (
     handler = establishDenoKvCacheMiddleware(
       modifier.Details.DenoKVDatabaseLookup,
       modifier.Details.CacheSeconds,
+      modifier.Details.PathFilterRegex,
     );
   } else if (isEaCKeepAliveModifierDetails(modifier.Details)) {
     handler = establishKeepAliveMiddleware(modifier.Details.KeepAlivePath);
