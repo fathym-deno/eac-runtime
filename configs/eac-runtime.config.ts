@@ -75,6 +75,9 @@ export default defineEaCConfig({
           denoDeploy: {
             Hostname: 'eac-runtime.deno.dev',
           },
+          fathym: {
+            Hostname: 'eac-runtime.fathym.com',
+          },
         },
         ModifierLookups: ['keepAlive', 'oauth'],
         ApplicationLookups: {
