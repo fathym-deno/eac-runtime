@@ -1,0 +1,76 @@
+{
+  "scriptId": "406",
+  "url": "file:///C:/Users/micha_8ygdgy8/AppData/Local/deno/npm/registry.npmjs.org/inversify/6.0.2/lib/planning/metadata_reader.js",
+  "functions": [
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 0, "endOffset": 2230, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 1, "endOffset": 2229, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "",
+      "ranges": [
+        { "startOffset": 194, "endOffset": 2165, "count": 1 },
+        { "startOffset": 497, "endOffset": 581, "count": 0 },
+        { "startOffset": 760, "endOffset": 804, "count": 0 }
+      ],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 343, "endOffset": 495, "count": 0 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 500, "endOffset": 580, "count": 0 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 665, "endOffset": 758, "count": 0 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "__setModuleDefault",
+      "ranges": [{ "startOffset": 762, "endOffset": 804, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "__importStar",
+      "ranges": [
+        { "startOffset": 858, "endOffset": 1144, "count": 1 },
+        { "startOffset": 918, "endOffset": 1143, "count": 0 }
+      ],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 1340, "endOffset": 2115, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "MetadataReader",
+      "ranges": [{ "startOffset": 1359, "endOffset": 1393, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "MetadataReader.getConstructorMetadata",
+      "ranges": [
+        { "startOffset": 1449, "endOffset": 1846, "count": 3 },
+        { "startOffset": 1822, "endOffset": 1827, "count": 2 }
+      ],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "MetadataReader.getPropertiesMetadata",
+      "ranges": [{ "startOffset": 1902, "endOffset": 2083, "count": 3 }],
+      "isBlockCoverage": true
+    }
+  ]
+}

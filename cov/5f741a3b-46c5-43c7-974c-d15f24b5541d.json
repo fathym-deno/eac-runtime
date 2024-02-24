@@ -1,0 +1,41 @@
+{
+  "scriptId": "411",
+  "url": "file:///C:/Users/micha_8ygdgy8/AppData/Local/deno/npm/registry.npmjs.org/inversify/6.0.2/lib/planning/context.js",
+  "functions": [
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 0, "endOffset": 875, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 1, "endOffset": 874, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 194, "endOffset": 810, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 411, "endOffset": 774, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "Context",
+      "ranges": [{ "startOffset": 430, "endOffset": 538, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "Context.addPlan",
+      "ranges": [{ "startOffset": 572, "endOffset": 623, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "Context.setCurrentRequest",
+      "ranges": [{ "startOffset": 668, "endOffset": 749, "count": 3 }],
+      "isBlockCoverage": true
+    }
+  ]
+}
