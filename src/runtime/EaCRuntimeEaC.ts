@@ -1,5 +1,6 @@
 import {
   EverythingAsCode,
+  EverythingAsCodeAI,
   EverythingAsCodeApplications,
   EverythingAsCodeDatabases,
   EverythingAsCodeIdentity,
@@ -9,4 +10,5 @@ export type EaCRuntimeEaC =
   & EverythingAsCode
   & EverythingAsCodeApplications
   & EverythingAsCodeDatabases
-  & EverythingAsCodeIdentity;
+  & EverythingAsCodeIdentity
+  & EverythingAsCodeAI;

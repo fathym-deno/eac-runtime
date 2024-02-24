@@ -1,0 +1,41 @@
+{
+  "scriptId": "402",
+  "url": "file:///C:/Users/micha_8ygdgy8/AppData/Local/deno/npm/registry.npmjs.org/inversify/6.0.2/lib/bindings/binding.js",
+  "functions": [
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 0, "endOffset": 1881, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 1, "endOffset": 1880, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 194, "endOffset": 1816, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 473, "endOffset": 1780, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "Binding",
+      "ranges": [{ "startOffset": 492, "endOffset": 1056, "count": 3 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "Binding.constraint",
+      "ranges": [{ "startOffset": 776, "endOffset": 811, "count": 3 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "Binding.clone",
+      "ranges": [{ "startOffset": 1088, "endOffset": 1755, "count": 0 }],
+      "isBlockCoverage": false
+    }
+  ]
+}

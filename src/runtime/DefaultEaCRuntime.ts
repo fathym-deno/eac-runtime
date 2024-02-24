@@ -1,4 +1,4 @@
-import { djwt, initializeDenoKv } from '../src.deps.ts';
+import { Container, djwt, initializeDenoKv, inject, injectable } from '../src.deps.ts';
 import { EaCDenoKVDatabaseDetails } from '../src.deps.ts';
 import { EaCApplicationAsCode } from '../src.deps.ts';
 import { EaCProjectAsCode } from '../src.deps.ts';
@@ -13,6 +13,60 @@ import { EaCRuntime } from './EaCRuntime.ts';
 import { EaCRuntimeContext } from './EaCRuntimeContext.ts';
 import { EaCRuntimeEaC } from './EaCRuntimeEaC.ts';
 import { EaCRuntimeHandler } from './EaCRuntimeHandler.ts';
+
+export interface Warrior {
+  fight(): string;
+  sneak(): string;
+}
+
+export interface Weapon {
+  hit(): string;
+}
+
+export interface ThrowableWeapon {
+  throw(): string;
+}
+
+const TYPES = {
+  Warrior: Symbol.for('Warrior'),
+  Weapon: Symbol.for('Weapon'),
+  ThrowableWeapon: Symbol.for('ThrowableWeapon'),
+};
+
+@injectable()
+class Katana implements Weapon {
+  public hit() {
+    return 'cut!';
+  }
+}
+
+@injectable()
+class Shuriken implements ThrowableWeapon {
+  public throw() {
+    return 'hit!';
+  }
+}
+
+@injectable()
+class Ninja implements Warrior {
+  private _katana: Weapon;
+  private _shuriken: ThrowableWeapon;
+
+  public constructor(
+    @inject(TYPES.Weapon) katana: Weapon,
+    @inject(TYPES.ThrowableWeapon) shuriken: ThrowableWeapon,
+  ) {
+    this._katana = katana;
+    this._shuriken = shuriken;
+  }
+
+  public fight() {
+    return this._katana.hit();
+  }
+  public sneak() {
+    return this._shuriken.throw();
+  }
+}
 
 export class DefaultEaCRuntime implements EaCRuntime {
   protected applicationGraph?: Record<string, EaCApplicationProcessorConfig[]>;
@@ -32,6 +86,25 @@ export class DefaultEaCRuntime implements EaCRuntime {
   }
 
   public async Configure(): Promise<void> {
+    const myContainer = new Container();
+    myContainer.bind<Warrior>(TYPES.Warrior).to(Ninja);
+    myContainer.bind<Weapon>(TYPES.Weapon).to(Katana);
+    myContainer.bind<ThrowableWeapon>(TYPES.ThrowableWeapon).to(Shuriken);
+
+    const ninja = myContainer.get<Warrior>(TYPES.Warrior);
+
+    if (ninja.fight() !== 'cut!') {
+      throw new Error('No Cut');
+    }
+
+    if (ninja.sneak() !== 'hit!') {
+      throw new Error('No hit');
+    }
+
+    console.log(ninja);
+    console.log(ninja.fight());
+    console.log(ninja.sneak());
+
     const eacApiKey = Deno.env.get('EAC_API_KEY');
 
     if (eacApiKey) {

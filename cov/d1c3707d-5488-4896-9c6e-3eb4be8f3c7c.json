@@ -1,0 +1,77 @@
+{
+  "scriptId": "422",
+  "url": "file:///C:/Users/micha_8ygdgy8/AppData/Local/deno/npm/registry.npmjs.org/inversify/6.0.2/lib/utils/binding_utils.js",
+  "functions": [
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 0, "endOffset": 3889, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 1, "endOffset": 3888, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "",
+      "ranges": [
+        { "startOffset": 194, "endOffset": 3824, "count": 1 },
+        { "startOffset": 497, "endOffset": 581, "count": 0 },
+        { "startOffset": 760, "endOffset": 804, "count": 0 }
+      ],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 343, "endOffset": 495, "count": 0 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 500, "endOffset": 580, "count": 0 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 665, "endOffset": 758, "count": 0 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "__setModuleDefault",
+      "ranges": [{ "startOffset": 762, "endOffset": 804, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "__importStar",
+      "ranges": [
+        { "startOffset": 858, "endOffset": 1144, "count": 1 },
+        { "startOffset": 918, "endOffset": 1143, "count": 0 }
+      ],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "multiBindToService",
+      "ranges": [{ "startOffset": 1566, "endOffset": 1921, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "ensureFullyBound",
+      "ranges": [
+        { "startOffset": 1997, "endOffset": 3068, "count": 3 },
+        { "startOffset": 2084, "endOffset": 2135, "count": 0 },
+        { "startOffset": 2145, "endOffset": 2252, "count": 0 },
+        { "startOffset": 2262, "endOffset": 2311, "count": 0 },
+        { "startOffset": 2451, "endOffset": 2569, "count": 0 },
+        { "startOffset": 2579, "endOffset": 2689, "count": 0 },
+        { "startOffset": 2699, "endOffset": 2807, "count": 0 },
+        { "startOffset": 2845, "endOffset": 3065, "count": 0 }
+      ],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "getFactoryDetails",
+      "ranges": [{ "startOffset": 3141, "endOffset": 3771, "count": 0 }],
+      "isBlockCoverage": false
+    }
+  ]
+}

@@ -1,0 +1,141 @@
+{
+  "scriptId": "414",
+  "url": "file:///C:/Users/micha_8ygdgy8/AppData/Local/deno/npm/registry.npmjs.org/inversify/6.0.2/lib/planning/reflection_utils.js",
+  "functions": [
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 0, "endOffset": 8605, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 1, "endOffset": 8604, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "",
+      "ranges": [
+        { "startOffset": 194, "endOffset": 8540, "count": 1 },
+        { "startOffset": 497, "endOffset": 581, "count": 0 },
+        { "startOffset": 760, "endOffset": 804, "count": 0 }
+      ],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 343, "endOffset": 495, "count": 0 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 500, "endOffset": 580, "count": 0 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 665, "endOffset": 758, "count": 0 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "__setModuleDefault",
+      "ranges": [{ "startOffset": 762, "endOffset": 804, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "__importStar",
+      "ranges": [
+        { "startOffset": 858, "endOffset": 1144, "count": 2 },
+        { "startOffset": 918, "endOffset": 1143, "count": 0 }
+      ],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "__spreadArray",
+      "ranges": [
+        { "startOffset": 1199, "endOffset": 1534, "count": 6 },
+        { "startOffset": 1241, "endOffset": 1266, "count": 0 },
+        { "startOffset": 1317, "endOffset": 1468, "count": 2 },
+        { "startOffset": 1352, "endOffset": 1461, "count": 0 }
+      ],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "get",
+      "ranges": [{ "startOffset": 2119, "endOffset": 2174, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "getDependencies",
+      "ranges": [{ "startOffset": 2217, "endOffset": 2409, "count": 3 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "getTargets",
+      "ranges": [
+        { "startOffset": 2455, "endOffset": 3571, "count": 3 },
+        { "startOffset": 2703, "endOffset": 2833, "count": 0 },
+        { "startOffset": 3018, "endOffset": 3036, "count": 2 },
+        { "startOffset": 3181, "endOffset": 3194, "count": 0 }
+      ],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "getConstructorArgsAsTarget",
+      "ranges": [
+        { "startOffset": 3573, "endOffset": 4944, "count": 2 },
+        { "startOffset": 3761, "endOffset": 3766, "count": 0 },
+        { "startOffset": 3976, "endOffset": 3999, "count": 0 },
+        { "startOffset": 4063, "endOffset": 4082, "count": 0 },
+        { "startOffset": 4172, "endOffset": 4237, "count": 0 },
+        { "startOffset": 4544, "endOffset": 4714, "count": 0 },
+        { "startOffset": 4923, "endOffset": 4943, "count": 0 }
+      ],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "getConstructorArgsAsTargets",
+      "ranges": [
+        { "startOffset": 4946, "endOffset": 5403, "count": 3 },
+        { "startOffset": 5137, "endOffset": 5379, "count": 2 }
+      ],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "_getServiceIdentifierForProperty",
+      "ranges": [{ "startOffset": 5405, "endOffset": 5800, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "getClassPropsAsTargets",
+      "ranges": [
+        { "startOffset": 5802, "endOffset": 7110, "count": 3 },
+        { "startOffset": 6231, "endOffset": 6763, "count": 0 },
+        { "startOffset": 6890, "endOffset": 7086, "count": 0 }
+      ],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "getBaseClassDependencyCount",
+      "ranges": [
+        { "startOffset": 7112, "endOffset": 7991, "count": 3 },
+        { "startOffset": 7288, "endOffset": 7950, "count": 0 }
+      ],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 7511, "endOffset": 7616, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "formatTargetMetadata",
+      "ranges": [{ "startOffset": 8061, "endOffset": 8536, "count": 2 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 8170, "endOffset": 8247, "count": 2 }],
+      "isBlockCoverage": true
+    }
+  ]
+}

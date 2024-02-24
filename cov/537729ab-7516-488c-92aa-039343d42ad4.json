@@ -1,0 +1,11 @@
+{
+  "scriptId": "315",
+  "url": "file:///C:/Users/micha_8ygdgy8/AppData/Local/deno/npm/registry.npmjs.org/inversify/6.0.2/lib/inversify.js",
+  "functions": [
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 0, "endOffset": 1869, "count": 1 }],
+      "isBlockCoverage": true
+    }
+  ]
+}

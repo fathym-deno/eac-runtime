@@ -1,0 +1,40 @@
+{
+  "scriptId": "421",
+  "url": "file:///C:/Users/micha_8ygdgy8/AppData/Local/deno/npm/registry.npmjs.org/inversify/6.0.2/lib/utils/async.js",
+  "functions": [
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 0, "endOffset": 947, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 1, "endOffset": 946, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 194, "endOffset": 882, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "isPromise",
+      "ranges": [
+        { "startOffset": 399, "endOffset": 610, "count": 15 },
+        { "startOffset": 486, "endOffset": 504, "count": 12 },
+        { "startOffset": 506, "endOffset": 537, "count": 3 },
+        { "startOffset": 570, "endOffset": 606, "count": 12 }
+      ],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "isPromiseOrContainsPromise",
+      "ranges": [
+        { "startOffset": 644, "endOffset": 812, "count": 3 },
+        { "startOffset": 718, "endOffset": 748, "count": 0 },
+        { "startOffset": 783, "endOffset": 808, "count": 0 }
+      ],
+      "isBlockCoverage": true
+    }
+  ]
+}

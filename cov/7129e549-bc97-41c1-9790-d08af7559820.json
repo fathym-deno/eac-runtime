@@ -1,0 +1,66 @@
+{
+  "scriptId": "420",
+  "url": "file:///C:/Users/micha_8ygdgy8/AppData/Local/deno/npm/registry.npmjs.org/inversify/6.0.2/lib/scope/scope.js",
+  "functions": [
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 0, "endOffset": 4963, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 1, "endOffset": 4962, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 194, "endOffset": 4898, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "__awaiter",
+      "ranges": [{ "startOffset": 313, "endOffset": 956, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "__generator",
+      "ranges": [{ "startOffset": 1007, "endOffset": 2774, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "tryGetFromScope",
+      "ranges": [
+        { "startOffset": 3024, "endOffset": 3378, "count": 3 },
+        { "startOffset": 3131, "endOffset": 3151, "count": 0 },
+        { "startOffset": 3153, "endOffset": 3192, "count": 0 },
+        { "startOffset": 3261, "endOffset": 3301, "count": 0 },
+        { "startOffset": 3303, "endOffset": 3357, "count": 0 }
+      ],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "saveToScope",
+      "ranges": [
+        { "startOffset": 3443, "endOffset": 3756, "count": 3 },
+        { "startOffset": 3557, "endOffset": 3614, "count": 0 },
+        { "startOffset": 3684, "endOffset": 3753, "count": 0 }
+      ],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "_saveToRequestScope",
+      "ranges": [{ "startOffset": 3821, "endOffset": 3962, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "_saveToSingletonScope",
+      "ranges": [{ "startOffset": 3993, "endOffset": 4199, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "_saveAsyncResultToSingletonScope",
+      "ranges": [{ "startOffset": 4241, "endOffset": 4893, "count": 0 }],
+      "isBlockCoverage": false
+    }
+  ]
+}

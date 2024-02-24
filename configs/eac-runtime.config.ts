@@ -14,6 +14,9 @@ import {
   EaCTracingModifierDetails,
 } from '../src/src.deps.ts';
 import { defineEaCConfig } from '../src/runtime/config/defineEaCConfig.ts';
+import { EaCAzureSearchAIVectorStoreDetails } from '../src/src.deps.ts';
+import { EaCAzureOpenAILLMDetails } from '../src/src.deps.ts';
+import { EaCAzureOpenAIEmbeddingsDetails } from '../src/src.deps.ts';
 
 export default defineEaCConfig({
   ModifierLookups: [],
@@ -150,13 +153,9 @@ export default defineEaCConfig({
           Description: 'The chat used to display the main dashboard',
         },
         Processor: {
-          APIKey: Deno.env.get('AZURE_OPENAI_KEY')!,
-          Endpoint: Deno.env.get('AZURE_OPENAI_ENDPOINT')!,
-          DeploymentName: 'gpt-4-turbo',
-          EmbeddingDeploymentName: 'text-embedding-ada-002',
-          ModelName: 'gpt-4',
-          SearchAPIKey: Deno.env.get('AZURE_AI_SEARCH_KEY')!,
-          SearchEndpoint: Deno.env.get('AZURE_AI_SEARCH_ENDPOINT')!,
+          EmbeddingsLookup: 'azureOpenAI',
+          LLMLookup: 'azureOpenAI',
+          VectorStoreLookup: 'azureSearchAI',
           UseSSEFormat: true,
           Messages: [
             [
@@ -181,8 +180,12 @@ export default defineEaCConfig({
           CacheControl: {
             'text\\/html': `private, max-age=${60 * 5}`,
             'image\\/': `public, max-age=${60 * 60 * 24 * 365}, immutable`,
-            'application\\/javascript': `public, max-age=${60 * 60 * 24 * 365}, immutable`,
-            'application\\/typescript': `public, max-age=${60 * 60 * 24 * 365}, immutable`,
+            'application\\/javascript': `public, max-age=${
+              60 * 60 * 24 * 365
+            }, immutable`,
+            'application\\/typescript': `public, max-age=${
+              60 * 60 * 24 * 365
+            }, immutable`,
             'text\\/css': `public, max-age=${60 * 60 * 24 * 365}, immutable`,
           },
         } as EaCProxyProcessor,
@@ -288,8 +291,12 @@ export default defineEaCConfig({
           CacheControl: {
             'text\\/html': `private, max-age=${60 * 5}`,
             'image\\/': `public, max-age=${60 * 60 * 24 * 365}, immutable`,
-            'application\\/javascript': `public, max-age=${60 * 60 * 24 * 365}, immutable`,
-            'application\\/typescript': `public, max-age=${60 * 60 * 24 * 365}, immutable`,
+            'application\\/javascript': `public, max-age=${
+              60 * 60 * 24 * 365
+            }, immutable`,
+            'application\\/typescript': `public, max-age=${
+              60 * 60 * 24 * 365
+            }, immutable`,
             'text\\/css': `public, max-age=${60 * 60 * 24 * 365}, immutable`,
           },
         } as EaCDFSProcessor,
@@ -369,6 +376,48 @@ export default defineEaCConfig({
           TraceResponse: true,
           Priority: 1500,
         } as EaCTracingModifierDetails,
+      },
+    },
+    AIs: {
+      core: {
+        Details: {
+          Name: 'Core AI',
+          Description: 'The Core AI for generative solutions.',
+        },
+        Embeddings: {
+          azureOpenAI: {
+            Details: {
+              Name: 'Azure OpenAI LLM',
+              Description: 'The LLM for interacting with Azure OpenAI.',
+              APIKey: Deno.env.get('AZURE_OPENAI_KEY')!,
+              Endpoint: Deno.env.get('AZURE_OPENAI_ENDPOINT')!,
+              DeploymentName: 'text-embedding-ada-002',
+            } as EaCAzureOpenAIEmbeddingsDetails,
+          },
+        },
+        LLMs: {
+          azureOpenAI: {
+            Details: {
+              Name: 'Azure OpenAI LLM',
+              Description: 'The LLM for interacting with Azure OpenAI.',
+              APIKey: Deno.env.get('AZURE_OPENAI_KEY')!,
+              Endpoint: Deno.env.get('AZURE_OPENAI_ENDPOINT')!,
+              DeploymentName: 'gpt-4-turbo',
+              ModelName: 'gpt-4',
+            } as EaCAzureOpenAILLMDetails,
+          },
+        },
+        VectorStores: {
+          azureSearchAI: {
+            Details: {
+              Name: 'Azure Search AI',
+              Description:
+                'The Vector Store for interacting with Azure Search AI.',
+              APIKey: Deno.env.get('AZURE_AI_SEARCH_KEY')!,
+              Endpoint: Deno.env.get('AZURE_AI_SEARCH_ENDPOINT')!,
+            } as EaCAzureSearchAIVectorStoreDetails,
+          },
+        },
       },
     },
   },

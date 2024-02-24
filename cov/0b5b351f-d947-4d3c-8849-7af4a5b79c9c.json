@@ -1,0 +1,131 @@
+{
+  "scriptId": "426",
+  "url": "file:///C:/Users/micha_8ygdgy8/AppData/Local/deno/npm/registry.npmjs.org/inversify/6.0.2/lib/syntax/binding_in_when_on_syntax.js",
+  "functions": [
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 0, "endOffset": 4131, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 1, "endOffset": 4130, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 194, "endOffset": 4066, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 584, "endOffset": 4002, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "BindingInWhenOnSyntax",
+      "ranges": [{ "startOffset": 603, "endOffset": 952, "count": 3 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "BindingInWhenOnSyntax.inRequestScope",
+      "ranges": [{ "startOffset": 1007, "endOffset": 1083, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "BindingInWhenOnSyntax.inSingletonScope",
+      "ranges": [{ "startOffset": 1141, "endOffset": 1219, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "BindingInWhenOnSyntax.inTransientScope",
+      "ranges": [{ "startOffset": 1277, "endOffset": 1355, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "BindingInWhenOnSyntax.when",
+      "ranges": [{ "startOffset": 1401, "endOffset": 1489, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "BindingInWhenOnSyntax.whenTargetNamed",
+      "ranges": [{ "startOffset": 1546, "endOffset": 1633, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "BindingInWhenOnSyntax.whenTargetIsDefault",
+      "ranges": [{ "startOffset": 1694, "endOffset": 1777, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "BindingInWhenOnSyntax.whenTargetTagged",
+      "ranges": [{ "startOffset": 1835, "endOffset": 1935, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "BindingInWhenOnSyntax.whenInjectedInto",
+      "ranges": [{ "startOffset": 1993, "endOffset": 2085, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "BindingInWhenOnSyntax.whenParentNamed",
+      "ranges": [{ "startOffset": 2142, "endOffset": 2229, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "BindingInWhenOnSyntax.whenParentTagged",
+      "ranges": [{ "startOffset": 2287, "endOffset": 2387, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "BindingInWhenOnSyntax.whenAnyAncestorIs",
+      "ranges": [{ "startOffset": 2446, "endOffset": 2543, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "BindingInWhenOnSyntax.whenNoAncestorIs",
+      "ranges": [{ "startOffset": 2601, "endOffset": 2697, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "BindingInWhenOnSyntax.whenAnyAncestorNamed",
+      "ranges": [{ "startOffset": 2759, "endOffset": 2851, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "BindingInWhenOnSyntax.whenAnyAncestorTagged",
+      "ranges": [{ "startOffset": 2914, "endOffset": 3019, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "BindingInWhenOnSyntax.whenNoAncestorNamed",
+      "ranges": [{ "startOffset": 3080, "endOffset": 3171, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "BindingInWhenOnSyntax.whenNoAncestorTagged",
+      "ranges": [{ "startOffset": 3233, "endOffset": 3337, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "BindingInWhenOnSyntax.whenAnyAncestorMatches",
+      "ranges": [{ "startOffset": 3401, "endOffset": 3507, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "BindingInWhenOnSyntax.whenNoAncestorMatches",
+      "ranges": [{ "startOffset": 3570, "endOffset": 3675, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "BindingInWhenOnSyntax.onActivation",
+      "ranges": [{ "startOffset": 3729, "endOffset": 3817, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "BindingInWhenOnSyntax.onDeactivation",
+      "ranges": [{ "startOffset": 3873, "endOffset": 3963, "count": 0 }],
+      "isBlockCoverage": false
+    }
+  ]
+}

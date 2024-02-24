@@ -1,0 +1,26 @@
+{
+  "scriptId": "438",
+  "url": "file:///C:/Users/micha_8ygdgy8/AppData/Local/deno/npm/registry.npmjs.org/inversify/6.0.2/lib/utils/js.js",
+  "functions": [
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 0, "endOffset": 849, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 1, "endOffset": 848, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 194, "endOffset": 784, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "getFirstArrayDuplicate",
+      "ranges": [{ "startOffset": 375, "endOffset": 722, "count": 0 }],
+      "isBlockCoverage": false
+    }
+  ]
+}

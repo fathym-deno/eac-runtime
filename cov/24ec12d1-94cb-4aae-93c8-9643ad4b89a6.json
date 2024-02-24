@@ -1,0 +1,406 @@
+{
+  "scriptId": "401",
+  "url": "file:///C:/Users/micha_8ygdgy8/AppData/Local/deno/npm/registry.npmjs.org/inversify/6.0.2/lib/container/container.js",
+  "functions": [
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 0, "endOffset": 35277, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 1, "endOffset": 35276, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "",
+      "ranges": [
+        { "startOffset": 194, "endOffset": 35212, "count": 1 },
+        { "startOffset": 891, "endOffset": 975, "count": 0 },
+        { "startOffset": 1154, "endOffset": 1198, "count": 0 }
+      ],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "__assign",
+      "ranges": [
+        { "startOffset": 311, "endOffset": 660, "count": 2 },
+        { "startOffset": 355, "endOffset": 611, "count": 0 }
+      ],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "__assign",
+      "ranges": [{ "startOffset": 358, "endOffset": 611, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 737, "endOffset": 889, "count": 0 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 894, "endOffset": 974, "count": 0 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 1059, "endOffset": 1152, "count": 0 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "__setModuleDefault",
+      "ranges": [{ "startOffset": 1156, "endOffset": 1198, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "__importStar",
+      "ranges": [
+        { "startOffset": 1252, "endOffset": 1538, "count": 2 },
+        { "startOffset": 1312, "endOffset": 1537, "count": 0 }
+      ],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "__awaiter",
+      "ranges": [{ "startOffset": 1585, "endOffset": 2228, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "__generator",
+      "ranges": [{ "startOffset": 2279, "endOffset": 4046, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "__spreadArray",
+      "ranges": [{ "startOffset": 4101, "endOffset": 4436, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 5340, "endOffset": 35172, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "Container",
+      "ranges": [
+        { "startOffset": 5359, "endOffset": 7333, "count": 1 },
+        { "startOffset": 5487, "endOffset": 5582, "count": 0 },
+        { "startOffset": 5724, "endOffset": 6077, "count": 0 },
+        { "startOffset": 6194, "endOffset": 6368, "count": 0 },
+        { "startOffset": 6487, "endOffset": 6657, "count": 0 }
+      ],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "Container.merge",
+      "ranges": [{ "startOffset": 7357, "endOffset": 8334, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "Container.load",
+      "ranges": [{ "startOffset": 8368, "endOffset": 9130, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "Container.loadAsync",
+      "ranges": [{ "startOffset": 9169, "endOffset": 10645, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "Container.unload",
+      "ranges": [{ "startOffset": 10681, "endOffset": 11106, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "Container.unloadAsync",
+      "ranges": [{ "startOffset": 11147, "endOffset": 12313, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "Container.bind",
+      "ranges": [
+        { "startOffset": 12347, "endOffset": 12682, "count": 3 },
+        { "startOffset": 12425, "endOffset": 12470, "count": 0 }
+      ],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "Container.rebind",
+      "ranges": [{ "startOffset": 12718, "endOffset": 12842, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "Container.rebindAsync",
+      "ranges": [{ "startOffset": 12883, "endOffset": 13332, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "Container.unbind",
+      "ranges": [{ "startOffset": 13368, "endOffset": 13672, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "Container.unbindAsync",
+      "ranges": [{ "startOffset": 13713, "endOffset": 14517, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "Container.unbindAll",
+      "ranges": [{ "startOffset": 14556, "endOffset": 14790, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "Container.unbindAllAsync",
+      "ranges": [{ "startOffset": 14834, "endOffset": 15616, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "Container.onActivation",
+      "ranges": [{ "startOffset": 15658, "endOffset": 15774, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "Container.onDeactivation",
+      "ranges": [{ "startOffset": 15818, "endOffset": 15940, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "Container.isBound",
+      "ranges": [{ "startOffset": 15977, "endOffset": 16219, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "Container.isCurrentBound",
+      "ranges": [{ "startOffset": 16263, "endOffset": 16367, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "Container.isBoundNamed",
+      "ranges": [{ "startOffset": 16409, "endOffset": 16539, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "Container.isBoundTagged",
+      "ranges": [{ "startOffset": 16582, "endOffset": 17149, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "Container.snapshot",
+      "ranges": [{ "startOffset": 17187, "endOffset": 17425, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "Container.restore",
+      "ranges": [{ "startOffset": 17462, "endOffset": 17929, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "Container.createChild",
+      "ranges": [{ "startOffset": 17970, "endOffset": 18129, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "Container.applyMiddleware",
+      "ranges": [{ "startOffset": 18174, "endOffset": 18529, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "Container.applyCustomMetadataReader",
+      "ranges": [{ "startOffset": 18584, "endOffset": 18666, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "Container.get",
+      "ranges": [{ "startOffset": 18699, "endOffset": 18857, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "Container.getAsync",
+      "ranges": [{ "startOffset": 18895, "endOffset": 19227, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "Container.getTagged",
+      "ranges": [{ "startOffset": 19266, "endOffset": 19448, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "Container.getTaggedAsync",
+      "ranges": [{ "startOffset": 19492, "endOffset": 19848, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "Container.getNamed",
+      "ranges": [{ "startOffset": 19886, "endOffset": 20012, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "Container.getNamedAsync",
+      "ranges": [{ "startOffset": 20055, "endOffset": 20186, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "Container.getAll",
+      "ranges": [{ "startOffset": 20222, "endOffset": 20370, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "Container.getAllAsync",
+      "ranges": [{ "startOffset": 20411, "endOffset": 20547, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "Container.getAllTagged",
+      "ranges": [{ "startOffset": 20589, "endOffset": 20770, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "Container.getAllTaggedAsync",
+      "ranges": [{ "startOffset": 20817, "endOffset": 20986, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "Container.getAllNamed",
+      "ranges": [{ "startOffset": 21027, "endOffset": 21156, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "Container.getAllNamedAsync",
+      "ranges": [{ "startOffset": 21202, "endOffset": 21336, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "Container.resolve",
+      "ranges": [{ "startOffset": 21373, "endOffset": 21724, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "Container._preDestroy",
+      "ranges": [{ "startOffset": 21765, "endOffset": 22102, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "Container._removeModuleHandlers",
+      "ranges": [{ "startOffset": 22153, "endOffset": 22448, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "Container._removeModuleBindings",
+      "ranges": [{ "startOffset": 22499, "endOffset": 22648, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "Container._deactivate",
+      "ranges": [{ "startOffset": 22689, "endOffset": 23862, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "Container._handleDeactivationError",
+      "ranges": [{ "startOffset": 23916, "endOffset": 24767, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "Container._deactivateContainer",
+      "ranges": [{ "startOffset": 24817, "endOffset": 25347, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "Container._deactivateContainerAsync",
+      "ranges": [{ "startOffset": 25402, "endOffset": 26201, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "Container._getContainerModuleHelpersFactory",
+      "ranges": [{ "startOffset": 26264, "endOffset": 28737, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "Container._getAll",
+      "ranges": [{ "startOffset": 28774, "endOffset": 28850, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "Container._get",
+      "ranges": [
+        { "startOffset": 28884, "endOffset": 29478, "count": 1 },
+        { "startOffset": 29120, "endOffset": 29411, "count": 0 }
+      ],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "contextInterceptor",
+      "ranges": [{ "startOffset": 28993, "endOffset": 29031, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "Container._getButThrowIfAsync",
+      "ranges": [
+        { "startOffset": 29527, "endOffset": 29777, "count": 1 },
+        { "startOffset": 29652, "endOffset": 29746, "count": 0 }
+      ],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "Container._getAllArgs",
+      "ranges": [{ "startOffset": 29818, "endOffset": 30045, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "Container._getNotAllArgs",
+      "ranges": [{ "startOffset": 30089, "endOffset": 30409, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "Container._planAndResolve",
+      "ranges": [{ "startOffset": 30454, "endOffset": 30876, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 30511, "endOffset": 30868, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "Container._deactivateIfSingleton",
+      "ranges": [{ "startOffset": 30928, "endOffset": 31282, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "Container._deactivateSingletons",
+      "ranges": [{ "startOffset": 31333, "endOffset": 31694, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "Container._deactivateSingletonsAsync",
+      "ranges": [{ "startOffset": 31750, "endOffset": 32239, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "Container._propagateContainerDeactivationThenBindingAndPreDestroy",
+      "ranges": [{ "startOffset": 32324, "endOffset": 32607, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "Container._propagateContainerDeactivationThenBindingAndPreDestroyAsync",
+      "ranges": [{ "startOffset": 32697, "endOffset": 33496, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "Container._removeServiceFromDictionary",
+      "ranges": [{ "startOffset": 33554, "endOffset": 33846, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "Container._bindingDeactivationAndPreDestroy",
+      "ranges": [{ "startOffset": 33909, "endOffset": 34344, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "Container._bindingDeactivationAndPreDestroyAsync",
+      "ranges": [{ "startOffset": 34412, "endOffset": 35145, "count": 0 }],
+      "isBlockCoverage": false
+    }
+  ]
+}

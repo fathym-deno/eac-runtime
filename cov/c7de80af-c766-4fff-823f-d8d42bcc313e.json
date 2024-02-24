@@ -1,0 +1,41 @@
+{
+  "scriptId": "429",
+  "url": "file:///C:/Users/micha_8ygdgy8/AppData/Local/deno/npm/registry.npmjs.org/inversify/6.0.2/lib/syntax/binding_on_syntax.js",
+  "functions": [
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 0, "endOffset": 1098, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 1, "endOffset": 1097, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 194, "endOffset": 1033, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 454, "endOffset": 981, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "BindingOnSyntax",
+      "ranges": [{ "startOffset": 473, "endOffset": 549, "count": 3 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "BindingOnSyntax.onActivation",
+      "ranges": [{ "startOffset": 596, "endOffset": 746, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "BindingOnSyntax.onDeactivation",
+      "ranges": [{ "startOffset": 796, "endOffset": 948, "count": 0 }],
+      "isBlockCoverage": false
+    }
+  ]
+}

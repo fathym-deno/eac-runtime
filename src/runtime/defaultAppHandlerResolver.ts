@@ -3,6 +3,7 @@ import {
   creatOAuthConfig,
   djwt,
   EaCAIRAGChatProcessor,
+  EaCAzureOpenAIEmbeddingsDetails,
   EaCDFSProcessor,
   EaCOAuthProcessor,
   EaCProxyProcessor,
@@ -28,6 +29,8 @@ import { EaCRuntimeHandler } from './EaCRuntimeHandler.ts';
 import { DFSFileHandler } from './_exports.ts';
 import { isEaCAzureADB2CProviderDetails } from '../src.deps.ts';
 import { EAC_RUNTIME_DEV } from '../constants.ts';
+import { EaCAzureOpenAILLMDetails } from '../src.deps.ts';
+import { EaCAzureSearchAIVectorStoreDetails } from '../src.deps.ts';
 
 export const defaultAppHandlerResolver: (
   appProcCfg: EaCApplicationProcessorConfig,
@@ -119,22 +122,31 @@ export const defaultAppHandlerResolver: (
       }
     };
   } else if (isEaCAIRAGChatProcessor(appProcCfg.Application.Processor)) {
-    handler = (req, _ctx) => {
+    handler = (req, ctx) => {
       const processor = appProcCfg.Application
         .Processor as EaCAIRAGChatProcessor;
 
+      const embeddings = ctx.EaC.AIs!['core'].Embeddings![processor.EmbeddingsLookup]
+        .Details! as EaCAzureOpenAIEmbeddingsDetails;
+
+      const llm = ctx.EaC.AIs!['core'].LLMs![processor.LLMLookup]
+        .Details! as EaCAzureOpenAILLMDetails;
+
+      const vs = ctx.EaC.AIs!['core'].VectorStores![processor.VectorStoreLookup]
+        .Details! as EaCAzureSearchAIVectorStoreDetails;
+
       return aiRAGChatRequest(
         req,
-        processor.Endpoint,
-        processor.APIKey,
-        processor.DeploymentName,
-        processor.ModelName,
+        llm.Endpoint,
+        llm.APIKey,
+        llm.DeploymentName,
+        llm.ModelName,
         processor.Messages,
         processor.UseSSEFormat,
-        processor.InputParams,
-        processor.EmbeddingDeploymentName,
-        processor.SearchEndpoint,
-        processor.SearchAPIKey,
+        llm.InputParams,
+        embeddings.DeploymentName,
+        vs.Endpoint,
+        vs.APIKey,
       );
     };
   } else if (isEaCDFSProcessor(appProcCfg.Application.Processor)) {

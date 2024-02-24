@@ -1,0 +1,11 @@
+{
+  "scriptId": "312",
+  "url": "file:///C:/Users/micha_8ygdgy8/AppData/Local/deno/npm/registry.npmjs.org/reflect-metadata/0.2.1/Reflect.js",
+  "functions": [
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 0, "endOffset": 286, "count": 1 }],
+      "isBlockCoverage": true
+    }
+  ]
+}

@@ -1,0 +1,73 @@
+{
+  "scriptId": "431",
+  "url": "file:///C:/Users/micha_8ygdgy8/AppData/Local/deno/npm/registry.npmjs.org/inversify/6.0.2/lib/syntax/constraint_helpers.js",
+  "functions": [
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 0, "endOffset": 2844, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 1, "endOffset": 2843, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "",
+      "ranges": [
+        { "startOffset": 194, "endOffset": 2779, "count": 1 },
+        { "startOffset": 497, "endOffset": 581, "count": 0 },
+        { "startOffset": 760, "endOffset": 804, "count": 0 }
+      ],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 343, "endOffset": 495, "count": 0 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 500, "endOffset": 580, "count": 0 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 665, "endOffset": 758, "count": 0 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "__setModuleDefault",
+      "ranges": [{ "startOffset": 762, "endOffset": 804, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "__importStar",
+      "ranges": [
+        { "startOffset": 858, "endOffset": 1144, "count": 1 },
+        { "startOffset": 918, "endOffset": 1143, "count": 0 }
+      ],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "traverseAncerstors",
+      "ranges": [{ "startOffset": 1476, "endOffset": 1713, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "taggedConstraint",
+      "ranges": [{ "startOffset": 1789, "endOffset": 2078, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 1813, "endOffset": 2075, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "typeConstraint",
+      "ranges": [{ "startOffset": 2257, "endOffset": 2732, "count": 0 }],
+      "isBlockCoverage": false
+    }
+  ]
+}

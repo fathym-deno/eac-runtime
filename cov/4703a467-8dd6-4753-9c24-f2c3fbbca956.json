@@ -1,0 +1,16 @@
+{
+  "scriptId": "369",
+  "url": "https://deno.land/std@0.216.0/path/posix/join.ts",
+  "functions": [
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 0, "endOffset": 688, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "join",
+      "ranges": [{ "startOffset": 348, "endOffset": 687, "count": 0 }],
+      "isBlockCoverage": false
+    }
+  ]
+}

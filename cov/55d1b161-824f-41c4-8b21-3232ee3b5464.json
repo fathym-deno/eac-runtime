@@ -1,0 +1,116 @@
+{
+  "scriptId": "428",
+  "url": "file:///C:/Users/micha_8ygdgy8/AppData/Local/deno/npm/registry.npmjs.org/inversify/6.0.2/lib/syntax/binding_when_on_syntax.js",
+  "functions": [
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 0, "endOffset": 3539, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 1, "endOffset": 3538, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 194, "endOffset": 3474, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 521, "endOffset": 3414, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "BindingWhenOnSyntax",
+      "ranges": [{ "startOffset": 540, "endOffset": 804, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "BindingWhenOnSyntax.when",
+      "ranges": [{ "startOffset": 847, "endOffset": 935, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "BindingWhenOnSyntax.whenTargetNamed",
+      "ranges": [{ "startOffset": 990, "endOffset": 1077, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "BindingWhenOnSyntax.whenTargetIsDefault",
+      "ranges": [{ "startOffset": 1136, "endOffset": 1219, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "BindingWhenOnSyntax.whenTargetTagged",
+      "ranges": [{ "startOffset": 1275, "endOffset": 1375, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "BindingWhenOnSyntax.whenInjectedInto",
+      "ranges": [{ "startOffset": 1431, "endOffset": 1523, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "BindingWhenOnSyntax.whenParentNamed",
+      "ranges": [{ "startOffset": 1578, "endOffset": 1665, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "BindingWhenOnSyntax.whenParentTagged",
+      "ranges": [{ "startOffset": 1721, "endOffset": 1821, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "BindingWhenOnSyntax.whenAnyAncestorIs",
+      "ranges": [{ "startOffset": 1878, "endOffset": 1975, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "BindingWhenOnSyntax.whenNoAncestorIs",
+      "ranges": [{ "startOffset": 2031, "endOffset": 2127, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "BindingWhenOnSyntax.whenAnyAncestorNamed",
+      "ranges": [{ "startOffset": 2187, "endOffset": 2279, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "BindingWhenOnSyntax.whenAnyAncestorTagged",
+      "ranges": [{ "startOffset": 2340, "endOffset": 2445, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "BindingWhenOnSyntax.whenNoAncestorNamed",
+      "ranges": [{ "startOffset": 2504, "endOffset": 2595, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "BindingWhenOnSyntax.whenNoAncestorTagged",
+      "ranges": [{ "startOffset": 2655, "endOffset": 2759, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "BindingWhenOnSyntax.whenAnyAncestorMatches",
+      "ranges": [{ "startOffset": 2821, "endOffset": 2927, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "BindingWhenOnSyntax.whenNoAncestorMatches",
+      "ranges": [{ "startOffset": 2988, "endOffset": 3093, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "BindingWhenOnSyntax.onActivation",
+      "ranges": [{ "startOffset": 3145, "endOffset": 3233, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "BindingWhenOnSyntax.onDeactivation",
+      "ranges": [{ "startOffset": 3287, "endOffset": 3377, "count": 0 }],
+      "isBlockCoverage": false
+    }
+  ]
+}

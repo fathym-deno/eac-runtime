@@ -1,0 +1,16 @@
+{
+  "scriptId": "350",
+  "url": "https://deno.land/std@0.216.0/path/windows/join.ts",
+  "functions": [
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 0, "endOffset": 2408, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "join",
+      "ranges": [{ "startOffset": 443, "endOffset": 2407, "count": 0 }],
+      "isBlockCoverage": false
+    }
+  ]
+}
