@@ -1,4 +1,10 @@
-import { Container, djwt, initializeDenoKv, inject, injectable } from '../src.deps.ts';
+import {
+  IoCContainer,
+  djwt,
+  initializeDenoKv,
+  inject,
+  injectable,
+} from '../src.deps.ts';
 import { EaCDenoKVDatabaseDetails } from '../src.deps.ts';
 import { EaCApplicationAsCode } from '../src.deps.ts';
 import { EaCProjectAsCode } from '../src.deps.ts';
@@ -14,66 +20,14 @@ import { EaCRuntimeContext } from './EaCRuntimeContext.ts';
 import { EaCRuntimeEaC } from './EaCRuntimeEaC.ts';
 import { EaCRuntimeHandler } from './EaCRuntimeHandler.ts';
 
-export interface Warrior {
-  fight(): string;
-  sneak(): string;
-}
-
-export interface Weapon {
-  hit(): string;
-}
-
-export interface ThrowableWeapon {
-  throw(): string;
-}
-
-const TYPES = {
-  Warrior: Symbol.for('Warrior'),
-  Weapon: Symbol.for('Weapon'),
-  ThrowableWeapon: Symbol.for('ThrowableWeapon'),
-};
-
-@injectable()
-class Katana implements Weapon {
-  public hit() {
-    return 'cut!';
-  }
-}
-
-@injectable()
-class Shuriken implements ThrowableWeapon {
-  public throw() {
-    return 'hit!';
-  }
-}
-
-@injectable()
-class Ninja implements Warrior {
-  private _katana: Weapon;
-  private _shuriken: ThrowableWeapon;
-
-  public constructor(
-    @inject(TYPES.Weapon) katana: Weapon,
-    @inject(TYPES.ThrowableWeapon) shuriken: ThrowableWeapon,
-  ) {
-    this._katana = katana;
-    this._shuriken = shuriken;
-  }
-
-  public fight() {
-    return this._katana.hit();
-  }
-  public sneak() {
-    return this._shuriken.throw();
-  }
-}
-
 export class DefaultEaCRuntime implements EaCRuntime {
   protected applicationGraph?: Record<string, EaCApplicationProcessorConfig[]>;
 
   protected databases: Record<string, Promise<unknown>>;
 
   protected eac?: EaCRuntimeEaC;
+
+  protected ioc: IoCContainer;
 
   protected projectGraph?: EaCProjectProcessorConfig[];
 
@@ -82,29 +36,12 @@ export class DefaultEaCRuntime implements EaCRuntime {
   constructor(protected config: EaCRuntimeConfig) {
     this.databases = {};
 
+    this.ioc = new IoCContainer();
+
     this.revision = Date.now();
   }
 
   public async Configure(): Promise<void> {
-    const myContainer = new Container();
-    myContainer.bind<Warrior>(TYPES.Warrior).to(Ninja);
-    myContainer.bind<Weapon>(TYPES.Weapon).to(Katana);
-    myContainer.bind<ThrowableWeapon>(TYPES.ThrowableWeapon).to(Shuriken);
-
-    const ninja = myContainer.get<Warrior>(TYPES.Warrior);
-
-    if (ninja.fight() !== 'cut!') {
-      throw new Error('No Cut');
-    }
-
-    if (ninja.sneak() !== 'hit!') {
-      throw new Error('No hit');
-    }
-
-    console.log(ninja);
-    console.log(ninja.fight());
-    console.log(ninja.sneak());
-
     const eacApiKey = Deno.env.get('EAC_API_KEY');
 
     if (eacApiKey) {
@@ -120,7 +57,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
         this.eac = mergeWithArrays(this.config.EaC || {}, eac);
       } catch (err) {
         console.error(
-          'Unable to connect to the EaC service, falling back to local config.',
+          'Unable to connect to the EaC service, falling back to local config.'
         );
         console.error(err);
 
@@ -130,13 +67,13 @@ export class DefaultEaCRuntime implements EaCRuntime {
       this.eac = this.config.EaC;
     } else {
       throw new Error(
-        'An EaC must be provided in the config or via a connection to an EaC Service with the EAC_API_KEY environment variable.',
+        'An EaC must be provided in the config or via a connection to an EaC Service with the EAC_API_KEY environment variable.'
       );
     }
 
     if (!this.eac!.Projects) {
       throw new Error(
-        'The EaC must provide a set of projects to use in the runtime.',
+        'The EaC must provide a set of projects to use in the runtime.'
       );
     }
 
@@ -151,7 +88,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
 
   public Handle(
     request: Request,
-    info: Deno.ServeHandlerInfo,
+    info: Deno.ServeHandlerInfo
   ): Response | Promise<Response> {
     const projProcessorConfig = this.projectGraph!.find((node) => {
       return node.Patterns.some((pattern) => pattern.test(request.url));
@@ -178,7 +115,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
       this.applicationGraph = this.projectGraph!.reduce(
         (appGraph, projProcCfg) => {
           const appLookups = Object.keys(
-            projProcCfg.Project.ApplicationLookups || {},
+            projProcCfg.Project.ApplicationLookups || {}
           );
 
           appGraph[projProcCfg.ProjectLookup] = appLookups
@@ -187,11 +124,12 @@ export class DefaultEaCRuntime implements EaCRuntime {
 
               if (!app) {
                 throw new Error(
-                  `The '${appLookup}' app configured for the project does not exist in the EaC Applications configuration.`,
+                  `The '${appLookup}' app configured for the project does not exist in the EaC Applications configuration.`
                 );
               }
 
-              const lookupCfg = projProcCfg.Project.ApplicationLookups[appLookup];
+              const lookupCfg =
+                projProcCfg.Project.ApplicationLookups[appLookup];
 
               return {
                 Application: app,
@@ -204,7 +142,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
               const pipeline: EaCRuntimeHandler[] = this.constructPipeline(
                 projProcCfg.Project,
                 appProcCfg.Application,
-                this.eac!.Modifiers || {},
+                this.eac!.Modifiers || {}
               );
 
               pipeline.push(this.establishApplicationHandler(appProcCfg));
@@ -220,7 +158,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
 
           return appGraph;
         },
-        {} as Record<string, EaCApplicationProcessorConfig[]>,
+        {} as Record<string, EaCApplicationProcessorConfig[]>
       );
     }
   }
@@ -271,21 +209,28 @@ export class DefaultEaCRuntime implements EaCRuntime {
           const dbDetails = db.Details as EaCDenoKVDatabaseDetails;
 
           console.log(
-            `Inititializing DenoKV database: ${dbDetails.DenoKVPath || '$default'}`,
+            `Inititializing DenoKV database: ${
+              dbDetails.DenoKVPath || '$default'
+            }`
           );
 
           initializeDenoKv(dbDetails.DenoKVPath).then((kv) => {
             console.log(
-              `Inititialized DenoKV database: ${dbDetails.DenoKVPath || '$default'}`,
+              `Inititialized DenoKV database: ${
+                dbDetails.DenoKVPath || '$default'
+              }`
             );
 
             resolve(kv);
           });
         });
 
+        console.log(dbInit instanceof Promise);
+
         dbInit.then();
 
         this.databases[dbLookup] = dbInit;
+        this.ioc.bind<Deno.Kv>(`EaC.Databases:${dbLookup}`).to(await dbInit);
       }
     });
   }
@@ -293,7 +238,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
   protected constructPipeline(
     project: EaCProjectAsCode,
     application: EaCApplicationAsCode,
-    modifiers: Record<string, EaCModifierAsCode>,
+    modifiers: Record<string, EaCModifierAsCode>
   ): EaCRuntimeHandler[] {
     const pipelineModifierLookups: string[] = [];
 
@@ -325,31 +270,34 @@ export class DefaultEaCRuntime implements EaCRuntime {
   }
 
   protected establishApplicationHandler(
-    appProcessorConfig: EaCApplicationProcessorConfig,
+    appProcessorConfig: EaCApplicationProcessorConfig
   ): EaCRuntimeHandler {
     return this.config.ApplicationHandlerResolver(appProcessorConfig);
   }
 
   protected establishProjectHandler(
-    projProcessorConfig: EaCProjectProcessorConfig,
+    projProcessorConfig: EaCProjectProcessorConfig
   ): EaCRuntimeHandler {
     return (req, ctx) => {
       const appProcessorConfig = this.applicationGraph![
         projProcessorConfig.ProjectLookup
       ].find((node) => {
-        const appLookupConfig = projProcessorConfig.Project.ApplicationLookups[
-          node.ApplicationLookup
-        ];
+        const appLookupConfig =
+          projProcessorConfig.Project.ApplicationLookups[
+            node.ApplicationLookup
+          ];
 
-        const isAllowedMethod = !appLookupConfig.AllowedMethods ||
+        const isAllowedMethod =
+          !appLookupConfig.AllowedMethods ||
           appLookupConfig.AllowedMethods.length === 0 ||
           appLookupConfig.AllowedMethods.some(
-            (am) => am.toLowerCase() === req.method.toLowerCase(),
+            (am) => am.toLowerCase() === req.method.toLowerCase()
           );
 
-        const matchesRegex = !appLookupConfig.UserAgentRegex ||
+        const matchesRegex =
+          !appLookupConfig.UserAgentRegex ||
           new RegExp(appLookupConfig.UserAgentRegex).test(
-            req.headers.get('user-agent') || '',
+            req.headers.get('user-agent') || ''
           );
 
         // TODO(mcgear): How to account for IsPrivate/IsTriggerSignIn during application resolution...
@@ -361,7 +309,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
 
       if (!appProcessorConfig) {
         throw new Error(
-          `No application is configured for '${req.url}' in project '${projProcessorConfig.ProjectLookup}'.`,
+          `No application is configured for '${req.url}' in project '${projProcessorConfig.ProjectLookup}'.`
         );
       }
 
@@ -370,7 +318,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
       return this.executePipeline(
         ctx.ApplicationProcessorConfig.Handlers,
         req,
-        ctx,
+        ctx
       );
     };
   }
@@ -379,7 +327,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
     pipeline: EaCRuntimeHandler[],
     request: Request,
     ctx: EaCRuntimeContext,
-    index = -1,
+    index = -1
   ): Response | Promise<Response> {
     ctx.next = async (req) => {
       req ??= request;

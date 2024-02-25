@@ -1,0 +1,50 @@
+{
+  "scriptId": "309",
+  "url": "file:///C:/Users/micha_8ygdgy8/Fathym/OpenSource/fathym-deno/eac-runtime/deps.ts",
+  "functions": [
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 0, "endOffset": 2133, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "<instance_members_initializer>",
+      "ranges": [{ "startOffset": 167, "endOffset": 2132, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "ServiceRegistry",
+      "ranges": [{ "startOffset": 194, "endOffset": 273, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "ResolveSingleton",
+      "ranges": [{ "startOffset": 276, "endOffset": 445, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "Resolve",
+      "ranges": [{ "startOffset": 448, "endOffset": 1033, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "RegisterSingleton",
+      "ranges": [{ "startOffset": 1036, "endOffset": 1214, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "Register",
+      "ranges": [{ "startOffset": 1217, "endOffset": 1880, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "Symbol",
+      "ranges": [
+        { "startOffset": 1883, "endOffset": 2130, "count": 2 },
+        { "startOffset": 1927, "endOffset": 1978, "count": 1 },
+        { "startOffset": 2056, "endOffset": 2107, "count": 1 }
+      ],
+      "isBlockCoverage": true
+    }
+  ]
+}

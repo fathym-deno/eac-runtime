@@ -1,0 +1,16 @@
+{
+  "scriptId": "332",
+  "url": "https://deno.land/std@0.216.0/path/resolve.ts",
+  "functions": [
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 0, "endOffset": 500, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "resolve",
+      "ranges": [{ "startOffset": 376, "endOffset": 499, "count": 0 }],
+      "isBlockCoverage": false
+    }
+  ]
+}

@@ -1,28 +1,35 @@
 import {
-  Container,
+  ServiceRegistry,
   assertEquals,
   assertInstanceOf,
-  inject,
-  injectable,
 } from '../test.deps.ts';
 
 Deno.test('IoC Workbench', async (t) => {
-  const myContainer = new Container();
-  myContainer.bind<Warrior>(TYPES.Warrior).to(Ninja);
-  myContainer.bind<Weapon>(TYPES.Weapon).to(Katana);
-  myContainer.bind<ThrowableWeapon>(TYPES.ThrowableWeapon).to(Shuriken);
+  await t.step('Singleton - No Symbol - Unamed- Default', async () => {
+    const svcReg = new ServiceRegistry();
 
-  await t.step('Type Resolution', async () => {
-    const ninja = myContainer.get<Warrior>(TYPES.Warrior);
+    svcReg.RegisterSingleton(TestDefaultClass);
 
-    assertEquals(ninja.fight(), 'cut!'); // true
-    assertEquals(ninja.sneak(), 'hit!'); // true
+    const test = svcReg.ResolveSingleton(
+      TestDefaultClass
+    );
+
+    assertEquals(test.Hello, 'World');
   });
 });
 
+export class TestDefaultClass {
+  public Hello: string = 'World';
+}
+
+export class TestParamsClass {
+  constructor(public Hello: string) {}
+}
+
 export interface Warrior {
   fight(): string;
-  sneak(): string;
+
+  // sneak(): string;
 }
 
 export interface Weapon {
@@ -33,43 +40,30 @@ export interface ThrowableWeapon {
   throw(): string;
 }
 
-const TYPES = {
-  Warrior: Symbol.for('Warrior'),
-  Weapon: Symbol.for('Weapon'),
-  ThrowableWeapon: Symbol.for('ThrowableWeapon'),
-};
-
-@injectable()
 class Katana implements Weapon {
   public hit() {
     return 'cut!';
   }
 }
 
-@injectable()
 class Shuriken implements ThrowableWeapon {
   public throw() {
     return 'hit!';
   }
 }
 
-@injectable()
 class Ninja implements Warrior {
-  private _katana: Weapon;
-  private _shuriken: ThrowableWeapon;
-
-  public constructor(
-    @inject(TYPES.Weapon) katana: Weapon,
-    @inject(TYPES.ThrowableWeapon) shuriken: ThrowableWeapon
-  ) {
-    this._katana = katana;
-    this._shuriken = shuriken;
-  }
+  // public constructor(
+  //   proteckatana: Weapon,
+  //   shuriken: ThrowableWeapon
+  // ) {}
 
   public fight() {
-    return this._katana.hit();
+    return 'cut!';
+    // return this.katana.hit();
   }
-  public sneak() {
-    return this._shuriken.throw();
-  }
+
+  // public sneak() {
+  //   return this.shuriken.throw();
+  // }
 }

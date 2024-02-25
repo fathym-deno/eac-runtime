@@ -1,0 +1,36 @@
+{
+  "scriptId": "307",
+  "url": "file:///C:/Users/micha_8ygdgy8/Fathym/OpenSource/fathym-deno/eac-runtime/tests/ioc/bench.ts",
+  "functions": [
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 0, "endOffset": 734, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 92, "endOffset": 448, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 154, "endOffset": 444, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "hit",
+      "ranges": [{ "startOffset": 468, "endOffset": 498, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "throw",
+      "ranges": [{ "startOffset": 520, "endOffset": 552, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "fight",
+      "ranges": [{ "startOffset": 668, "endOffset": 731, "count": 1 }],
+      "isBlockCoverage": true
+    }
+  ]
+}

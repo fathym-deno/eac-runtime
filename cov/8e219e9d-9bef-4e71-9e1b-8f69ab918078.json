@@ -1,0 +1,16 @@
+{
+  "scriptId": "356",
+  "url": "https://deno.land/std@0.216.0/path/windows/glob_to_regexp.ts",
+  "functions": [
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 0, "endOffset": 3326, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "globToRegExp",
+      "ranges": [{ "startOffset": 3230, "endOffset": 3325, "count": 0 }],
+      "isBlockCoverage": false
+    }
+  ]
+}
