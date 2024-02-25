@@ -20,7 +20,7 @@ export type IoCServiceResolutions =
   | Promise<IoCServiceConstructed>
   | (() => IoCServiceConstructed | Promise<IoCServiceConstructed>);
 
-export type IoCServiceResolver<T> = (svcs: IoCServices) => T | Promise<T>;
+export type IoCServiceResolver<T> = (ioc: IoCContainer) => T | Promise<T>;
 
 export type IoCServices = Map<Symbol, Map<string, IoCServiceResolutions>>;
 
@@ -100,7 +100,7 @@ export class IoCContainer {
     if (typeof instanceOptions !== 'function') {
       options = instanceOptions as IoCServiceOptions;
 
-      instance = (_svcs) =>
+      instance = (_ioc) =>
         options?.Lazy
           ? new Promise<T>((resolve) => {
               return resolve(new clazz());
@@ -114,7 +114,7 @@ export class IoCContainer {
 
     if (options?.Lifetime === 'transient') {
       this.services.get(symbol)!.set(name, () => {
-        return instance(this.services) as IoCServiceConstructed;
+        return instance(this) as IoCServiceConstructed;
       });
     } else if (options?.Lifetime === 'scoped') {
       const scope = new AbortController();
@@ -125,13 +125,13 @@ export class IoCContainer {
 
       this.services
         .get(symbol)!
-        .set(name, instance(this.services) as IoCServiceConstructed);
+        .set(name, instance(this) as IoCServiceConstructed);
 
       return () => scope.abort();
     } else {
       this.services
         .get(symbol)!
-        .set(name, instance(this.services) as IoCServiceConstructed);
+        .set(name, instance(this) as IoCServiceConstructed);
     }
   }
 

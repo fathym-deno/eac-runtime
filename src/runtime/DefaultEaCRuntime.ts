@@ -1,10 +1,30 @@
-import { djwt, initializeDenoKv, IoCContainer } from '../src.deps.ts';
-import { EaCDenoKVDatabaseDetails } from '../src.deps.ts';
-import { EaCApplicationAsCode } from '../src.deps.ts';
-import { EaCProjectAsCode } from '../src.deps.ts';
-import { EaCModifierAsCode } from '../src.deps.ts';
-import { isEaCDenoKVDatabaseDetails } from '../src.deps.ts';
-import { loadEaCSvc, mergeWithArrays } from '../src.deps.ts';
+import {
+  AzureAISearchVectorStore,
+  AzureChatOpenAI,
+  AzureOpenAIEmbeddings,
+  BaseLanguageModel,
+  djwt,
+  EaCApplicationAsCode,
+  EaCAzureOpenAIEmbeddingsDetails,
+  EaCAzureOpenAILLMDetails,
+  EaCAzureSearchAIVectorStoreDetails,
+  EaCDenoKVDatabaseDetails,
+  EaCModifierAsCode,
+  EaCProjectAsCode,
+  EaCWatsonXLLMDetails,
+  Embeddings,
+  initializeDenoKv,
+  IoCContainer,
+  isEaCAzureOpenAIEmbeddingsDetails,
+  isEaCAzureOpenAILLMDetails,
+  isEaCAzureSearchAIVectorStoreDetails,
+  isEaCDenoKVDatabaseDetails,
+  isEaCWatsonXLLMDetails,
+  loadEaCSvc,
+  mergeWithArrays,
+  VectorStore,
+  WatsonxAI,
+} from '../src.deps.ts';
 import { EaCRuntimeConfig } from './config/EaCRuntimeConfig.ts';
 import { defaultModifierMiddlewareResolver } from './defaultModifierMiddlewareResolver.ts';
 import { EaCApplicationProcessorConfig } from './EaCApplicationProcessorConfig.ts';
@@ -17,8 +37,6 @@ import { EaCRuntimeHandler } from './EaCRuntimeHandler.ts';
 export class DefaultEaCRuntime implements EaCRuntime {
   protected applicationGraph?: Record<string, EaCApplicationProcessorConfig[]>;
 
-  // protected databases: Record<string, Promise<unknown>>;
-
   protected eac?: EaCRuntimeEaC;
 
   protected ioc: IoCContainer;
@@ -28,8 +46,6 @@ export class DefaultEaCRuntime implements EaCRuntime {
   protected revision: number;
 
   constructor(protected config: EaCRuntimeConfig) {
-    // this.databases = {};
-
     this.ioc = new IoCContainer();
 
     this.revision = Date.now();
@@ -73,7 +89,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
 
     this.revision = Date.now();
 
-    this.configureDatabases();
+    this.configureEaCServices();
 
     this.buildProjectGraph();
 
@@ -94,7 +110,6 @@ export class DefaultEaCRuntime implements EaCRuntime {
 
     const resp = projProcessorConfig.Handler(request, {
       Config: this.config,
-      // Databases: this.databases,
       EaC: this.eac,
       Info: info,
       IoC: this.ioc,
@@ -192,38 +207,148 @@ export class DefaultEaCRuntime implements EaCRuntime {
     }
   }
 
-  protected configureDatabases(): void {
+  protected configureEaCAI(): void {
+    const aiLookups = Object.keys(this.eac!.AIs || {});
+
+    aiLookups.forEach((aiLookup) => {
+      const ai = this.eac!.AIs![aiLookup];
+
+      const llmLookups = Object.keys(ai.LLMs || {});
+
+      llmLookups.forEach((llmLookup) => {
+        const llm = ai.LLMs![llmLookup];
+
+        if (isEaCAzureOpenAILLMDetails(llm.Details)) {
+          const llmDetails = llm.Details as EaCAzureOpenAILLMDetails;
+
+          this.ioc.Register(
+            AzureChatOpenAI,
+            () =>
+              new AzureChatOpenAI({
+                azureOpenAIEndpoint: llmDetails.Endpoint,
+                azureOpenAIApiKey: llmDetails.APIKey,
+                azureOpenAIEmbeddingsApiDeploymentName: llmDetails.DeploymentName,
+                modelName: llmDetails.ModelName,
+                temperature: 0.7,
+                // maxTokens: 1000,
+                maxRetries: 5,
+                verbose: llmDetails.Verbose,
+                streaming: llmDetails.Streaming,
+                ...(llmDetails.InputParams || {}),
+              }),
+            {
+              Lazy: true,
+              Name: `${aiLookup}|${llmLookup}`,
+              Type: this.ioc.Symbol(BaseLanguageModel.name),
+            },
+          );
+        } else if (isEaCWatsonXLLMDetails(llm.Details)) {
+          const llmDetails = llm.Details as EaCWatsonXLLMDetails;
+
+          this.ioc.Register(
+            WatsonxAI,
+            () =>
+              new WatsonxAI({
+                ibmCloudApiKey: llmDetails.APIKey,
+                projectId: llmDetails.ProjectID,
+                modelId: llmDetails.ModelID,
+                modelParameters: llmDetails.ModelParameters ?? {},
+                verbose: llmDetails.Verbose,
+              }),
+            {
+              Lazy: true,
+              Name: `${aiLookup}|${llmLookup}`,
+              Type: this.ioc.Symbol(BaseLanguageModel.name),
+            },
+          );
+        }
+      });
+
+      const embeddingsLookups = Object.keys(ai.Embeddings || {});
+
+      embeddingsLookups.forEach((embeddingsLookup) => {
+        const embeddings = ai.Embeddings![embeddingsLookup];
+
+        if (isEaCAzureOpenAIEmbeddingsDetails(embeddings.Details)) {
+          const embeddingsDetails = embeddings.Details as EaCAzureOpenAIEmbeddingsDetails;
+
+          this.ioc.Register(
+            AzureOpenAIEmbeddings,
+            () =>
+              new AzureOpenAIEmbeddings({
+                azureOpenAIEndpoint: embeddingsDetails.Endpoint,
+                azureOpenAIApiKey: embeddingsDetails.APIKey,
+                azureOpenAIEmbeddingsApiDeploymentName: embeddingsDetails.DeploymentName,
+              }),
+            {
+              Lazy: true,
+              Name: `${aiLookup}|${embeddingsLookup}`,
+              Type: this.ioc.Symbol(Embeddings.name),
+            },
+          );
+        }
+      });
+
+      const vectorStoreLookups = Object.keys(ai.VectorStores || {});
+
+      vectorStoreLookups.forEach((vectorStoreLookup) => {
+        const vectorStore = ai.VectorStores![vectorStoreLookup];
+
+        if (isEaCAzureSearchAIVectorStoreDetails(vectorStore.Details)) {
+          const vectorStoreDetails = vectorStore.Details as EaCAzureSearchAIVectorStoreDetails;
+
+          this.ioc.Register(
+            AzureAISearchVectorStore,
+            async (ioc) =>
+              new AzureAISearchVectorStore(
+                await ioc.Resolve<Embeddings>(
+                  ioc.Symbol(Embeddings.name),
+                  `${aiLookup}|${vectorStoreDetails.EmbeddingsLookup}`,
+                ),
+                {
+                  endpoint: vectorStoreDetails.Endpoint,
+                  key: vectorStoreDetails.APIKey,
+                  search: {
+                    type: vectorStoreDetails.QueryType,
+                  },
+                },
+              ),
+            {
+              Lazy: true,
+              Name: `${aiLookup}|${vectorStoreLookup}`,
+              Type: this.ioc.Symbol(VectorStore.name),
+            },
+          );
+        }
+      });
+    });
+  }
+
+  protected configureEaCDatabases(): void {
     const dbLookups = Object.keys(this.eac!.Databases || {});
 
     dbLookups.forEach((dbLookup) => {
       const db = this.eac!.Databases![dbLookup];
 
       if (isEaCDenoKVDatabaseDetails(db.Details)) {
-        const dbInit = new Promise<Deno.Kv>((resolve) => {
-          const dbDetails = db.Details as EaCDenoKVDatabaseDetails;
+        const dbDetails = db.Details as EaCDenoKVDatabaseDetails;
 
-          console.log(
-            `Inititializing DenoKV database: ${dbDetails.DenoKVPath || '$default'}`,
-          );
-
-          initializeDenoKv(dbDetails.DenoKVPath).then((kv) => {
-            console.log(
-              `Inititialized DenoKV database: ${dbDetails.DenoKVPath || '$default'}`,
-            );
-
-            resolve(kv);
-          });
-        });
-
-        this.ioc.Register<Deno.Kv>(
+        this.ioc.Register(
           Deno.Kv,
-          () => dbInit,
+          () => initializeDenoKv(dbDetails.DenoKVPath),
           {
+            Lazy: true,
             Name: dbLookup,
           },
         );
       }
     });
+  }
+
+  protected configureEaCServices(): void {
+    this.configureEaCAI();
+
+    this.configureEaCDatabases();
   }
 
   protected constructPipeline(

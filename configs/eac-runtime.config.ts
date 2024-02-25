@@ -1,5 +1,6 @@
 import {
-  EaCAIRAGChatProcessor,
+  AzureAISearchQueryType,
+  EaCAIChatProcessor,
   EaCAzureADB2CProviderDetails,
   EaCDenoKVCacheModifierDetails,
   EaCDenoKVDatabaseDetails,
@@ -12,6 +13,7 @@ import {
   EaCProxyProcessor,
   EaCRedirectProcessor,
   EaCTracingModifierDetails,
+  EaCWatsonXLLMDetails,
 } from '../src/src.deps.ts';
 import { defineEaCConfig } from '../src/runtime/config/defineEaCConfig.ts';
 import { EaCAzureSearchAIVectorStoreDetails } from '../src/src.deps.ts';
@@ -153,6 +155,14 @@ export default defineEaCConfig({
           Description: 'The chat used to display the main dashboard',
         },
         Processor: {
+          AILookup: 'core',
+          DefaultInput: {
+            input: 'Tell me about Fathym Inc',
+            context: '',
+          },
+          DefaultRAGInput: {
+            input: 'Tell me about Fathym Inc',
+          },
           EmbeddingsLookup: 'azureOpenAI',
           LLMLookup: 'azureOpenAI',
           VectorStoreLookup: 'azureSearchAI',
@@ -164,7 +174,7 @@ export default defineEaCConfig({
             ],
             ['human', '{input}'],
           ],
-        } as EaCAIRAGChatProcessor,
+        } as EaCAIChatProcessor,
       },
       dashboard: {
         Details: {
@@ -404,7 +414,24 @@ export default defineEaCConfig({
               Endpoint: Deno.env.get('AZURE_OPENAI_ENDPOINT')!,
               DeploymentName: 'gpt-4-turbo',
               ModelName: 'gpt-4',
+              Streaming: true,
+              Verbose: false,
             } as EaCAzureOpenAILLMDetails,
+          },
+          watsonX: {
+            Details: {
+              Name: 'WatsonX LLM',
+              Description: 'The LLM for interacting with WatsonX.',
+              APIKey: Deno.env.get('IBM_CLOUD_API_KEY')!,
+              ProjectID: Deno.env.get('IBM_WATSON_X_PROJECT_ID')!,
+              ModelID: 'meta-llama/llama-2-70b-chat',
+              ModelParameters: {
+                max_new_tokens: 100,
+                min_new_tokens: 0,
+                stop_sequences: [],
+                repetition_penalty: 1,
+              },
+            } as EaCWatsonXLLMDetails,
           },
         },
         VectorStores: {
@@ -415,6 +442,8 @@ export default defineEaCConfig({
                 'The Vector Store for interacting with Azure Search AI.',
               APIKey: Deno.env.get('AZURE_AI_SEARCH_KEY')!,
               Endpoint: Deno.env.get('AZURE_AI_SEARCH_ENDPOINT')!,
+              EmbeddingsLookup: 'azureOpenAI',
+              QueryType: AzureAISearchQueryType.SimilarityHybrid,
             } as EaCAzureSearchAIVectorStoreDetails,
           },
         },

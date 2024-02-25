@@ -9,8 +9,6 @@ export type EaCRuntimeContext = {
 
   Config: EaCRuntimeConfig;
 
-  // Databases: Record<string, unknown>;
-
   EaC: EaCRuntimeEaC;
 
   Info: Deno.ServeHandlerInfo;
