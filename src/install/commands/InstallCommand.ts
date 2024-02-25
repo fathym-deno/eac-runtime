@@ -1,5 +1,4 @@
 import { exists, path } from '../install.deps.ts';
-import { loadEverythingAsCodeMetaUrl } from 'https://deno.land/x/fathym_everything_as_code@v0.0.335-integration/src/utils/library.helpers.ts';
 import { EaCRuntimeInstallerFlags } from '../../../install.ts';
 import { Command } from './Command.ts';
 
