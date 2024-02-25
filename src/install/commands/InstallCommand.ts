@@ -1,7 +1,6 @@
-import { exists, path } from '../install.deps.ts';
+import { exists, loadEverythingAsCodeMetaUrl, path } from '../install.deps.ts';
 import { EaCRuntimeInstallerFlags } from '../../../install.ts';
 import { Command } from './Command.ts';
-import { loadEverythingAsCodeMetaUrl } from '../../src.deps.ts';
 
 export class InstallCommand implements Command {
   protected filesToCreate: [string, string][];
