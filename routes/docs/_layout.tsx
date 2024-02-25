@@ -2,7 +2,7 @@ import { JSX } from 'preact';
 import { EaCRuntimeHandler } from '@fathym/eac/runtime';
 
 export const middleware: EaCRuntimeHandler[] = [
-  (req, ctx) => {
+  (_req, ctx) => {
     return ctx.next();
   },
 ];
