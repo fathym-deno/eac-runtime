@@ -1,4 +1,5 @@
-import { exists, loadEverythingAsCodeMetaUrl, path } from '../install.deps.ts';
+import { exists, path } from '../install.deps.ts';
+import { loadEverythingAsCodeMetaUrl } from 'https://deno.land/x/fathym_everything_as_code@v0.0.335-integration/src/utils/library.helpers.ts';
 import { EaCRuntimeInstallerFlags } from '../../../install.ts';
 import { Command } from './Command.ts';
 
@@ -77,7 +78,7 @@ export class InstallCommand implements Command {
       },
       exclude: ['**/_eac/*'],
       imports: {
-        '@fathym/eac': loadEverythingAsCodeMetaUrl('/mod.ts'),
+        '@fathym/eac': loadEverythingAsCodeMetaUrl('../../mod.ts'),
         '@fathym/eac/runtime': import.meta.resolve('../../../mod.ts'),
       } as Record<string, string>,
       unstable: ['kv'],
