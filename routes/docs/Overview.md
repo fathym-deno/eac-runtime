@@ -29,8 +29,8 @@ The EaC JSON configuration allows you to specify a wide range of settings, inclu
 ## Getting Started
 To get started with the EaC Runtime, follow these steps:
 
-1. (https://docs.deno.com/runtime/manual/getting_started/installation)[Install DenoJS] on your system if you haven't already done so.
-2. (getting-started/install)[Create an EaC Runtime project] and setup the configuration file for your micro frontend application.
+1. [Install DenoJS](https://docs.deno.com/runtime/manual/getting_started/installation) on your system if you haven't already done so.
+2. [Create an EaC Runtime project](./docs/getting-started/install) and setup the configuration file for your micro frontend application.
 3. Configure the necessary settings within the EaC JSON file according to your requirements, such as redirects, proxies, OAuth, generative AI chat, and hosting configuration.
 4. Save the EaC JSON configuration file in a location accessible to your DenoJS project.
 5. Execute the EaC Runtime using a command line interface, providing the path to your EaC JSON configuration file as a parameter.
