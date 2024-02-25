@@ -43,7 +43,7 @@ export default defineEaCConfig({
         ModifierLookups: ['keepAlive'],
         ApplicationLookups: {
           apiProxy: {
-            PathPattern: '/api*',
+            PathPattern: '/api-reqres*',
             Priority: 200,
             IsPrivate: true,
             IsTriggerSignIn: true,
@@ -93,7 +93,7 @@ export default defineEaCConfig({
             IsTriggerSignIn: true,
           },
           chat: {
-            PathPattern: '/chat*',
+            PathPattern: '/api/chat',
             Priority: 300,
             // IsPrivate: true,
             // IsTriggerSignIn: true,
