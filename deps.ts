@@ -1,162 +1,141 @@
 export * as colors from 'https://deno.land/std@0.216.0/fmt/colors.ts';
 export * as path from 'https://deno.land/std@0.216.0/path/mod.ts';
 
-export type ServiceConstructed = { constructor: Function };
+export type IoCServiceConstructed = { constructor: Function };
 
-export type ServiceConstructor<T> = { new (...args: any[]): T };
+export type IoCServiceConstructor<T> = { new (...args: any[]): T };
 
-export type ServiceContainer = Map<
-  Symbol,
-  Map<
-    string,
-    | ServiceConstructed
-    | Promise<ServiceConstructed>
-    | (() => ServiceConstructed | Promise<ServiceConstructed>)
-  >
->;
+export type IoCServiceOptions = {
+  Lazy?: boolean;
 
-export type ServiceResolver =
-  | object
-  | Promise<object>
-  | (() => object | Promise<object>);
+  Lifetime?: 'transient' | 'scoped';
+
+  Name?: string;
+
+  Type?: Symbol;
+};
+
+export type IoCServiceResolutions =
+  | IoCServiceConstructed
+  | Promise<IoCServiceConstructed>
+  | (() => IoCServiceConstructed | Promise<IoCServiceConstructed>);
+
+export type IoCServiceResolver<T> = (svcs: IoCServices) => T | Promise<T>;
+
+export type IoCServices = Map<Symbol, Map<string, IoCServiceResolutions>>;
 
 // export type ServiceResult<T extends ServiceConstructor> = T | Promise<T>;
 
-export class ServiceRegistry {
-  protected services: ServiceContainer;
+export class IoCContainer {
+  protected services: IoCServices;
 
-  protected symbols: Map<string, Symbol>;
+  protected symbols: Map<string, symbol>;
 
   constructor() {
-    this.services = new Map<
-      Symbol,
-      Map<string, object | Promise<object> | (() => object | Promise<object>)>
-    >();
+    this.services = new Map<symbol, Map<string, IoCServiceResolutions>>();
 
-    this.symbols = new Map<string, Symbol>();
+    this.symbols = new Map<string, symbol>();
   }
 
-  public ResolveSingleton<T>(ctor: ServiceConstructor<T>): T {
-    const symbol = this.Symbol(ctor.name);
+  public async Resolve<T>(ctor: IoCServiceConstructor<T>): Promise<T>;
 
-    const name = '$default';
+  public async Resolve<T>(
+    ctor: IoCServiceConstructor<T>,
+    name: string
+  ): Promise<T>;
 
-    const svc = this.services.get(symbol)!.get(name)!;
+  public async Resolve<T>(symbol: symbol): Promise<T>;
+
+  public async Resolve<T>(symbol: symbol, name: string): Promise<T>;
+
+  public async Resolve<T>(
+    ctorSymbol: IoCServiceConstructor<T> | symbol,
+    name?: string
+  ): Promise<T> {
+    let [symbol] = [ctorSymbol as symbol];
+
+    if (typeof ctorSymbol !== 'symbol') {
+      symbol = this.Symbol(ctorSymbol.name);
+    }
+
+    name ??= '$default';
+
+    if (!this.services.get(symbol)!.has(name)) {
+      throw new Deno.errors.NotFound(
+        `No Service for symbol '${symbol.description}' with name '${name}' has been registered.`
+      );
+    }
+
+    let svc = this.services.get(symbol)!.get(name)!;
+
+    if (typeof svc === 'function') {
+      svc = svc();
+    }
+
+    if (svc instanceof Promise) {
+      svc = await svc;
+    }
 
     return svc as T;
   }
 
-  //   public async Resolve<T extends ServiceConstructor>(
-  //     symbol: Symbol,
-  //     name: string
-  //   ): Promise<T> {
-  //     if (!this.services.has(symbol)) {
-  //       throw new Error(
-  //         `No Services for symbol '${symbol}' have been registered.`
-  //       );
-  //     } else if (!this.services.get(symbol)!.has(name)) {
-  //       throw new Error(
-  //         `No Service for symbol '${symbol}' with name '${
-  //           name || '$default'
-  //         } has been registered.`
-  //       );
-  //     }
+  public Register<T>(
+    clazz: IoCServiceConstructor<T>,
+    options?: IoCServiceOptions
+  ): void | (() => void);
 
-  //     let svcResolver = this.services.get(symbol)!.get(name)!;
+  public Register<T>(
+    clazz: IoCServiceConstructor<T>,
+    instance: IoCServiceResolver<T>,
+    options?: IoCServiceOptions
+  ): void | (() => void);
 
-  //     if (typeof svcResolver === 'function') {
-  //       svcResolver = (svcResolver as () => object | Promise<object>)();
-  //     }
+  public Register<T>(
+    clazz: IoCServiceConstructor<T>,
+    instanceOptions?: IoCServiceResolver<T> | IoCServiceOptions,
+    options?: IoCServiceOptions
+  ): void | (() => void) {
+    let [instance] = [instanceOptions as IoCServiceResolver<T>];
 
-  //     if (svcResolver instanceof Promise) {
-  //       svcResolver = await svcResolver;
-  //     }
+    if (typeof instanceOptions !== 'function') {
+      options = instanceOptions as IoCServiceOptions;
 
-  //     return svcResolver as T;
-  //   }
-
-  public RegisterSingleton<T>(clazz: ServiceConstructor<T>): void;
-
-  public RegisterSingleton<T>(
-    clazz: ServiceConstructor<T>,
-    instance: (svcs: ServiceContainer) => T
-  ): void;
-
-  public RegisterSingleton<T>(
-    clazz: ServiceConstructor<T>,
-    instance?: (svcs: ServiceContainer) => T
-  ): void {
-    if (!instance) {
-      instance = (svcs) => new clazz();
+      instance = (_svcs) =>
+        options?.Lazy
+          ? new Promise<T>((resolve) => {
+              return resolve(new clazz());
+            })
+          : new clazz();
     }
 
-    const svc = instance(this.services);
+    const symbol = options?.Type || this.Symbol(clazz.name);
 
-    const symbol = this.Symbol(clazz.name);
+    const name = options?.Name || '$default';
 
-    const name = '$default';
+    if (options?.Lifetime === 'transient') {
+      this.services.get(symbol)!.set(name, () => {
+        return instance(this.services) as IoCServiceConstructed;
+      });
+    } else if (options?.Lifetime === 'scoped') {
+      const scope = new AbortController();
 
-    this.services.get(symbol)!.set(name, svc as ServiceConstructed);
+      scope.signal.onabort = (e) => {
+        this.services.get(symbol)!.delete(name);
+      };
+
+      this.services
+        .get(symbol)!
+        .set(name, instance(this.services) as IoCServiceConstructed);
+
+      return () => scope.abort();
+    } else {
+      this.services
+        .get(symbol)!
+        .set(name, instance(this.services) as IoCServiceConstructed);
+    }
   }
 
-  //   public Register<T extends ServiceConstructor>(svc: T): void;
-
-  //   public Register<T extends ServiceConstructor>(name: string, svc: Text): void;
-
-  //   public Register<T extends ServiceConstructor>(
-  //     symbol: Symbol,
-  //     svc: Promise<T>
-  //   ): void;
-
-  //   public Register<T extends ServiceConstructor>(
-  //     symbol: Symbol,
-  //     name: string,
-  //     svc: ServiceType<T>
-  //   ): void;
-
-  //   public Register<T extends ServiceConstructor>(
-  //     symbol: Symbol,
-  //     svc: () => ServiceType<T>
-  //   ): void;
-
-  //   public Register<T extends ServiceConstructor>(
-  //     symbol: Symbol,
-  //     name: string,
-  //     svc: () => ServiceType<T>
-  //   ): void;
-
-  //   public Register<T extends ServiceConstructor>(
-  //     svcNameSymbol: T | string | Symbol,
-  //     svcNameResolver?: ServiceType<T> | string | (() => ServiceType<T>),
-  //     svcResolver?: ServiceType<T> | (() => ServiceType<T>)
-  //   ): void {
-  //     let [symbol, name]: [Symbol, string] = [
-  //       svcNameSymbol as Symbol,
-  //       svcNameResolver as string,
-  //     ];
-
-  //     if (typeof svcNameSymbol === 'string') {
-  //       name = svcNameSymbol;
-
-  //       svcResolver = svcNameResolver as T;
-
-  //       symbol = Symbol(svcResolver.constructor.name);
-  //     } else if (typeof svcNameSymbol !== 'symbol') {
-  //       svcResolver = svcNameSymbol as T;
-
-  //       name = '$default';
-
-  //       symbol = this.Symbol(svcResolver.constructor.name);
-  //     } else if (typeof svcNameResolver === 'string') {
-  //       name = svcNameResolver;
-  //     } else {
-  //       svcResolver = svcNameResolver!;
-  //     }
-
-  //     this.services.get(symbol)!.set(name, svcResolver!);
-  //   }
-
-  public Symbol(id: string): Symbol {
+  public Symbol(id: string): symbol {
     if (!this.symbols.has(id)) {
       this.symbols.set(id, Symbol.for(id));
     }
@@ -164,7 +143,7 @@ export class ServiceRegistry {
     const symbol = this.symbols.get(id)!;
 
     if (!this.services.has(symbol)) {
-      this.services.set(symbol, new Map<string, ServiceResolver>());
+      this.services.set(symbol, new Map<string, IoCServiceResolutions>());
     }
 
     return symbol;

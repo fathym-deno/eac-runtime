@@ -7,7 +7,7 @@
     "build:lint": "deno lint",
     "deploy": "deno task build && deno task test && ftm git",
     "start": "deno run -A main.ts",
-    "test": "deno test -A --allow-env .env tests/tests.ts --coverage=cov"
+    "test": "deno test -A tests/tests.ts --parallel --coverage=cov"
   },
   "imports": {
     "@fathym/eac": "https://deno.land/x/fathym_everything_as_code@v0.0.319-integration/mod.ts",

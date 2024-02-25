@@ -979,6 +979,9 @@
     "https://deno.land/std@0.216.0/assert/assert.ts": "bec068b2fccdd434c138a555b19a2c2393b71dfaada02b7d568a01541e67cdc5",
     "https://deno.land/std@0.216.0/assert/assert_equals.ts": "4497c56fe7d2993b0d447926702802fc0becb44e319079e8eca39b482ee01b4e",
     "https://deno.land/std@0.216.0/assert/assert_instance_of.ts": "72dc1faff1e248692d873c89382fa1579dd7b53b56d52f37f9874a75b11ba444",
+    "https://deno.land/std@0.216.0/assert/assert_is_error.ts": "6596f2b5ba89ba2fe9b074f75e9318cda97a2381e59d476812e30077fbdb6ed2",
+    "https://deno.land/std@0.216.0/assert/assert_not_equals.ts": "ac86413ab70ffb14fdfc41740ba579a983fe355ba0ce4a9ab685e6b8e7f6a250",
+    "https://deno.land/std@0.216.0/assert/assert_throws.ts": "edddd86b39606c342164b49ad88dd39a26e72a26655e07545d172f164b617fa7",
     "https://deno.land/std@0.216.0/assert/assertion_error.ts": "9f689a101ee586c4ce92f52fa7ddd362e86434ffdf1f848e45987dc7689976b8",
     "https://deno.land/std@0.216.0/assert/equal.ts": "fae5e8a52a11d3ac694bbe1a53e13a7969e3f60791262312e91a3e741ae519e2",
     "https://deno.land/std@0.216.0/async/delay.ts": "8e1d18fe8b28ff95885e2bc54eccec1713f57f756053576d8228e6ca110793ad",
@@ -2607,6 +2610,10 @@
     "https://raw.githubusercontent.com/fathym-deno/deno_kv_oauth/main/lib/sign_in.ts": "fbc1f11a0999b84a64324ed82e0038dc1ef308bf1b8b5e56a79b09351f017c52",
     "https://raw.githubusercontent.com/fathym-deno/deno_kv_oauth/main/lib/sign_out.ts": "5dc0113a019b28395c9edfe8918f881defcd9cf0a23076afe236ce17b8d7f8f9",
     "https://raw.githubusercontent.com/fathym-deno/deno_kv_oauth/main/lib/types.ts": "71923b383f83e9a7509e67770bbf2daff68ab768eaf0424a71c99ae1a1484af9",
-    "https://raw.githubusercontent.com/fathym-deno/deno_kv_oauth/main/mod.ts": "b807947f2701721453c3f0b2900ca9e9319139fcf5f91ea1f3046243e414fdae"
+    "https://raw.githubusercontent.com/fathym-deno/deno_kv_oauth/main/mod.ts": "b807947f2701721453c3f0b2900ca9e9319139fcf5f91ea1f3046243e414fdae",
+    "https://raw.githubusercontent.com/fathym-deno/deno_std/main/assert/assert_is_error.ts": "6596f2b5ba89ba2fe9b074f75e9318cda97a2381e59d476812e30077fbdb6ed2",
+    "https://raw.githubusercontent.com/fathym-deno/deno_std/main/assert/assert_throws_async.ts": "acbffb6900abe9e5437e22b7a53bd901b15d58dd6544a6b7ff86a06d7a0ddd7d",
+    "https://raw.githubusercontent.com/fathym-deno/deno_std/main/assert/assertion_error.ts": "9f689a101ee586c4ce92f52fa7ddd362e86434ffdf1f848e45987dc7689976b8",
+    "https://raw.githubusercontent.com/fathym-deno/deno_std/main/fmt/colors.ts": "d239d84620b921ea520125d778947881f62c50e78deef2657073840b8af9559a"
   }
 }

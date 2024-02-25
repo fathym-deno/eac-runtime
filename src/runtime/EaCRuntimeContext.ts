@@ -1,3 +1,4 @@
+import { IoCContainer } from '../src.deps.ts';
 import { EaCApplicationProcessorConfig } from './EaCApplicationProcessorConfig.ts';
 import { EaCProjectProcessorConfig } from './EaCProjectProcessorConfig.ts';
 import { EaCRuntimeEaC } from './EaCRuntimeEaC.ts';
@@ -8,11 +9,13 @@ export type EaCRuntimeContext = {
 
   Config: EaCRuntimeConfig;
 
-  Databases: Record<string, unknown>;
+  // Databases: Record<string, unknown>;
 
   EaC: EaCRuntimeEaC;
 
   Info: Deno.ServeHandlerInfo;
+
+  IoC: IoCContainer;
 
   next: (req?: Request) => Response | Promise<Response>;
 
