@@ -1,12 +1,10 @@
 {
   "tasks": {
-    "dev": "deno run -A --watch=configs/,data/,routes/,src/,static/ dev.ts",
     "build": "deno task build:fmt && deno task build:lint && deno task build:mod",
     "build:mod": "deno run -A mod.ts build",
     "build:fmt": "deno fmt",
     "build:lint": "deno lint",
     "deploy": "deno task build && deno task test && ftm git",
-    "start": "deno run -A main.ts",
     "test": "deno test -A tests/tests.ts --parallel --coverage=cov"
   },
   "imports": {
@@ -14,7 +12,7 @@
     "@fathym/eac/runtime": "./mod.ts"
   },
   "lint": {
-    "include": ["src/", "configs/"],
+    "include": ["src/"],
     "exclude": [],
     "rules": {
       "tags": ["recommended"],

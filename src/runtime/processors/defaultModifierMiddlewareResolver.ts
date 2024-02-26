@@ -1,15 +1,15 @@
-import { EaCRuntimeHandler } from './EaCRuntimeHandler.ts';
 import {
   EaCModifierAsCode,
   isEaCDenoKVCacheModifierDetails,
   isEaCKeepAliveModifierDetails,
   isEaCOAuthModifierDetails,
   isEaCTracingModifierDetails,
-} from '../src.deps.ts';
-import { establishDenoKvCacheMiddleware } from '../modules/cache/denoKvCacheMiddleware.ts';
-import { establishKeepAliveMiddleware } from '../modules/keepAlive/keepAliveMiddleware.ts';
-import { establishOAuthMiddleware } from '../modules/oauth/oauthMiddleware.ts';
-import { establishTracingMiddleware } from '../modules/tracing/tracingMiddleware.ts';
+} from '../../src.deps.ts';
+import { EaCRuntimeHandler } from '../EaCRuntimeHandler.ts';
+import { establishDenoKvCacheMiddleware } from '../../modules/cache/denoKvCacheMiddleware.ts';
+import { establishKeepAliveMiddleware } from '../../modules/keepAlive/keepAliveMiddleware.ts';
+import { establishOAuthMiddleware } from '../../modules/oauth/oauthMiddleware.ts';
+import { establishTracingMiddleware } from '../../modules/tracing/tracingMiddleware.ts';
 
 export const defaultModifierMiddlewareResolver: (
   modifier: EaCModifierAsCode,

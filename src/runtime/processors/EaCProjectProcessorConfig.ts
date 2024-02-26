@@ -1,5 +1,5 @@
-import { EaCProjectAsCode } from '../src.deps.ts';
-import { EaCRuntimeHandler } from './EaCRuntimeHandler.ts';
+import { EaCProjectAsCode } from '../../src.deps.ts';
+import { EaCRuntimeHandler } from '../EaCRuntimeHandler.ts';
 
 export type EaCProjectProcessorConfig = {
   Handler: EaCRuntimeHandler;

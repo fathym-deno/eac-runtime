@@ -1,5 +1,5 @@
-import { EaCApplicationAsCode, EaCApplicationLookupConfiguration } from '../src.deps.ts';
-import { EaCRuntimeHandler } from './EaCRuntimeHandler.ts';
+import { EaCApplicationAsCode, EaCApplicationLookupConfiguration } from '../../src.deps.ts';
+import { EaCRuntimeHandler } from '../EaCRuntimeHandler.ts';
 
 export type EaCApplicationProcessorConfig = {
   Handlers: EaCRuntimeHandler[];

@@ -1,4 +1,4 @@
-import { EaCApplicationProcessorConfig } from '../EaCApplicationProcessorConfig.ts';
+import { EaCApplicationProcessorConfig } from '../processors/EaCApplicationProcessorConfig.ts';
 import { EaCRuntime } from '../EaCRuntime.ts';
 import { EaCRuntimeHandler } from '../EaCRuntimeHandler.ts';
 import { EaCRuntimeEaC } from '../EaCRuntimeEaC.ts';

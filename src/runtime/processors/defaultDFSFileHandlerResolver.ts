@@ -4,7 +4,7 @@ import {
   isEaCLocalDistributedFileSystem,
   isEaCNPMDistributedFileSystem,
   path,
-} from '../src.deps.ts';
+} from '../../src.deps.ts';
 
 export type DFSFileInfo = {
   Contents: ReadableStream<Uint8Array>;

@@ -10,6 +10,7 @@ import {
   EaCProxyProcessor,
   EaCRedirectProcessor,
   isEaCAIChatProcessor,
+  isEaCAzureADB2CProviderDetails,
   isEaCDFSProcessor,
   isEaCOAuthProcessor,
   isEaCOAuthProviderDetails,
@@ -21,13 +22,11 @@ import {
   proxyRequest,
   redirectRequest,
   VectorStore,
-} from '../src.deps.ts';
+} from '../../src.deps.ts';
 import { EaCApplicationProcessorConfig } from './EaCApplicationProcessorConfig.ts';
-import { defaultDFSFileHandlerResolver } from './defaultDFSFileHandlerResolver.ts';
-import { EaCRuntimeHandler } from './EaCRuntimeHandler.ts';
-import { DFSFileHandler } from './_exports.ts';
-import { isEaCAzureADB2CProviderDetails } from '../src.deps.ts';
-import { EAC_RUNTIME_DEV } from '../constants.ts';
+import { defaultDFSFileHandlerResolver, DFSFileHandler } from './defaultDFSFileHandlerResolver.ts';
+import { EaCRuntimeHandler } from '../EaCRuntimeHandler.ts';
+import { EAC_RUNTIME_DEV } from '../../constants.ts';
 
 export const defaultAppHandlerResolver: (
   appProcCfg: EaCApplicationProcessorConfig,

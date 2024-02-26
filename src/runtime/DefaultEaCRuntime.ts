@@ -26,9 +26,9 @@ import {
   WatsonxAI,
 } from '../src.deps.ts';
 import { EaCRuntimeConfig } from './config/EaCRuntimeConfig.ts';
-import { defaultModifierMiddlewareResolver } from './defaultModifierMiddlewareResolver.ts';
-import { EaCApplicationProcessorConfig } from './EaCApplicationProcessorConfig.ts';
-import { EaCProjectProcessorConfig } from './EaCProjectProcessorConfig.ts';
+import { defaultModifierMiddlewareResolver } from './processors/defaultModifierMiddlewareResolver.ts';
+import { EaCApplicationProcessorConfig } from './processors/EaCApplicationProcessorConfig.ts';
+import { EaCProjectProcessorConfig } from './processors/EaCProjectProcessorConfig.ts';
 import { EaCRuntime } from './EaCRuntime.ts';
 import { EaCRuntimeContext } from './EaCRuntimeContext.ts';
 import { EaCRuntimeEaC } from './EaCRuntimeEaC.ts';

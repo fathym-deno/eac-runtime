@@ -1,7 +1,7 @@
 // deno-lint-ignore-file no-explicit-any
 import {} from '../../src.deps.ts';
 import { EaCRuntimeHandler } from '../../runtime/EaCRuntimeHandler.ts';
-import { DFSFileInfo } from '../../runtime/defaultDFSFileHandlerResolver.ts';
+import { DFSFileInfo } from '../../runtime/processors/defaultDFSFileHandlerResolver.ts';
 
 export function concatTypedArrays(a: Uint8Array, b: Uint8Array) {
   // a, b TypedArray of same type

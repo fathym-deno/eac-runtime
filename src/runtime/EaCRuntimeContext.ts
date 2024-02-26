@@ -1,6 +1,6 @@
 import { IoCContainer } from '../src.deps.ts';
-import { EaCApplicationProcessorConfig } from './EaCApplicationProcessorConfig.ts';
-import { EaCProjectProcessorConfig } from './EaCProjectProcessorConfig.ts';
+import { EaCApplicationProcessorConfig } from './processors/EaCApplicationProcessorConfig.ts';
+import { EaCProjectProcessorConfig } from './processors/EaCProjectProcessorConfig.ts';
 import { EaCRuntimeEaC } from './EaCRuntimeEaC.ts';
 import { EaCRuntimeConfig } from './config/EaCRuntimeConfig.ts';
 
