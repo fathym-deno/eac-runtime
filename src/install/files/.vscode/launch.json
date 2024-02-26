@@ -24,16 +24,6 @@
         "--inspect-wait"
       ],
       "attachSimplePort": 9229
-    },
-    {
-      "request": "launch",
-      "name": "Install Program",
-      "type": "node",
-      "program": "https://deno.land/x/fathym_eac_runtime/install.ts",
-      // "program": "${workspaceFolder}/install.ts",
-      "cwd": "${workspaceFolder}/install-test",
-      "runtimeExecutable": "deno.exe",
-      "runtimeArgs": ["run", "--config", "../deno.jsonc", "--inspect-wait"]
     }
   ]
 }
