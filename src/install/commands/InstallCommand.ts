@@ -23,7 +23,7 @@ export class InstallCommand implements Command {
       [
         '../files/deno.template.jsonc',
         './deno.jsonc',
-        this.ensureDenoConfigSetup,
+        (contents) => this.ensureDenoConfigSetup(contents),
       ],
     ];
   }
