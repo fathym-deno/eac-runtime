@@ -7,7 +7,7 @@
     "build:fmt": "deno fmt",
     "build:lint": "deno lint",
     "build:main": "deno run -A main.ts build",
-    "deploy": "deno task build && deno task test && ftm git",
+    "deploy": "deno task build && deno task test && npx ftm git",
     "dev": "deno run -A --watch=configs/,data/,routes/,src/,static/ dev.ts",
     "start": "deno run -A main.ts",
     "test": "deno test -A tests/tests.ts --coverage=cov"
