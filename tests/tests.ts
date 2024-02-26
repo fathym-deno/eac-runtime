@@ -1,1 +1,0 @@
-import './ioc/bench.ts';
