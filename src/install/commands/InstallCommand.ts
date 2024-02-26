@@ -1,9 +1,4 @@
-import {
-  exists,
-  loadEverythingAsCodeMetaUrl,
-  merge,
-  path,
-} from '../install.deps.ts';
+import { exists, loadEverythingAsCodeMetaUrl, merge, path } from '../install.deps.ts';
 import { EaCRuntimeInstallerFlags } from '../../../install.ts';
 import { Command } from './Command.ts';
 
@@ -41,7 +36,7 @@ export class InstallCommand implements Command {
   protected async copyTemplateFile(
     installDirectory: string,
     filePath: string,
-    outputFilePath: string
+    outputFilePath: string,
   ): Promise<void> {
     const outputTo = path.join(installDirectory, outputFilePath);
 
@@ -59,13 +54,12 @@ export class InstallCommand implements Command {
   }
 
   protected async ensureDenoConfigCreated(
-    installDirectory: string
+    installDirectory: string,
   ): Promise<void> {
     const config = {
       lock: false,
       tasks: {
-        build:
-          'deno task build:fmt && deno task build:lint && deno task build:main',
+        build: 'deno task build:fmt && deno task build:lint && deno task build:main',
         'build:dev': 'deno run -A dev.ts build',
         'build:docker': 'docker build --no-cache .',
         'build:fmt': 'deno fmt',
@@ -87,8 +81,7 @@ export class InstallCommand implements Command {
         '@fathym/eac/runtime': import.meta.resolve('../../../mod.ts'),
         preact: 'https://esm.sh/preact@10.19.6',
         'preact/': 'https://esm.sh/preact@10.19.6/',
-        'preact-render-to-string':
-          'https://esm.sh/*preact-render-to-string@6.4.0',
+        'preact-render-to-string': 'https://esm.sh/*preact-render-to-string@6.4.0',
       } as Record<string, string>,
       unstable: ['kv'],
       compilerOptions: {
@@ -101,8 +94,7 @@ export class InstallCommand implements Command {
       config.imports = merge(config.imports, {
         preact: 'https://esm.sh/preact@10.19.6',
         'preact/': 'https://esm.sh/preact@10.19.6/',
-        'preact-render-to-string':
-          'https://esm.sh/*preact-render-to-string@6.4.0',
+        'preact-render-to-string': 'https://esm.sh/*preact-render-to-string@6.4.0',
       });
     }
 
@@ -110,7 +102,7 @@ export class InstallCommand implements Command {
 
     await Deno.writeTextFile(
       path.join(installDirectory, 'deno.jsonc'),
-      configStr
+      configStr,
     );
   }
 
@@ -121,7 +113,7 @@ export class InstallCommand implements Command {
   }
 
   protected async openTemplateFile(
-    filePath: string
+    filePath: string,
   ): Promise<ReadableStream<Uint8Array>> {
     const fileUrl = new URL(filePath, import.meta.url);
 

@@ -1,3 +1,5 @@
-export type PageProps = {
+import { EaCRuntimeContext } from '../EaCRuntimeContext.ts';
 
-} & JSX
+export type PageProps = {
+  Context: EaCRuntimeContext;
+}; //& JSX;
