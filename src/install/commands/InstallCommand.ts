@@ -50,7 +50,7 @@ export class InstallCommand implements Command {
   ): Promise<void> {
     const outputTo = path.join(installDirectory, outputFilePath);
 
-    if (!exists(outputTo)) {
+    if (!(await exists(outputTo))) {
       const dir = await path.dirname(outputTo);
 
       if (!(await exists(dir))) {
@@ -110,8 +110,13 @@ export class InstallCommand implements Command {
   }
 
   protected async ensureFilesCreated(installDirectory: string): Promise<void> {
-    for (const [inputFile, outputFile] of this.filesToCreate) {
-      await this.copyTemplateFile(installDirectory, inputFile, outputFile);
+    for (const [inputFile, outputFile, transformer] of this.filesToCreate) {
+      await this.copyTemplateFile(
+        installDirectory,
+        inputFile,
+        outputFile,
+        transformer,
+      );
     }
   }
 
