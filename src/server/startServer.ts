@@ -1,3 +1,4 @@
+import { IS_BUILDING } from '../constants.ts';
 import { EaCRuntimeConfig } from '../runtime/config/EaCRuntimeConfig.ts';
 
 export async function startServer(config: EaCRuntimeConfig): Promise<void> {
@@ -5,5 +6,8 @@ export async function startServer(config: EaCRuntimeConfig): Promise<void> {
 
   await runtime.Configure();
 
-  await Deno.serve(config.Server, (req, info) => runtime.Handle(req, info)).finished;
+  if (!IS_BUILDING) {
+    await Deno.serve(config.Server, (req, info) => runtime.Handle(req, info))
+      .finished;
+  }
 }
