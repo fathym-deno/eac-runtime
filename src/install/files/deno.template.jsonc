@@ -12,6 +12,7 @@
     "start": "deno run -A main.ts",
     "test": "deno test -A tests/tests.ts --coverage=cov"
   },
+  "imports": {},
   "lint": {
     "rules": {
       "tags": ["recommended"]
