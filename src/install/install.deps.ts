@@ -1,5 +1,6 @@
 export * from '../../deps.ts';
 export { parseArgs } from 'https://deno.land/std@0.216.0/cli/mod.ts';
+export { toText } from 'https://deno.land/std@0.216.0/streams/to_text.ts';
 
 export * from 'https://deno.land/x/fathym_common@v0.0.156/src/utils/path/exists.ts';
 export * from 'https://deno.land/x/fathym_common@v0.0.156/src/utils/object.helpers.ts';

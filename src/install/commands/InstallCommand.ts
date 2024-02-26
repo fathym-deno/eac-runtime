@@ -1,9 +1,15 @@
-import { exists, loadEverythingAsCodeMetaUrl, merge, path } from '../install.deps.ts';
+import {
+  exists,
+  loadEverythingAsCodeMetaUrl,
+  mergeWithArrays,
+  path,
+  toText,
+} from '../install.deps.ts';
 import { EaCRuntimeInstallerFlags } from '../../../install.ts';
 import { Command } from './Command.ts';
 
 export class InstallCommand implements Command {
-  protected filesToCreate: [string, string][];
+  protected filesToCreate: [string, string, ((contents: string) => string)?][];
 
   constructor(protected flags: EaCRuntimeInstallerFlags) {
     this.filesToCreate = [
@@ -13,6 +19,11 @@ export class InstallCommand implements Command {
       [
         '../files/configs/eac-runtime.config.ts',
         './configs/eac-runtime.config.ts',
+      ],
+      [
+        '../files/deno.template.jsonc',
+        './deno.jsonc',
+        this.ensureDenoConfigSetup,
       ],
     ];
   }
@@ -29,81 +40,73 @@ export class InstallCommand implements Command {
     }
 
     await this.ensureFilesCreated(installDirectory);
-
-    await this.ensureDenoConfigCreated(installDirectory);
   }
 
   protected async copyTemplateFile(
     installDirectory: string,
     filePath: string,
     outputFilePath: string,
+    transformer?: (contents: string) => string,
   ): Promise<void> {
     const outputTo = path.join(installDirectory, outputFilePath);
 
-    const file = await this.openTemplateFile(filePath);
+    if (!exists(outputTo)) {
+      const dir = await path.dirname(outputTo);
 
-    const dir = await path.dirname(outputTo);
+      if (!(await exists(dir))) {
+        await Deno.mkdir(dir);
+      }
 
-    if (!(await exists(dir))) {
-      await Deno.mkdir(dir);
+      const file = await this.openTemplateFile(filePath);
+
+      if (transformer) {
+        const fileContents = await toText(file);
+
+        const transformed = transformer(fileContents);
+
+        await Deno.writeTextFile(outputTo, transformed, {
+          append: false,
+          create: true,
+        });
+      } else {
+        await Deno.writeFile(outputTo, file, {
+          append: false,
+          create: true,
+        });
+      }
+    } else {
+      console.log(`Skipping file ${outputTo}, because it already exists.`);
     }
-
-    await Deno.writeFile(outputTo, file, {
-      create: true,
-    });
   }
 
-  protected async ensureDenoConfigCreated(
-    installDirectory: string,
-  ): Promise<void> {
-    const config = {
-      lock: false,
-      tasks: {
-        build: 'deno task build:fmt && deno task build:lint && deno task build:main',
-        'build:dev': 'deno run -A dev.ts build',
-        'build:docker': 'docker build --no-cache .',
-        'build:fmt': 'deno fmt',
-        'build:lint': 'deno lint',
-        'build:main': 'deno run -A main.ts build',
-        deploy: 'deno task build && deno task test && ftm git',
-        dev: 'deno run -A --watch=configs/,data/,routes/,src/,static/ dev.ts',
-        start: 'deno run -A main.ts',
-        test: 'deno test -A tests/tests.ts --coverage=cov',
-      },
-      lint: {
-        rules: {
-          tags: ['recommended'],
-        },
-      },
-      exclude: ['**/_eac/*'],
+  protected ensureDenoConfigSetup(contents: string): string {
+    // Is there a Deno type that represents the configuration file?
+    let config: Record<string, unknown> = JSON.parse(contents);
+
+    config = mergeWithArrays(config, {
       imports: {
         '@fathym/eac': loadEverythingAsCodeMetaUrl('../../mod.ts'),
         '@fathym/eac/runtime': import.meta.resolve('../../../mod.ts'),
-        preact: 'https://esm.sh/preact@10.19.6',
-        'preact/': 'https://esm.sh/preact@10.19.6/',
-        'preact-render-to-string': 'https://esm.sh/*preact-render-to-string@6.4.0',
-      } as Record<string, string>,
-      unstable: ['kv'],
-      compilerOptions: {
-        jsx: 'react-jsx',
-        jsxImportSource: 'preact',
       },
-    };
+    });
 
     if (this.flags.preact) {
-      config.imports = merge(config.imports, {
-        preact: 'https://esm.sh/preact@10.19.6',
-        'preact/': 'https://esm.sh/preact@10.19.6/',
-        'preact-render-to-string': 'https://esm.sh/*preact-render-to-string@6.4.0',
+      config = mergeWithArrays(config, {
+        imports: {
+          preact: 'https://esm.sh/preact@10.19.6',
+          'preact/': 'https://esm.sh/preact@10.19.6/',
+          'preact-render-to-string': 'https://esm.sh/*preact-render-to-string@6.4.0',
+        },
+        compilerOptions: {
+          jsx: 'react-jsx',
+          jsxImportSource: 'preact',
+        },
       });
     }
 
     const configStr = JSON.stringify(config, null, 2) + '\n';
 
-    await Deno.writeTextFile(
-      path.join(installDirectory, 'deno.jsonc'),
-      configStr,
-    );
+    return configStr;
   }
 
   protected async ensureFilesCreated(installDirectory: string): Promise<void> {
