@@ -25,6 +25,8 @@ export class InstallCommand implements Command {
         './deno.jsonc',
         (contents) => this.ensureDenoConfigSetup(contents),
       ],
+      ['../files/tests/tests.ts', './tests/tests.ts'],
+      ['../files/tests/test.deps.ts', './tests/test.deps.ts'],
     ];
   }
 
@@ -37,6 +39,14 @@ export class InstallCommand implements Command {
 
     if (this.flags.docker) {
       this.filesToCreate.push(['../files/DOCKERFILE', './DOCKERFILE']);
+    }
+
+    if (this.flags.vscode) {
+      this.filesToCreate.push(['../files/.vscode/extensions.json', './.vscode/extensions.json']);
+
+      this.filesToCreate.push(['../files/.vscode/launch.json', './.vscode/launch.json']);
+
+      this.filesToCreate.push(['../files/.vscode/settings.json', './.vscode/settings.json']);
     }
 
     await this.ensureFilesCreated(installDirectory);
