@@ -6,8 +6,11 @@
 .env.local
 
 # EaC Runtime build directory
-# _runtim/
+_eac-runtime/
 node_modules/
 
 # State 
 denoKv/
+
+# Testing
+cov/

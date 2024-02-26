@@ -8,21 +8,22 @@ export const fathymGreen: colors.Rgb = { r: 74, g: 145, b: 142 };
 // TODO(mcgear): Check that minimum deno version is met
 
 export type EaCRuntimeInstallerFlags = {
-  help?: boolean,
-  force?: boolean,
-  tailwind?: boolean,
-  twind?: boolean,
-  vscode?: boolean,
   docker?: boolean,
+  force?: boolean,
+  help?: boolean,
+  preact?: boolean,
+  tailwind?: boolean,
+  vscode?: boolean,
 };
 
 const flags: EaCRuntimeInstallerFlags = parseArgs(Deno.args, {
-  boolean: ['force', 'tailwind', 'twind', 'vscode', 'docker', 'help'],
+  boolean: ['docker', 'force', 'help', 'preact', 'tailwind', 'vscode'],
   default: {
+    docker: undefined,
     force: undefined,
+    preact: undefined,
     tailwind: undefined,
     vscode: undefined,
-    docker: undefined,
   },
   alias: {
     force: 'f',
