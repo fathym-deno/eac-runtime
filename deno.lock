@@ -4,7 +4,11 @@
     "specifiers": {
       "npm:@azure/arm-resources": "npm:@azure/arm-resources@5.2.0",
       "npm:@azure/arm-subscriptions": "npm:@azure/arm-subscriptions@5.1.0",
+      "npm:@azure/identity": "npm:@azure/identity@3.4.2",
+      "npm:@azure/keyvault-keys": "npm:@azure/keyvault-keys@4.8.0",
+      "npm:@azure/keyvault-secrets": "npm:@azure/keyvault-secrets@4.8.0",
       "npm:@azure/search-documents": "npm:@azure/search-documents@12.0.0",
+      "npm:@azure/storage-file-datalake": "npm:@azure/storage-file-datalake@12.16.0",
       "npm:@langchain/azure-openai": "npm:@langchain/azure-openai@0.0.2_zod@3.22.4",
       "npm:@langchain/community": "npm:@langchain/community@0.0.32_@azure+search-documents@12.0.0",
       "npm:@langchain/core": "npm:@langchain/core@0.1.34_zod@3.22.4",
@@ -104,6 +108,25 @@
           "@azure/core-rest-pipeline": "@azure/core-rest-pipeline@1.14.0"
         }
       },
+      "@azure/core-http@3.0.4": {
+        "integrity": "sha512-Fok9VVhMdxAFOtqiiAtg74fL0UJkt0z3D+ouUUxcRLzZNBioPRAMJFVxiWoJljYpXsRi4GDQHzQHDc9AiYaIUQ==",
+        "dependencies": {
+          "@azure/abort-controller": "@azure/abort-controller@1.1.0",
+          "@azure/core-auth": "@azure/core-auth@1.6.0",
+          "@azure/core-tracing": "@azure/core-tracing@1.0.0-preview.13",
+          "@azure/core-util": "@azure/core-util@1.7.0",
+          "@azure/logger": "@azure/logger@1.0.4",
+          "@types/node-fetch": "@types/node-fetch@2.6.11",
+          "@types/tunnel": "@types/tunnel@0.0.3",
+          "form-data": "form-data@4.0.0",
+          "node-fetch": "node-fetch@2.7.0",
+          "process": "process@0.11.10",
+          "tslib": "tslib@2.6.2",
+          "tunnel": "tunnel@0.0.6",
+          "uuid": "uuid@8.3.2",
+          "xml2js": "xml2js@0.5.0"
+        }
+      },
       "@azure/core-lro@2.6.0": {
         "integrity": "sha512-PyRNcaIOfMgoUC01/24NoG+k8O81VrKxYARnDlo+Q2xji0/0/j2nIt8BwQh294pb1c5QnXTDPbNR4KzoDKXEoQ==",
         "dependencies": {
@@ -138,6 +161,13 @@
           "tslib": "tslib@2.6.2"
         }
       },
+      "@azure/core-tracing@1.0.0-preview.13": {
+        "integrity": "sha512-KxDlhXyMlh2Jhj2ykX6vNEU0Vou4nHr025KoSEiz7cS3BNiHNaZcdECk/DmLkEB0as5T7b/TpRcehJ5yV6NeXQ==",
+        "dependencies": {
+          "@opentelemetry/api": "@opentelemetry/api@1.7.0",
+          "tslib": "tslib@2.6.2"
+        }
+      },
       "@azure/core-tracing@1.0.1": {
         "integrity": "sha512-I5CGMoLtX+pI17ZdiFJZgxMJApsK6jjfm85hpgp3oazCdq5Wxgh4wMr7ge/TTWW1B5WBuvIOI1fMU/FrOAMKrw==",
         "dependencies": {
@@ -167,6 +197,38 @@
           "jws": "jws@4.0.0",
           "open": "open@8.4.2",
           "stoppable": "stoppable@1.1.0",
+          "tslib": "tslib@2.6.2"
+        }
+      },
+      "@azure/keyvault-keys@4.8.0": {
+        "integrity": "sha512-jkuYxgkw0aaRfk40OQhFqDIupqblIOIlYESWB6DKCVDxQet1pyv86Tfk9M+5uFM0+mCs6+MUHU+Hxh3joiUn4Q==",
+        "dependencies": {
+          "@azure/abort-controller": "@azure/abort-controller@1.1.0",
+          "@azure/core-auth": "@azure/core-auth@1.6.0",
+          "@azure/core-client": "@azure/core-client@1.8.0",
+          "@azure/core-http-compat": "@azure/core-http-compat@2.0.1",
+          "@azure/core-lro": "@azure/core-lro@2.6.0",
+          "@azure/core-paging": "@azure/core-paging@1.5.0",
+          "@azure/core-rest-pipeline": "@azure/core-rest-pipeline@1.14.0",
+          "@azure/core-tracing": "@azure/core-tracing@1.0.1",
+          "@azure/core-util": "@azure/core-util@1.7.0",
+          "@azure/logger": "@azure/logger@1.0.4",
+          "tslib": "tslib@2.6.2"
+        }
+      },
+      "@azure/keyvault-secrets@4.8.0": {
+        "integrity": "sha512-RGfpFk6XUXHfWuTAiokOe8t6ej5C4ijf4HVyJUmTfN6VjDBVPvTtoiOi/C5072/ENHScYZFhiYOgIjLgYjfJ/A==",
+        "dependencies": {
+          "@azure/abort-controller": "@azure/abort-controller@1.1.0",
+          "@azure/core-auth": "@azure/core-auth@1.6.0",
+          "@azure/core-client": "@azure/core-client@1.8.0",
+          "@azure/core-http-compat": "@azure/core-http-compat@2.0.1",
+          "@azure/core-lro": "@azure/core-lro@2.6.0",
+          "@azure/core-paging": "@azure/core-paging@1.5.0",
+          "@azure/core-rest-pipeline": "@azure/core-rest-pipeline@1.14.0",
+          "@azure/core-tracing": "@azure/core-tracing@1.0.1",
+          "@azure/core-util": "@azure/core-util@1.7.0",
+          "@azure/logger": "@azure/logger@1.0.4",
           "tslib": "tslib@2.6.2"
         }
       },
@@ -224,6 +286,32 @@
           "tslib": "tslib@2.6.2"
         }
       },
+      "@azure/storage-blob@12.17.0": {
+        "integrity": "sha512-sM4vpsCpcCApagRW5UIjQNlNylo02my2opgp0Emi8x888hZUvJ3dN69Oq20cEGXkMUWnoCrBaB0zyS3yeB87sQ==",
+        "dependencies": {
+          "@azure/abort-controller": "@azure/abort-controller@1.1.0",
+          "@azure/core-http": "@azure/core-http@3.0.4",
+          "@azure/core-lro": "@azure/core-lro@2.6.0",
+          "@azure/core-paging": "@azure/core-paging@1.5.0",
+          "@azure/core-tracing": "@azure/core-tracing@1.0.0-preview.13",
+          "@azure/logger": "@azure/logger@1.0.4",
+          "events": "events@3.3.0",
+          "tslib": "tslib@2.6.2"
+        }
+      },
+      "@azure/storage-file-datalake@12.16.0": {
+        "integrity": "sha512-jUAk2/gg1j1p17xp25+6baskC4RMeaKS61eQuTUXGXcKgaX2zqUso8nJpThXoiDIbGWCIB/p7M+pVbYQAVs/dA==",
+        "dependencies": {
+          "@azure/abort-controller": "@azure/abort-controller@1.1.0",
+          "@azure/core-http": "@azure/core-http@3.0.4",
+          "@azure/core-paging": "@azure/core-paging@1.5.0",
+          "@azure/core-tracing": "@azure/core-tracing@1.0.0-preview.13",
+          "@azure/logger": "@azure/logger@1.0.4",
+          "@azure/storage-blob": "@azure/storage-blob@12.17.0",
+          "events": "events@3.3.0",
+          "tslib": "tslib@2.6.2"
+        }
+      },
       "@langchain/azure-openai@0.0.2_zod@3.22.4": {
         "integrity": "sha512-auE9QszxdFk79gFuqGbmD9bxw0s2ZzOzfr+/0AOBdlSimExXipTou6esyG4krx1NoE9rl0d85O4K3As9bR8atA==",
         "dependencies": {
@@ -273,6 +361,10 @@
           "zod-to-json-schema": "zod-to-json-schema@3.22.4_zod@3.22.4"
         }
       },
+      "@opentelemetry/api@1.7.0": {
+        "integrity": "sha512-AdY5wvN0P2vXBi3b29hxZgSFvdhdxPB9+f0B6s//P9Q8nibRWeA3cHm8UmLpio9ABigkVHJ5NMPk+Mz8VCCyrw==",
+        "dependencies": {}
+      },
       "@tootallnate/once@2.0.0": {
         "integrity": "sha512-XCuKFP5PS55gnMVu3dty8KPatLqUoy/ZYzDzAGCQ8JNFCkLXzmI7vNHCR+XpbZaMWQK/vQubr7PkYq8g470J/A==",
         "dependencies": {}
@@ -297,6 +389,12 @@
       "@types/retry@0.12.0": {
         "integrity": "sha512-wWKOClTTiizcZhXnPY4wikVAwmdYHp8q6DmC+EJUzAMsycb7HB32Kh9RN4+0gExjmPmZSAQjgURXIGATPegAvA==",
         "dependencies": {}
+      },
+      "@types/tunnel@0.0.3": {
+        "integrity": "sha512-sOUTGn6h1SfQ+gbgqC364jLFBw2lnFqkgF3q0WovEHRLMrVD1sd5aufqi/aJObLekJO+Aq5z646U4Oxy6shXMA==",
+        "dependencies": {
+          "@types/node": "@types/node@18.16.19"
+        }
       },
       "@types/uuid@8.3.4": {
         "integrity": "sha512-c/I8ZRb51j+pYGAu5CrFMRxqZ2ke4y2grEBO5AUjgSkSk+qT2Ea+OdWElz/OiMf5MNpn2b17kuVBwZLQJXzihw==",
@@ -799,6 +897,10 @@
           "node-ensure": "node-ensure@0.0.0"
         }
       },
+      "process@0.11.10": {
+        "integrity": "sha512-cdGef/drWFoydD1JsMzuFf8100nZl+GT+yacc2bEced5f9Rjk4z+WtFUTBu9PhOi9j/jfmBPu0mMEY4wIdAF8A==",
+        "dependencies": {}
+      },
       "proxy-from-env@1.1.0": {
         "integrity": "sha512-D+zkORCbA9f1tdWRK0RaCR3GPv50cMxcrz4X8k5LTSUD1Dkw47mKJEZQNunItRTkWwgtaUSo1RVFRIG9ZXiFYg==",
         "dependencies": {}
@@ -823,6 +925,10 @@
       },
       "safe-buffer@5.2.1": {
         "integrity": "sha512-rp3So07KcdmmKbGvgaNxQSJr7bGVSVk5S9Eq1F+ppbRo70+YeaDxkw5Dd8NPN+GD6bjnYm2VuPuCXmpuYvmCXQ==",
+        "dependencies": {}
+      },
+      "sax@1.3.0": {
+        "integrity": "sha512-0s+oAmw9zLl1V1cS9BtZN7JAd0cW5e0QH4W3LWEK6a4LaLEA2OTpGYWDY+6XasBLtz6wkm3u1xRw95mRuJ59WA==",
         "dependencies": {}
       },
       "semver@7.6.0": {
@@ -856,6 +962,10 @@
       },
       "tslib@2.6.2": {
         "integrity": "sha512-AEYxH93jGFPn/a2iVAwW87VuUIkR1FVUKB77NwMF7nBTDkDrrT/Hpt/IrCJ0QXhW27jTBDcf5ZY7w6RiqTMw2Q==",
+        "dependencies": {}
+      },
+      "tunnel@0.0.6": {
+        "integrity": "sha512-1h/Lnq9yajKY2PEbBadPXj3VxsDDu844OnaAo52UVmIzIvwwtBPIuNvkjuzBlTWpfJyUbG3ez0KSBibQkj4ojg==",
         "dependencies": {}
       },
       "undici-types@5.26.5": {
@@ -892,6 +1002,17 @@
           "tr46": "tr46@0.0.3",
           "webidl-conversions": "webidl-conversions@3.0.1"
         }
+      },
+      "xml2js@0.5.0": {
+        "integrity": "sha512-drPFnkQJik/O+uPKpqSgr22mpuFHqKdbS835iAQrUC73L2F5WkboIRd63ai/2Yg6I1jzifPFKH2NTK+cfglkIA==",
+        "dependencies": {
+          "sax": "sax@1.3.0",
+          "xmlbuilder": "xmlbuilder@11.0.1"
+        }
+      },
+      "xmlbuilder@11.0.1": {
+        "integrity": "sha512-fDlsI/kFEx7gLvbecc0/ohLG50fugQp8ryHzMTuW9vSa1GJ0XYWKnhsUx7oie3G98+r56aTQIUB4kht42R3JvA==",
+        "dependencies": {}
       },
       "xtend@4.0.2": {
         "integrity": "sha512-LKYU1iAXJXUgAXn9URjiu+MWhyUXHsvfp7mcuYm9dSUKK0/CjtrUwFAxD82/mCWbtLsGjFIad0wIsod4zrTAEQ==",
@@ -1161,6 +1282,27 @@
     "https://deno.land/std@0.216.0/streams/writer_from_stream_writer.ts": "b0e39ef607dfdc5abdfb627edf61a9672809463e2bb022afcbaf0cd006c40feb",
     "https://deno.land/std@0.216.0/streams/zip_readable_streams.ts": "53eb10d7557539b489bd858907aab6dd28247f074b3446573801de3150cb932e",
     "https://deno.land/std@0.216.0/version.ts": "953bada0e10c46d1a0192725deeb6f8bf5a9bd7d098ad72def816f9b15b0fee7",
+    "https://deno.land/x/case@2.1.1/camelCase.ts": "0808961e69e1883c6e94faf85e333196a464ceba46ddc76984d7b8ce9e26a43a",
+    "https://deno.land/x/case@2.1.1/constantCase.ts": "e50eaa8a45cf68417902fda218f03a99e45e2a30f7fce2db325306c84e8c3f0a",
+    "https://deno.land/x/case@2.1.1/dotCase.ts": "ef3977567057e6c2a4e1b5ca09ec34b9e0788c1a50246187c11f435a468be17e",
+    "https://deno.land/x/case@2.1.1/headerCase.ts": "4440a251a196fb6d7090213c39e4c6c50ddecab90c14ec91495bee3563082d3c",
+    "https://deno.land/x/case@2.1.1/lowerCase.ts": "86d5533f9587ed60003181591e40e648838c23f371edfa79d00288153d113b16",
+    "https://deno.land/x/case@2.1.1/lowerFirstCase.ts": "74e8ebe10f3c54a9d8e81d21127a20fcfb34c446e9c49b2a335162babd652de9",
+    "https://deno.land/x/case@2.1.1/mod.ts": "28b0b1329c7b18730799ac05627a433d9547c04b9bfb429116247c60edecd97b",
+    "https://deno.land/x/case@2.1.1/normalCase.ts": "6a8b924da9ab0790d99233ae54bfcfc996d229cb91b2533639fe20972cc33dac",
+    "https://deno.land/x/case@2.1.1/paramCase.ts": "cf3101c59fd4f16ee14fd09985adb7fa3dbfb194f102499986f7407995202394",
+    "https://deno.land/x/case@2.1.1/pascalCase.ts": "f68936d584182c8f4b341238bd9c424b1a740bfba3ab2847234f57a4c205f1df",
+    "https://deno.land/x/case@2.1.1/pathCase.ts": "76e5f437369f8981e17ecdb07870e1c9c8d2d0357f1bf3377e2b0eb132159ed8",
+    "https://deno.land/x/case@2.1.1/sentenceCase.ts": "f3355985a6a41e088c8c9be80219e5e055a68ad9a987df084a57ee437a0871c5",
+    "https://deno.land/x/case@2.1.1/snakeCase.ts": "ee2ab4e2c931d30bb79190d090c21eb5c00d1de1b7a9a3e7f33e035ae431333b",
+    "https://deno.land/x/case@2.1.1/swapCase.ts": "d9b5ee5b8e1ee3d202cbce32a504dde976b9002ed94b4527054a004179905dbb",
+    "https://deno.land/x/case@2.1.1/titleCase.ts": "36d3fc73df58712240a74b04d84191ac22dd2866bef3838b02157f8e46cb0ecb",
+    "https://deno.land/x/case@2.1.1/types.ts": "8e2bd6edaa27c0d1972c0d5b76698564740f37b4d3787d58d1fb5f48de611e61",
+    "https://deno.land/x/case@2.1.1/upperCase.ts": "e6a1a3dea30e17013aa212ec237b35e2dd5c5c0b1501778c07db66ff0bbe4372",
+    "https://deno.land/x/case@2.1.1/upperFirstCase.ts": "2b083db95744105a4f4accefe66dcd09390634514abf757fc580a7ebad58bf4f",
+    "https://deno.land/x/case@2.1.1/vendor/camelCaseRegexp.ts": "7d9ff02aad4ab6429eeab7c7353f7bcdd6cc5909a8bd3dda97918c8bbb7621ae",
+    "https://deno.land/x/case@2.1.1/vendor/camelCaseUpperRegexp.ts": "292de54a698370f90adcdf95727993d09888b7f33d17f72f8e54ba75f7791787",
+    "https://deno.land/x/case@2.1.1/vendor/nonWordRegexp.ts": "c1a052629a694144b48c66b0175a22a83f4d61cb40f4e45293fc5d6b123f927e",
     "https://deno.land/x/deno_cache@0.7.1/auth_tokens.ts": "3cfe2c5e5f07e1f77020be94de1e1196915ccd77c3dfff8480fa8e4a1d1be7e2",
     "https://deno.land/x/deno_cache@0.7.1/cache.ts": "5632468ad366153fd33eeb15253935fde8a9c95cdbda9cd9841f8f345f55861d",
     "https://deno.land/x/deno_cache@0.7.1/deno_dir.ts": "1ea355b8ba11c630d076b222b197cfc937dd81e5a4a260938997da99e8ff93a0",
@@ -1269,6 +1411,29 @@
     "https://deno.land/x/fathym_common@v0.0.157/src/utils/path.ts": "81b8343a3caca404889603b053a04ccfd4399ed7da6b850fe979ed91514700ba",
     "https://deno.land/x/fathym_common@v0.0.157/src/utils/path/exists.ts": "89936717e5537558d26613550ca7e784e8adf7484bba1f119afeac6d736f50f8",
     "https://deno.land/x/fathym_common@v0.0.157/src/utils/tailwind.helpers.ts": "5d38356381d041658a7588c4cd87df8b16fb24063075303b9e91fda8ae1a4f1a",
+    "https://deno.land/x/fathym_common@v0.0.158/deps.ts": "5a054d0e06345a22e6022a6af6c9217c3b5bf77a57b84b6fc3f62db6b2679ab3",
+    "https://deno.land/x/fathym_common@v0.0.158/mod.ts": "9b9ec6a2599bba9859f9532b5712acb334bff2859c3a8649edb94fc8d133ce6c",
+    "https://deno.land/x/fathym_common@v0.0.158/src/_exports.ts": "263c9b4719c61c0450ed2a610dc38a7980479cbfcc3fa98f95c8b733603b5206",
+    "https://deno.land/x/fathym_common@v0.0.158/src/iterables/Queue.ts": "b057a89a7f5f326f0214c8a4bd87450eabb632d82128718619020fdc1d0f66d3",
+    "https://deno.land/x/fathym_common@v0.0.158/src/iterables/Stack.ts": "500fef9b21c40ad357fe59e8f7b82ef330105b5db8084af10b82435e6a89f902",
+    "https://deno.land/x/fathym_common@v0.0.158/src/iterables/_exports.ts": "c912d9acd48dfbc3c58e1193a6f706d0944f181a6fd98277ffc029bca99c4276",
+    "https://deno.land/x/fathym_common@v0.0.158/src/services/BaseRequest.ts": "94722e8ab38181c7ff6a31aa279fd350d68a039772eda3781321a87beb24aad1",
+    "https://deno.land/x/fathym_common@v0.0.158/src/services/BaseResponse.ts": "c9e86603cedce676c99f059e168b6f7dc36b13d429b93e18538595870c66fa92",
+    "https://deno.land/x/fathym_common@v0.0.158/src/services/ObservableContextService.ts": "2a288412d67fb24a457afe6c6f735e4ef5ebf7636ce811ed4a80f088fa40031b",
+    "https://deno.land/x/fathym_common@v0.0.158/src/services/Pageable.ts": "6de897b1f00d8149ef3f10a9192f31a54b5a7fc704073271780cc8cfb9050605",
+    "https://deno.land/x/fathym_common@v0.0.158/src/services/RealTimeConnection.ts": "dfc6f1e17d4b9fc3711fdd531363c92a8262fe9393a49d3ceca142203ffd0cc6",
+    "https://deno.land/x/fathym_common@v0.0.158/src/services/StateContext.ts": "2f23ecb4b91d604f85c847d318d9007c81c92399badc285452c8bd62958831f9",
+    "https://deno.land/x/fathym_common@v0.0.158/src/services/_exports.ts": "a3bd1eea75b39236d4e8f0f460fd679cd8905e57f95b8e618f899a5c547b0108",
+    "https://deno.land/x/fathym_common@v0.0.158/src/src.deps.ts": "5949faa1a72be9897e35396d9693d26ac9c3f3995ea13ab6a3e800d8dea1a900",
+    "https://deno.land/x/fathym_common@v0.0.158/src/status.ts": "46ff39f46ee0b49dd2db776e57155400a1d195ff7267f4dda5a0dd907a360e04",
+    "https://deno.land/x/fathym_common@v0.0.158/src/utils/_exports.ts": "2202cde112917b39ba3d1a8e5078b909c666d412d8eb3a1c659b2dcb5db77d1f",
+    "https://deno.land/x/fathym_common@v0.0.158/src/utils/http.helpers.ts": "09151a6d9f2fdac215ba3c738f51122cce1a6910ac27f4a0ef0040756ffee66a",
+    "https://deno.land/x/fathym_common@v0.0.158/src/utils/iterables.ts": "936c9407203a750299b3528b18a6845b91d36bd4699e74b59f3047d78b1ce4cc",
+    "https://deno.land/x/fathym_common@v0.0.158/src/utils/library.helpers.ts": "e59d2a79dd61b814e73efb5cb8c2630936cadf44f40dc83e2c7bb8423475510c",
+    "https://deno.land/x/fathym_common@v0.0.158/src/utils/merge.helpers.ts": "4d2ac0c4c10ed7a6df2e71e55dfa9258aba273fc65c1cf727be80e565e5ce495",
+    "https://deno.land/x/fathym_common@v0.0.158/src/utils/path.ts": "81b8343a3caca404889603b053a04ccfd4399ed7da6b850fe979ed91514700ba",
+    "https://deno.land/x/fathym_common@v0.0.158/src/utils/path/exists.ts": "89936717e5537558d26613550ca7e784e8adf7484bba1f119afeac6d736f50f8",
+    "https://deno.land/x/fathym_common@v0.0.158/src/utils/tailwind.helpers.ts": "5d38356381d041658a7588c4cd87df8b16fb24063075303b9e91fda8ae1a4f1a",
     "https://deno.land/x/fathym_everything_as_code@v0.0.338-integration/configs/eac.ts": "00d203bf8532392a8b66668292d35a1d8d4e9ccbad6f21460ecc77f930e92bc1",
     "https://deno.land/x/fathym_everything_as_code@v0.0.338-integration/configs/jwt.config.ts": "4885854e18036e8e79e20d2fd8b8828ab116891ccc73905b145be1766e2305b3",
     "https://deno.land/x/fathym_everything_as_code@v0.0.338-integration/mod.ts": "1c858fecb354c8162a0620d09e12771f0a405e601d0c816a994d0ff82ead0f6b",
@@ -1438,6 +1603,55 @@
     "https://deno.land/x/oauth2_client@v1.0.2/src/types.ts": "3327c2e81bc483e91843fb103595dd304393c3ac2a530d1c89200b6a5cf75e13",
     "https://deno.land/x/wasmbuild@0.15.1/cache.ts": "9d01b5cb24e7f2a942bbd8d14b093751fa690a6cde8e21709ddc97667e6669ed",
     "https://deno.land/x/wasmbuild@0.15.1/loader.ts": "8c2fc10e21678e42f84c5135d8ab6ab7dc92424c3f05d2354896a29ccfd02a63",
+    "https://esm.sh/*preact-render-to-string@6.4.0/": "122d204508fa032c6aabe22961b2336bb4caf179440063d474ee68fb3de90b70",
+    "https://esm.sh/@octokit/auth-app@6.0.1": "708cac48e38063b994ccae2672157beadd6940699db2d327ffbf6dc7dfc88141",
+    "https://esm.sh/@octokit/auth-token@4.0.0": "664b49f160bee313f8cdeeea0be7169fd6234bc26c6450046b2108eb6c92f163",
+    "https://esm.sh/@octokit/openapi-types@19.1.0": "fabf6997a3adf11e45d11e3c4d58d0634ab98f9d72f3116f3694123818ccd457",
+    "https://esm.sh/@octokit/plugin-rest-endpoint-methods@10.2.0": "9e81ea9eab7119b8988cc0f07cf01a72fbabeede26b373f3db473f1adfe6a66f",
+    "https://esm.sh/octokit@3.1.2?dts": "893be022afada9d0e7257eafae8743dd9d17decb5d905b6b5a2f60df9ca17de7",
+    "https://esm.sh/preact@10.19.6": "281b115a9b79918c6b73382b4e818d6f9e48db9064b7fd4f75a45a4edee54145",
+    "https://esm.sh/preact@10.19.6/jsx-runtime": "f4c9e5f72ef18435eab846ae02e315a63da724f64fb08d806d2ddeaf08d99bd8",
+    "https://esm.sh/stable/preact@10.19.6/denonext/jsx-runtime.js": "97e9eeb40443de53a8cb3b70f264d04db2bbfc5c2298fdb15d1c471283ccd6aa",
+    "https://esm.sh/stable/preact@10.19.6/denonext/preact.mjs": "68491395d287895f4d697e403ded5b0ebb8fed0494f9e870c422bc017e5e52f5",
+    "https://esm.sh/v135/@octokit/app@14.0.2/denonext/app.mjs": "4334bfe731978a9e3275cb53c26d9f1a78d202e926c9c6571765885350a678d4",
+    "https://esm.sh/v135/@octokit/auth-app@6.0.1/denonext/auth-app.mjs": "14a0d001c97de201f2494ed78be41009d190df4e24878209805dca4ccb61a205",
+    "https://esm.sh/v135/@octokit/auth-oauth-app@7.0.1/denonext/auth-oauth-app.mjs": "5db38d887d10dd263d764a53836e1874e87a5d3daceee2610f4f847bfa7b36e4",
+    "https://esm.sh/v135/@octokit/auth-oauth-device@6.0.1/denonext/auth-oauth-device.mjs": "7c910565cee30ef3b4de188f7a65c1fac550645556e3471e3836065764bb6414",
+    "https://esm.sh/v135/@octokit/auth-oauth-user@4.0.1/denonext/auth-oauth-user.mjs": "553289459a184ba043e4e562365107cf8836c34c212017d72bfe57b67aa0e19b",
+    "https://esm.sh/v135/@octokit/auth-token@4.0.0/denonext/auth-token.mjs": "ab9285959f2bc3ca7942bfb81df3e2f15f5895c829455156647faa403b75703b",
+    "https://esm.sh/v135/@octokit/auth-unauthenticated@5.0.1/denonext/auth-unauthenticated.mjs": "df223324a50c37e1c1a30540cfc7734e0963def74e1b291b2b63e0e14b87ab12",
+    "https://esm.sh/v135/@octokit/core@5.0.2/denonext/core.mjs": "4d8d486843690723fe2f314d80c7a7783450064dc6fae231f05c755e227038ec",
+    "https://esm.sh/v135/@octokit/endpoint@9.0.2/denonext/endpoint.mjs": "1a7a902350655f7c029a1a98e045bdf9743224fdda396ea14bd5e1876baa1998",
+    "https://esm.sh/v135/@octokit/graphql@7.0.2/denonext/graphql.mjs": "72aa9d18b1ba8bf45a778e7c1287ee6eb110c4e0dd9d0de56dab96ea7456e6c9",
+    "https://esm.sh/v135/@octokit/oauth-app@6.0.0/denonext/oauth-app.mjs": "a657094cb2a799a4ba7364351fdfe83af1d21c51d2d1ac8dd09006b1c235b904",
+    "https://esm.sh/v135/@octokit/oauth-authorization-url@6.0.2/denonext/oauth-authorization-url.mjs": "c4a3809c1092ab4135bbb65ba82e885b915a3e0b68e8c9554c98766388baa399",
+    "https://esm.sh/v135/@octokit/oauth-methods@4.0.0/denonext/oauth-methods.mjs": "359d27e6a203d839ab9d9019baab5e48f30c006e112875e55e0573f5d048edd8",
+    "https://esm.sh/v135/@octokit/plugin-paginate-graphql@4.0.0/denonext/plugin-paginate-graphql.mjs": "a5cecabc85094e79ec138accb9f901d01af7d3eda10f101b6f30c45ce934a354",
+    "https://esm.sh/v135/@octokit/plugin-paginate-rest@9.1.4/denonext/plugin-paginate-rest.mjs": "6c9ba63573f33f1d8fb57ba720c8f7ebca633767cd9a0e0e3fa25c2fa91cbaa1",
+    "https://esm.sh/v135/@octokit/plugin-rest-endpoint-methods@10.1.5/denonext/plugin-rest-endpoint-methods.mjs": "2252ba9ecfd252ef2e1f86c29ba6ef7c15f7bf308f74aace5d9ae511cb9a8538",
+    "https://esm.sh/v135/@octokit/plugin-rest-endpoint-methods@10.2.0/denonext/plugin-rest-endpoint-methods.mjs": "5ceb21f5e62fed5de9a4e4bc5883941ed671a2483ba4e8f450cd5e966e87742f",
+    "https://esm.sh/v135/@octokit/plugin-retry@6.0.1/denonext/plugin-retry.mjs": "748a9c9f95567f793f79f6c46f26ec27fc3f4c99ba024ad278cd4768d94fc2bf",
+    "https://esm.sh/v135/@octokit/plugin-throttling@8.1.3/denonext/plugin-throttling.mjs": "3beb99119538438e6d27a613f31404ce291cf9a5696dac8aaf14bcf6a88de35a",
+    "https://esm.sh/v135/@octokit/request-error@5.0.1/denonext/request-error.mjs": "29545da3e16820c62df13044b08c0238e1b26b0cdaaaaad5049899f45a75b8a8",
+    "https://esm.sh/v135/@octokit/request@8.1.5/denonext/request.mjs": "566127b020f1790f6e79217464ca2c633381497b78b197031d11168c99896d81",
+    "https://esm.sh/v135/@octokit/request@8.1.6/denonext/request.mjs": "9a63ba0df8cc60838b04851ea1b18ec989131ace2641f2ea540127b4328934f1",
+    "https://esm.sh/v135/@octokit/webhooks-methods@4.0.0/denonext/webhooks-methods.mjs": "b44d80a07e6e698c95a2fc2789e2caf10b4ff821300e947b2e79c449453a7a19",
+    "https://esm.sh/v135/@octokit/webhooks@12.0.8/denonext/webhooks.mjs": "17e72b77385247c8b81b9baeaf65b30a95eb80d7e4a442856033c5a13490e77e",
+    "https://esm.sh/v135/aggregate-error@3.1.0/denonext/aggregate-error.mjs": "7f1b0c33a6a93091f69cf635c21670b53e1cc5f8dde9042ad7e4fbf371237aba",
+    "https://esm.sh/v135/before-after-hook@2.2.3/denonext/before-after-hook.mjs": "f4262d059d899d7fcaa8d903bcf352df38ac1c040bb45273d79de200ffdad267",
+    "https://esm.sh/v135/bottleneck@2.19.5/denonext/light.js": "964cbaaa1bf999d34a2410023ae269f921c82c72009c707a1fd02fb6abad5b1d",
+    "https://esm.sh/v135/btoa-lite@1.0.0/denonext/btoa-lite.mjs": "5f8ecdf77c8824225e30cf84b62ded0fa667ef51fe1a8b772b1ddf46410bf78f",
+    "https://esm.sh/v135/clean-stack@2.2.0/denonext/clean-stack.mjs": "8a2732fd195c0663d9f8a3957932215f3d4cb45dbe2f4747c9f39a966a4f067b",
+    "https://esm.sh/v135/deprecation@2.3.1/denonext/deprecation.mjs": "0bf7139d1068345709e59dddb4daea315691d290a8c896a6e076dea02dd66eaf",
+    "https://esm.sh/v135/indent-string@4.0.0/denonext/indent-string.mjs": "de4038b836a42fe2a7c453bd0b44cdae706a9560bbef99b1857c13f9d55ace14",
+    "https://esm.sh/v135/is-plain-object@5.0.0/denonext/is-plain-object.mjs": "6d9568ddc8b90de99a46c63e14984810280b6b021dc4e478803b3c240811985f",
+    "https://esm.sh/v135/lru-cache@10.0.3/denonext/lru-cache.mjs": "2d4e2536e768b1b5f84e7e0fddd277d007925b6377b7971497383ff1e47a75e6",
+    "https://esm.sh/v135/octokit@3.1.2/denonext/octokit.mjs": "c4b017c39398f8dd882e22703fb3a8b84e263cf06be38ef48fd8cb71e0b1fb0c",
+    "https://esm.sh/v135/once@1.4.0/denonext/once.mjs": "5ab9193c36609f6c5cf6f1e2e37dd952c87d8ff0b0267433c29b228a2c470cd5",
+    "https://esm.sh/v135/preact-render-to-string@6.4.0/X-ZS8q/denonext/preact-render-to-string.mjs": "441c6360fc6adf7c6a60f4eb61ae3a44ed6668819cb0b145d03d52514c1ca1f5",
+    "https://esm.sh/v135/universal-github-app-jwt@1.1.1/denonext/universal-github-app-jwt.mjs": "546280ef9d50e167172bc039c0c2f4348a728ae1732f467af726b08491d2ea18",
+    "https://esm.sh/v135/universal-user-agent@6.0.1/denonext/universal-user-agent.mjs": "053324bcacbaf066d185d6bf0a3797ee474d975f720ce75351238e420fc82c22",
+    "https://esm.sh/v135/wrappy@1.0.2/denonext/wrappy.mjs": "3c31e4782e0307cf56b319fcec6110f925dafe6cb47a8fa23350d480f5fa8b06",
     "https://raw.githubusercontent.com/fathym-deno/deno_kv_oauth/main/deps.ts": "21a67c42f073714409158e6a3bd7e763dd6c62fa0b0989ad228cc824b2c35cfd",
     "https://raw.githubusercontent.com/fathym-deno/deno_kv_oauth/main/lib/_http.ts": "4205897586b637a1c20006fdec2dbbbabc5aba057d893a8b1f714af5802f7acf",
     "https://raw.githubusercontent.com/fathym-deno/deno_kv_oauth/main/lib/_kv.ts": "0006b0762068ecf9a26a8bb536c3140fe6e02ee939a2a71cf38366894c46b4bb",

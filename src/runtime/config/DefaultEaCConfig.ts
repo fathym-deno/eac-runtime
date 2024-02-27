@@ -1,7 +1,7 @@
 import { colors } from '../../src.deps.ts';
 import { DefaultEaCRuntime } from '../DefaultEaCRuntime.ts';
 import { EaCRuntimeConfig } from './EaCRuntimeConfig.ts';
-import { defaultAppHandlerResolver } from '../processors/defaultAppHandlerResolver.ts';
+import { defaultAppHandlerResolver } from '../processors/defaultAppHandlerResolver.tsx';
 import { fathymGreen } from '../../constants.ts';
 
 export const DefaultEaCConfig: EaCRuntimeConfig = {

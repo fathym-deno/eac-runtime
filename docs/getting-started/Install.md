@@ -10,7 +10,7 @@ params:
 
 # EaC Runtime - Installation
 
-Once you have <a href="https://docs.deno.com/runtime/manual/getting_started/installation" target="_blank">DenoJS installed</a>, the next thing you need to do is install the EaC Runtime in a new project. To do that, we'll run the Deno install script for the runtime:
+Once you have <a href="https://docs.deno.com/runtime/manual/getting_started/installation" target="_blank">DenoJS installed</a>, the next thing you need to do is install the EaC Runtime in a new project. To do that, create/open the directory where you want the project to live, then in a command prompt for that directory run the Deno install script for the runtime:
 
 ```
 deno run -A -r https://eac-runtime.fathym.com/deno/install --docker
@@ -30,3 +30,4 @@ If you would like to start a production instance of your site, use the following
 deno task start
 ```
 
+After the runtime is running, you can navigate to `http://localhost:8000/api-reqres/users` to do a demo query for user data. This should return a block of JSON, with a list of users.

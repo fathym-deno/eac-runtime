@@ -12,21 +12,24 @@ params:
 
 ## Overview
 
-The EaC Runtime is a powerful runtime environment for DenoJS that allows you to effortlessly orchestrate micro frontend applications. It provides a wide range of features including redirect, proxy, OAuth, generative AI chat, and hosting for both single-page applications (SPA) and static sites.
+The EaC Runtime is a powerful runtime environment that allows you to effortlessly orchestrate and deliver performant applications in any environment. Serve from the cloud with Deno Deploy, Azure, AWS and more, or serve from edge devices like a Raspberry PI to deliver unique experiences for end users. 
+
+The runtime provides a configuration model, the EaC (Everything as Code) Model, to deliver applications at scale.  
+
+## Key Features
+
+- **Proxies**: Configure proxy settings to forward incoming requests to backend services or other external resources.
+- **Generative AI**: Enable generative AI capabilities to add interactive and intelligent conversation and agent capabilities to your applications without writing any code.
+- **User Authentication**: Set up OAuth authentication for your application, allowing users to securely sign in with their preferred identity providers.
+- **Content Caching**: Serving as an edge content cache for any configured request. Cut down on the traffic to existing infrastructure for HTML, JS, CSS, JSON/APIs and more.
+- **Hosting**: Define the hosting settings for your single-page applications (SPAs) and static sites, allowing you to serve them with ease and additional features.
+- **Redirects**: Define redirect rules to redirect incoming requests based on various criteria.
+- **More**: As an open source project, our gaol is to provide you more of the features you want, support the development of community plugins, and provide our own additional features. 
+## EaC JSON Configuration
 
 The core concept behind the EaC Runtime is the configuration of an EaC JSON file. By leveraging this configuration file, you can easily define and customize various aspects of your micro frontend application, enabling you to enhance its functionality and adapt it to your specific requirements.
 
-## EaC JSON Configuration
-
 At the heart of the EaC Runtime is the EaC JSON configuration file. This file serves as a central point for defining all the necessary configurations for your micro frontend application. By leveraging a configuration-based approach, you can easily manage and modify your application's behavior without the need for extensive code changes.
-
-The EaC JSON configuration allows you to specify a wide range of settings, including:
-
-- **Redirects**: Define redirect rules to redirect incoming requests based on various criteria.
-- **Proxies**: Configure proxy settings to forward incoming requests to backend services or other external resources.
-- **OAuth**: Set up OAuth authentication for your application, allowing users to securely sign in with their preferred identity providers.
-- **Generative AI Chat**: Enable generative AI chat capabilities to add interactive and intelligent conversation capabilities to your applications without writing any code.
-- **Hosting**: Define the hosting settings for your single-page applications (SPAs) and static sites, allowing you to serve them with ease.
 
 ## Getting Started
 

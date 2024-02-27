@@ -1,4 +1,5 @@
 export * from '../deps.ts';
+export * from 'https://esm.sh/preact@10.19.6';
 export * as DenoKVOAuth from 'https://raw.githubusercontent.com/fathym-deno/deno_kv_oauth/main/mod.ts';
 export * as colors from 'https://deno.land/std@0.216.0/fmt/colors.ts';
 export * from 'https://deno.land/std@0.216.0/http/mod.ts';
@@ -8,6 +9,8 @@ export { transpile } from 'https://deno.land/x/emit@0.37.0/mod.ts';
 export * from 'https://deno.land/x/deno_dom@v0.1.45/deno-dom-wasm-noinit.ts';
 import Mime from 'npm:mime';
 export const mime = Mime;
+import PreactToString from 'https://esm.sh/*preact-render-to-string@6.4.0/';
+export const preactToString = PreactToString;
 
 export { AzureChatOpenAI, AzureOpenAIEmbeddings } from 'npm:@langchain/azure-openai';
 export { WatsonxAI } from 'npm:@langchain/community/llms/watsonx_ai';

@@ -7,6 +7,7 @@ import {
   EaCAIChatProcessor,
   EaCDFSProcessor,
   EaCOAuthProcessor,
+  // EaCPreactAppProcessor,
   EaCProxyProcessor,
   EaCRedirectProcessor,
   isEaCAIChatProcessor,
@@ -14,10 +15,13 @@ import {
   isEaCDFSProcessor,
   isEaCOAuthProcessor,
   isEaCOAuthProviderDetails,
+  // isEaCPreactAppProcessor,
   isEaCProxyProcessor,
   isEaCRedirectProcessor,
+  JSX,
   mime,
   oAuthRequest,
+  preactToString,
   processCacheControlHeaders,
   proxyRequest,
   redirectRequest,
@@ -27,6 +31,7 @@ import { EaCApplicationProcessorConfig } from './EaCApplicationProcessorConfig.t
 import { defaultDFSFileHandlerResolver, DFSFileHandler } from './defaultDFSFileHandlerResolver.ts';
 import { EaCRuntimeHandler } from '../EaCRuntimeHandler.ts';
 import { EAC_RUNTIME_DEV } from '../../constants.ts';
+import App from '../../../../eac-runtime-web/apps/_layout.tsx';
 
 export const defaultAppHandlerResolver: (
   appProcCfg: EaCApplicationProcessorConfig,
@@ -44,6 +49,19 @@ export const defaultAppHandlerResolver: (
         processor.Permanent,
       );
     };
+    // } else if (isEaCPreactAppProcessor(appProcCfg.Application.Processor)) {
+    //   handler = (req, _ctx) => {
+    //     const processor = appProcCfg.Application
+    //       .Processor as EaCPreactAppProcessor;
+
+    //     const page = <App />;
+
+    //     const html = preactToString(page);
+
+    //     return new Response(html, {
+    //       headers: { 'content-type': 'text/html; charset=utf-8' },
+    //     });
+    //   };
   } else if (isEaCProxyProcessor(appProcCfg.Application.Processor)) {
     handler = (req, _ctx) => {
       const processor = appProcCfg.Application.Processor as EaCProxyProcessor;
