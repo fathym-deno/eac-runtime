@@ -20,8 +20,7 @@ The runtime provides a configuration model, the EaC (Everything as Code) Model, 
 
 - **Proxies**: Configure proxy settings to forward incoming requests to backend services or other external resources.
 - **Generative AI**: Enable generative AI capabilities to add interactive and intelligent conversation and agent capabilities to your applications without writing any code.
-- **User Authem b j iii 
-vmcation for your applications, allowing users to securely sign in with their preferred identity providers.
+- **User Authentication for your applications, allowing users to securely sign in with their preferred identity providers.
 - **Content Caching**: Serving as an edge content cache for any configured request. Cut down on the traffic to existing infrastructure for HTML, JS, CSS, JSON/APIs and more.
 - **Hosting**: Define the hosting settings for your single-page applications (SPAs) and static sites, allowing you to serve them with ease and additional features.
 - **Redirects**: Define redirect rules to redirect incoming requests based on various criteria.
@@ -39,9 +38,9 @@ To get started with the EaC Runtime, follow these steps:
 
 1. <a href="https://docs.deno.com/runtime/manual/getting_started/installation" target="_blank">Install DenoJS</a> on your system if you haven't already done so.
 2. [Create an EaC Runtime project](getting-started/Install.md) and setup the configuration file for your micro frontend application.
-3. Configure the necessary settings within the EaC JSON file according to your requirements, such as redirects, proxies, OAuth, generative AI, and hosting configuration.
+3. [Configure](getting-started/Cofigure.md) the necessary settings within the EaC JSON file according to your requirements, such as redirects, proxies, OAuth, generative AI, and hosting configuration.
 4. Start the EaC Runtime using a command line interface.
-5. Deploy the Eac Runtime to the cloud or at the edge.
+5. [Deploy](getting-started/Deploy.md) the Eac Runtime locally, to the cloud or at the edge.
 
 With these steps, you can harness the power of EaC Runtime to effortlessly orchestrate your micro applications and leverage its various features for enhanced functionality.
 
