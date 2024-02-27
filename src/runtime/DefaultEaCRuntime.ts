@@ -3,7 +3,6 @@ import {
   AzureChatOpenAI,
   AzureOpenAIEmbeddings,
   BaseLanguageModel,
-  djwt,
   EaCApplicationAsCode,
   EaCAzureOpenAIEmbeddingsDetails,
   EaCAzureOpenAILLMDetails,
@@ -20,7 +19,6 @@ import {
   isEaCAzureSearchAIVectorStoreDetails,
   isEaCDenoKVDatabaseDetails,
   isEaCWatsonXLLMDetails,
-  loadEaCSvc,
   mergeWithArrays,
   VectorStore,
   WatsonxAI,
@@ -33,6 +31,8 @@ import { EaCRuntime } from './EaCRuntime.ts';
 import { EaCRuntimeContext } from './EaCRuntimeContext.ts';
 import { EaCRuntimeEaC } from './EaCRuntimeEaC.ts';
 import { EaCRuntimeHandler } from './EaCRuntimeHandler.ts';
+import { EaCRuntimePluginConfig } from './config/EaCRuntimePluginConfig.ts';
+import { EaCRuntimePlugin } from './plugins/EaCRuntimePlugin.ts';
 
 export class DefaultEaCRuntime implements EaCRuntime {
   protected applicationGraph?: Record<string, EaCApplicationProcessorConfig[]>;
@@ -40,6 +40,8 @@ export class DefaultEaCRuntime implements EaCRuntime {
   protected eac?: EaCRuntimeEaC;
 
   protected ioc: IoCContainer;
+
+  protected modifierLookups?: string[];
 
   protected projectGraph?: EaCProjectProcessorConfig[];
 
@@ -52,30 +54,15 @@ export class DefaultEaCRuntime implements EaCRuntime {
   }
 
   public async Configure(): Promise<void> {
-    const eacApiKey = Deno.env.get('EAC_API_KEY');
+    this.eac = this.config.EaC;
 
-    if (eacApiKey) {
-      try {
-        const [_header, payload] = await djwt.decode(eacApiKey);
+    this.ioc = this.config.IoC || new IoCContainer();
 
-        const { EnterpriseLookup } = payload as Record<string, unknown>;
+    this.modifierLookups = this.config.ModifierLookups || [];
 
-        const eacSvc = await loadEaCSvc(eacApiKey);
+    await this.processPlugins(this.config.Plugins);
 
-        const eac = await eacSvc.Get(EnterpriseLookup as string);
-
-        this.eac = mergeWithArrays(this.config.EaC || {}, eac);
-      } catch (err) {
-        console.error(
-          'Unable to connect to the EaC service, falling back to local config.',
-        );
-        console.error(err);
-
-        this.eac = this.config.EaC;
-      }
-    } else if (this.config.EaC) {
-      this.eac = this.config.EaC;
-    } else {
+    if (!this.eac) {
       throw new Error(
         'An EaC must be provided in the config or via a connection to an EaC Service with the EAC_API_KEY environment variable.',
       );
@@ -358,7 +345,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
   ): EaCRuntimeHandler[] {
     const pipelineModifierLookups: string[] = [];
 
-    pipelineModifierLookups.push(...(this.config.ModifierLookups || []));
+    pipelineModifierLookups.push(...(this.modifierLookups || []));
 
     // TODO(mcgear): Add application logic middlewares to pipeline
 
@@ -461,5 +448,43 @@ export class DefaultEaCRuntime implements EaCRuntime {
     };
 
     return ctx.next(request);
+  }
+
+  protected async processPlugins(
+    plugins?: (EaCRuntimePlugin | [string, ...args: unknown[]])[],
+  ): Promise<void> {
+    const pluginBuilds = await plugins?.map(async (pluginDef) => {
+      if (Array.isArray(pluginDef)) {
+        const [plugin, ...args] = pluginDef;
+
+        pluginDef = new (await import(plugin)).default(
+          args,
+        ) as EaCRuntimePlugin;
+      }
+
+      return pluginDef.Build();
+    });
+
+    const pluginConfigs: EaCRuntimePluginConfig[] = (
+      await Promise.all(pluginBuilds || [])
+    ).filter((pluginCfg) => pluginCfg);
+
+    await pluginConfigs.forEach(async (pluginConfig) => {
+      if (pluginConfig.EaC) {
+        this.eac = mergeWithArrays(this.eac || {}, pluginConfig.EaC);
+      }
+
+      if (pluginConfig.IoC) {
+        pluginConfig.IoC.CopyTo(this.ioc!);
+      }
+
+      if (pluginConfig.ModifierLookups) {
+        this.modifierLookups!.push(...(pluginConfig.ModifierLookups || []));
+
+        this.modifierLookups = [...new Set(this.modifierLookups)];
+      }
+
+      await this.processPlugins(pluginConfig.Plugins);
+    });
   }
 }

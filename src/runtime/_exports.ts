@@ -1,4 +1,5 @@
 export * from './config/_exports.ts';
+export * from './plugins/_exports.ts';
 export * from './processors/_exports.ts';
 export * from './DefaultEaCRuntime.ts';
 export * from './EaCRuntime.ts';

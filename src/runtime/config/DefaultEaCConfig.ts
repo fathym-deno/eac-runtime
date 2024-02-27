@@ -3,10 +3,12 @@ import { DefaultEaCRuntime } from '../DefaultEaCRuntime.ts';
 import { EaCRuntimeConfig } from './EaCRuntimeConfig.ts';
 import { defaultAppHandlerResolver } from '../processors/defaultAppHandlerResolver.tsx';
 import { fathymGreen } from '../../constants.ts';
+import FathymCorePlugin from '../plugins/FathymCorePlugin.ts';
 
 export const DefaultEaCConfig: EaCRuntimeConfig = {
   ApplicationHandlerResolver: defaultAppHandlerResolver,
   ModifierLookups: [],
+  Plugins: [new FathymCorePlugin()],
   Runtime: (cfg: EaCRuntimeConfig) => new DefaultEaCRuntime(cfg),
   Server: {
     onListen: (params) => {

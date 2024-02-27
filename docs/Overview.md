@@ -1,6 +1,6 @@
 ---
 title: 'EaC Runtime Introduction'
-slug: './'
+path: './'
 description: 'An introduction to the EaC Runtime and what you can do with it'
 tags: ['DenoJS', 'EaC Runtime', 'Microfrontends']
 date: '2022-02-22'

@@ -176,13 +176,20 @@ export function establishDenoKvCacheMiddleware(
         resp = new Response(cached.Contents, {
           headers: cached.Headers || {},
         });
+
+        const eTag = resp.headers.get('ETag');
+
+        if (eTag) {
+          // TODO(mcgear): Somehow limit how often we refresh the file
+          loadForCaching().then();
+        }
       }
     }
 
-    if (!resp) {
-      resp = await ctx.next();
+    async function loadForCaching() {
+      const toCacheResp = await ctx.next();
 
-      if (cacheDb && resp?.ok && isCachePathFiltered) {
+      if (cacheDb && toCacheResp?.ok && isCachePathFiltered) {
         console.log(
           `Storing item in cache middleware: ${respCacheKey.join('|')}`,
         );
@@ -190,11 +197,17 @@ export function establishDenoKvCacheMiddleware(
         denoKvCacheReadableStream(
           cacheDb,
           respCacheKey,
-          resp.clone().body!,
+          toCacheResp.clone().body!,
           cacheSeconds,
-          resp.headers,
+          toCacheResp.headers,
         );
       }
+
+      return toCacheResp;
+    }
+
+    if (!resp) {
+      resp = await loadForCaching();
     }
 
     return resp;

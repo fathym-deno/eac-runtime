@@ -10,6 +10,7 @@
   "imports": {
     "@fathym/eac": "https://deno.land/x/fathym_everything_as_code@v0.0.332-integration/mod.ts",
     "@fathym/eac/runtime": "./mod.ts",
+    "@fathym/eac/runtime/": "./",
     "preact": "https://esm.sh/preact@10.19.6",
     "preact/": "https://esm.sh/preact@10.19.6/"
   },

@@ -97,6 +97,7 @@ export class InstallCommand implements Command {
       imports: {
         '@fathym/eac': loadEverythingAsCodeMetaUrl('../../mod.ts'),
         '@fathym/eac/runtime': import.meta.resolve('../../../mod.ts'),
+        '@fathym/eac/runtime/': import.meta.resolve('../../../'),
       },
     });
 
