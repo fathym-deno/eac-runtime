@@ -31,7 +31,6 @@ import { EaCApplicationProcessorConfig } from './EaCApplicationProcessorConfig.t
 import { defaultDFSFileHandlerResolver, DFSFileHandler } from './defaultDFSFileHandlerResolver.ts';
 import { EaCRuntimeHandler } from '../EaCRuntimeHandler.ts';
 import { EAC_RUNTIME_DEV } from '../../constants.ts';
-import App from '../../../../eac-runtime-web/apps/_layout.tsx';
 
 export const defaultAppHandlerResolver: (
   appProcCfg: EaCApplicationProcessorConfig,
