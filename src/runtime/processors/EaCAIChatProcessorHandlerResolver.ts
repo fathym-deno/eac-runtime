@@ -5,13 +5,13 @@ import {
   isEaCAIChatProcessor,
   VectorStore,
 } from '../../src.deps.ts';
-import { AppHandlerResolver } from './AppHandlerResolver.ts';
+import { ProcessorHandlerResolver } from './ProcessorHandlerResolver.ts';
 
-export const EaCAIChatProcessorAppHandlerResolver: AppHandlerResolver = {
+export const EaCAIChatProcessorHandlerResolver: ProcessorHandlerResolver = {
   Resolve(_ioc, appProcCfg) {
     if (!isEaCAIChatProcessor(appProcCfg.Application.Processor)) {
       throw new Deno.errors.NotSupported(
-        'The provided processor is not supported for the EaCAIChatProcessorAppHandlerResolver.',
+        'The provided processor is not supported for the EaCAIChatProcessorHandlerResolver.',
       );
     }
 

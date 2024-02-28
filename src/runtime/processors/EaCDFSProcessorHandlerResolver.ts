@@ -4,15 +4,15 @@ import {
   mime,
   processCacheControlHeaders,
 } from '../../src.deps.ts';
-import { AppHandlerResolver } from './AppHandlerResolver.ts';
+import { ProcessorHandlerResolver } from './ProcessorHandlerResolver.ts';
 import { defaultDFSFileHandlerResolver, DFSFileHandler } from './defaultDFSFileHandlerResolver.ts';
 import { EAC_RUNTIME_DEV } from '../../constants.ts';
 
-export const EaCDFSProcessorAppHandlerResolver: AppHandlerResolver = {
+export const EaCDFSProcessorHandlerResolver: ProcessorHandlerResolver = {
   Resolve(_ioc, appProcCfg) {
     if (!isEaCDFSProcessor(appProcCfg.Application.Processor)) {
       throw new Deno.errors.NotSupported(
-        'The provided processor is not supported for the EaCDFSProcessorAppHandlerResolver.',
+        'The provided processor is not supported for the EaCDFSProcessorHandlerResolver.',
       );
     }
 

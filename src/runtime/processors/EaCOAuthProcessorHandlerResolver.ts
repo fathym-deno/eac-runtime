@@ -8,13 +8,13 @@ import {
   isEaCOAuthProviderDetails,
   oAuthRequest,
 } from '../../src.deps.ts';
-import { AppHandlerResolver } from './AppHandlerResolver.ts';
+import { ProcessorHandlerResolver } from './ProcessorHandlerResolver.ts';
 
-export const EaCOAuthProcessorAppHandlerResolver: AppHandlerResolver = {
+export const EaCOAuthProcessorHandlerResolver: ProcessorHandlerResolver = {
   Resolve(_ioc, appProcCfg) {
     if (!isEaCOAuthProcessor(appProcCfg.Application.Processor)) {
       throw new Deno.errors.NotSupported(
-        'The provided processor is not supported for the EaCOAuthProcessorAppHandlerResolver.',
+        'The provided processor is not supported for the EaCOAuthProcessorHandlerResolver.',
       );
     }
 

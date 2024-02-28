@@ -1,12 +1,12 @@
 import { EaCProxyProcessor, isEaCProxyProcessor, proxyRequest } from '../../src.deps.ts';
-import { AppHandlerResolver } from './AppHandlerResolver.ts';
+import { ProcessorHandlerResolver } from './ProcessorHandlerResolver.ts';
 import { EAC_RUNTIME_DEV } from '../../constants.ts';
 
-export const EaCProxyProcessorAppHandlerResolver: AppHandlerResolver = {
+export const EaCProxyProcessorHandlerResolver: ProcessorHandlerResolver = {
   Resolve(_ioc, appProcCfg) {
     if (!isEaCProxyProcessor(appProcCfg.Application.Processor)) {
       throw new Deno.errors.NotSupported(
-        'The provided processor is not supported for the EaCProxyProcessorAppHandlerResolver.',
+        'The provided processor is not supported for the EaCProxyProcessorHandlerResolver.',
       );
     }
 

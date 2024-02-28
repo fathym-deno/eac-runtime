@@ -1,6 +1,6 @@
-import { AppHandlerResolver } from './AppHandlerResolver.ts';
+import { ProcessorHandlerResolver } from './ProcessorHandlerResolver.ts';
 
-export const EaCPreactAppProcessorAppHandlerResolver: AppHandlerResolver = {
+export const EaCPreactAppProcessorHandlerResolver: ProcessorHandlerResolver = {
   Resolve(_ioc, _appProcCfg) {
     // const processor = appProcCfg.Application
     // .Processor as EaCPreactAppProcessor;

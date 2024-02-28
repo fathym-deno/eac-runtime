@@ -24,7 +24,7 @@ import {
   WatsonxAI,
 } from '../src.deps.ts';
 import { EaCRuntimeConfig } from './config/EaCRuntimeConfig.ts';
-import { defaultAppHandlerResolver } from './processors/defaultAppHandlerResolver.tsx';
+import { defaultProcessorHandlerResolver } from './processors/defaultProcessorHandlerResolver.ts';
 import { defaultModifierMiddlewareResolver } from './processors/defaultModifierMiddlewareResolver.ts';
 import { EaCApplicationProcessorConfig } from './processors/EaCApplicationProcessorConfig.ts';
 import { EaCProjectProcessorConfig } from './processors/EaCProjectProcessorConfig.ts';
@@ -377,7 +377,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
   protected async establishApplicationHandler(
     appProcessorConfig: EaCApplicationProcessorConfig,
   ): Promise<EaCRuntimeHandler> {
-    return await defaultAppHandlerResolver.Resolve(this.ioc, appProcessorConfig);
+    return await defaultProcessorHandlerResolver.Resolve(this.ioc, appProcessorConfig);
   }
 
   protected establishProjectHandler(

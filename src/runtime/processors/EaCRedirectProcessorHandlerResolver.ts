@@ -1,11 +1,11 @@
 import { EaCRedirectProcessor, isEaCRedirectProcessor, redirectRequest } from '../../src.deps.ts';
-import { AppHandlerResolver } from './AppHandlerResolver.ts';
+import { ProcessorHandlerResolver } from './ProcessorHandlerResolver.ts';
 
-export const EaCRedirectProcessorAppHandlerResolver: AppHandlerResolver = {
+export const EaCRedirectProcessorHandlerResolver: ProcessorHandlerResolver = {
   Resolve(_ioc, appProcCfg) {
     if (!isEaCRedirectProcessor(appProcCfg.Application.Processor)) {
       throw new Deno.errors.NotSupported(
-        'The provided processor is not supported for the EaCRedirectProcessorAppHandlerResolver.',
+        'The provided processor is not supported for the EaCRedirectProcessorHandlerResolver.',
       );
     }
 

@@ -1,11 +1,11 @@
 import { IoCContainer } from '../../src.deps.ts';
-import { EaCAIChatProcessorAppHandlerResolver } from '../processors/EaCAIChatProcessorAppHandlerResolver.ts';
-import { EaCDFSProcessorAppHandlerResolver } from '../processors/EaCDFSProcessorAppHandlerResolver.ts';
-import { EaCOAuthProcessorAppHandlerResolver } from '../processors/EaCOAuthProcessorAppHandlerResolver.ts';
-import { EaCPreactAppProcessorAppHandlerResolver } from '../processors/EaCPreactAppProcessorAppHandlerResolver.ts';
-import { EaCProxyProcessorAppHandlerResolver } from '../processors/EaCProxyProcessorAppHandlerResolver.ts';
-import { EaCRedirectProcessorAppHandlerResolver } from '../processors/EaCRedirectProcessorAppHandlerResolver.ts';
-import { UnknownEaCProcessorAppHandlerResolver } from '../processors/UnknownEaCProcessorAppHandlerResolver.ts';
+import { EaCAIChatProcessorHandlerResolver } from '../processors/EaCAIChatProcessorHandlerResolver.ts';
+import { EaCDFSProcessorHandlerResolver } from '../processors/EaCDFSProcessorHandlerResolver.ts';
+import { EaCOAuthProcessorHandlerResolver } from '../processors/EaCOAuthProcessorHandlerResolver.ts';
+import { EaCPreactAppProcessorHandlerResolver } from '../processors/EaCPreactAppProcessorHandlerResolver.ts';
+import { EaCProxyProcessorHandlerResolver } from '../processors/EaCProxyProcessorHandlerResolver.ts';
+import { EaCRedirectProcessorHandlerResolver } from '../processors/EaCRedirectProcessorHandlerResolver.ts';
+import { UnknownEaCProcessorHandlerResolver } from '../processors/UnknownEaCProcessorHandlerResolver.ts';
 import { EaCRuntimePlugin } from './EaCRuntimePlugin.ts';
 import { EaCRuntimePluginConfig } from '../config/EaCRuntimePluginConfig.ts';
 
@@ -16,39 +16,39 @@ export default class FathymAppHandlerPlugin implements EaCRuntimePlugin {
       IoC: new IoCContainer(),
     };
 
-    config.IoC!.Register(() => EaCAIChatProcessorAppHandlerResolver, {
+    config.IoC!.Register(() => EaCAIChatProcessorHandlerResolver, {
       Name: 'EaCAIChatProcessor',
-      Type: config.IoC!.Symbol('AppHandlerResolver'),
+      Type: config.IoC!.Symbol('ProcessorHandlerResolver'),
     });
 
-    config.IoC!.Register(() => EaCDFSProcessorAppHandlerResolver, {
+    config.IoC!.Register(() => EaCDFSProcessorHandlerResolver, {
       Name: 'EaCDFSProcessor',
-      Type: config.IoC!.Symbol('AppHandlerResolver'),
+      Type: config.IoC!.Symbol('ProcessorHandlerResolver'),
     });
 
-    config.IoC!.Register(() => EaCOAuthProcessorAppHandlerResolver, {
+    config.IoC!.Register(() => EaCOAuthProcessorHandlerResolver, {
       Name: 'EaCOAuthProcessor',
-      Type: config.IoC!.Symbol('AppHandlerResolver'),
+      Type: config.IoC!.Symbol('ProcessorHandlerResolver'),
     });
 
-    config.IoC!.Register(() => EaCPreactAppProcessorAppHandlerResolver, {
+    config.IoC!.Register(() => EaCPreactAppProcessorHandlerResolver, {
       Name: 'EaCPreactAppProcessor',
-      Type: config.IoC!.Symbol('AppHandlerResolver'),
+      Type: config.IoC!.Symbol('ProcessorHandlerResolver'),
     });
 
-    config.IoC!.Register(() => EaCProxyProcessorAppHandlerResolver, {
+    config.IoC!.Register(() => EaCProxyProcessorHandlerResolver, {
       Name: 'EaCProxyProcessor',
-      Type: config.IoC!.Symbol('AppHandlerResolver'),
+      Type: config.IoC!.Symbol('ProcessorHandlerResolver'),
     });
 
-    config.IoC!.Register(() => EaCRedirectProcessorAppHandlerResolver, {
+    config.IoC!.Register(() => EaCRedirectProcessorHandlerResolver, {
       Name: 'EaCRedirectProcessor',
-      Type: config.IoC!.Symbol('AppHandlerResolver'),
+      Type: config.IoC!.Symbol('ProcessorHandlerResolver'),
     });
 
-    config.IoC!.Register(() => UnknownEaCProcessorAppHandlerResolver, {
+    config.IoC!.Register(() => UnknownEaCProcessorHandlerResolver, {
       Name: 'UnknownEaCProcessor',
-      Type: config.IoC!.Symbol('AppHandlerResolver'),
+      Type: config.IoC!.Symbol('ProcessorHandlerResolver'),
     });
 
     return Promise.resolve(config);

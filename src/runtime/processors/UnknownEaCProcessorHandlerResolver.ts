@@ -1,6 +1,6 @@
-import { AppHandlerResolver } from './AppHandlerResolver.ts';
+import { ProcessorHandlerResolver } from './ProcessorHandlerResolver.ts';
 
-export const UnknownEaCProcessorAppHandlerResolver: AppHandlerResolver = {
+export const UnknownEaCProcessorHandlerResolver: ProcessorHandlerResolver = {
   Resolve(_ioc, appProcCfg) {
     // TODO(mcgear): Create a better unknown app handler
 

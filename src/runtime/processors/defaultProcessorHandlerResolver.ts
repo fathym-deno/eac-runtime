@@ -7,11 +7,9 @@ import {
   isEaCRedirectProcessor,
   // preactToString,
 } from '../../src.deps.ts';
-import { defaultDFSFileHandlerResolver, DFSFileHandler } from './defaultDFSFileHandlerResolver.ts';
-import { EAC_RUNTIME_DEV } from '../../constants.ts';
-import { AppHandlerResolver } from './AppHandlerResolver.ts';
+import { ProcessorHandlerResolver } from './ProcessorHandlerResolver.ts';
 
-export const defaultAppHandlerResolver: AppHandlerResolver = {
+export const defaultProcessorHandlerResolver: ProcessorHandlerResolver = {
   async Resolve(ioc, appProcCfg) {
     let toResolveName: string = '';
 
@@ -31,8 +29,8 @@ export const defaultAppHandlerResolver: AppHandlerResolver = {
       toResolveName = 'UnknownEaCProcessor';
     }
 
-    const resolver = await ioc.Resolve<AppHandlerResolver>(
-      ioc.Symbol('AppHandlerResolver'),
+    const resolver = await ioc.Resolve<ProcessorHandlerResolver>(
+      ioc.Symbol('ProcessorHandlerResolver'),
       toResolveName,
     );
 
