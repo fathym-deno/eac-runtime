@@ -24,6 +24,7 @@ import {
   WatsonxAI,
 } from '../src.deps.ts';
 import { EaCRuntimeConfig } from './config/EaCRuntimeConfig.ts';
+import { defaultAppHandlerResolver } from './processors/defaultAppHandlerResolver.tsx';
 import { defaultModifierMiddlewareResolver } from './processors/defaultModifierMiddlewareResolver.ts';
 import { EaCApplicationProcessorConfig } from './processors/EaCApplicationProcessorConfig.ts';
 import { EaCProjectProcessorConfig } from './processors/EaCProjectProcessorConfig.ts';
@@ -31,7 +32,6 @@ import { EaCRuntime } from './EaCRuntime.ts';
 import { EaCRuntimeContext } from './EaCRuntimeContext.ts';
 import { EaCRuntimeEaC } from './EaCRuntimeEaC.ts';
 import { EaCRuntimeHandler } from './EaCRuntimeHandler.ts';
-import { EaCRuntimePluginConfig } from './config/EaCRuntimePluginConfig.ts';
 import { EaCRuntimePlugin } from './plugins/EaCRuntimePlugin.ts';
 
 export class DefaultEaCRuntime implements EaCRuntime {
@@ -80,7 +80,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
 
     this.buildProjectGraph();
 
-    this.buildApplicationGraph();
+    await this.buildApplicationGraph();
   }
 
   public Handle(
@@ -107,55 +107,57 @@ export class DefaultEaCRuntime implements EaCRuntime {
     return resp;
   }
 
-  protected buildApplicationGraph(): void {
+  protected async buildApplicationGraph(): Promise<void> {
     if (this.eac!.Applications) {
-      this.applicationGraph = this.projectGraph!.reduce(
-        (appGraph, projProcCfg) => {
-          const appLookups = Object.keys(
-            projProcCfg.Project.ApplicationLookups || {},
+      this.applicationGraph = {} as Record<
+        string,
+        EaCApplicationProcessorConfig[]
+      >;
+
+      for (const projProcCfg of this.projectGraph!) {
+        const appLookups = Object.keys(
+          projProcCfg.Project.ApplicationLookups || {},
+        );
+
+        this.applicationGraph[projProcCfg.ProjectLookup] = appLookups
+          .map((appLookup) => {
+            const app = this.eac!.Applications![appLookup];
+
+            if (!app) {
+              throw new Error(
+                `The '${appLookup}' app configured for the project does not exist in the EaC Applications configuration.`,
+              );
+            }
+
+            const lookupCfg = projProcCfg.Project.ApplicationLookups[appLookup];
+
+            return {
+              Application: app,
+              ApplicationLookup: appLookup,
+              LookupConfig: lookupCfg,
+              Pattern: new URLPattern({ pathname: lookupCfg.PathPattern }),
+            } as EaCApplicationProcessorConfig;
+          })
+          .sort((a, b) => {
+            return b.LookupConfig.Priority - a.LookupConfig.Priority;
+          });
+
+        for (
+          const appProcCfg of this.applicationGraph[
+            projProcCfg.ProjectLookup
+          ]
+        ) {
+          const pipeline: EaCRuntimeHandler[] = this.constructPipeline(
+            projProcCfg.Project,
+            appProcCfg.Application,
+            this.eac!.Modifiers || {},
           );
 
-          appGraph[projProcCfg.ProjectLookup] = appLookups
-            .map((appLookup) => {
-              const app = this.eac!.Applications![appLookup];
+          pipeline.push(await this.establishApplicationHandler(appProcCfg));
 
-              if (!app) {
-                throw new Error(
-                  `The '${appLookup}' app configured for the project does not exist in the EaC Applications configuration.`,
-                );
-              }
-
-              const lookupCfg = projProcCfg.Project.ApplicationLookups[appLookup];
-
-              return {
-                Application: app,
-                ApplicationLookup: appLookup,
-                LookupConfig: lookupCfg,
-                Pattern: new URLPattern({ pathname: lookupCfg.PathPattern }),
-              } as EaCApplicationProcessorConfig;
-            })
-            .map((appProcCfg) => {
-              const pipeline: EaCRuntimeHandler[] = this.constructPipeline(
-                projProcCfg.Project,
-                appProcCfg.Application,
-                this.eac!.Modifiers || {},
-              );
-
-              pipeline.push(this.establishApplicationHandler(appProcCfg));
-
-              return {
-                ...appProcCfg,
-                Handlers: pipeline,
-              } as EaCApplicationProcessorConfig;
-            })
-            .sort((a, b) => {
-              return b.LookupConfig.Priority - a.LookupConfig.Priority;
-            });
-
-          return appGraph;
-        },
-        {} as Record<string, EaCApplicationProcessorConfig[]>,
-      );
+          appProcCfg.Handlers = pipeline;
+        }
+      }
     }
   }
 
@@ -372,10 +374,10 @@ export class DefaultEaCRuntime implements EaCRuntime {
     return pipeline.filter((p) => p).map((p) => p!);
   }
 
-  protected establishApplicationHandler(
+  protected async establishApplicationHandler(
     appProcessorConfig: EaCApplicationProcessorConfig,
-  ): EaCRuntimeHandler {
-    return this.config.ApplicationHandlerResolver(appProcessorConfig);
+  ): Promise<EaCRuntimeHandler> {
+    return await defaultAppHandlerResolver.Resolve(this.ioc, appProcessorConfig);
   }
 
   protected establishProjectHandler(
@@ -453,7 +455,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
   protected async processPlugins(
     plugins?: (EaCRuntimePlugin | [string, ...args: unknown[]])[],
   ): Promise<void> {
-    const pluginBuilds = await plugins?.map(async (pluginDef) => {
+    for (let pluginDef of plugins || []) {
       if (Array.isArray(pluginDef)) {
         const [plugin, ...args] = pluginDef;
 
@@ -462,29 +464,25 @@ export class DefaultEaCRuntime implements EaCRuntime {
         ) as EaCRuntimePlugin;
       }
 
-      return pluginDef.Build();
-    });
+      const pluginConfig = await pluginDef.Build();
 
-    const pluginConfigs: EaCRuntimePluginConfig[] = (
-      await Promise.all(pluginBuilds || [])
-    ).filter((pluginCfg) => pluginCfg);
+      if (pluginConfig) {
+        if (pluginConfig.EaC) {
+          this.eac = mergeWithArrays(this.eac || {}, pluginConfig.EaC);
+        }
 
-    await pluginConfigs.forEach(async (pluginConfig) => {
-      if (pluginConfig.EaC) {
-        this.eac = mergeWithArrays(this.eac || {}, pluginConfig.EaC);
+        if (pluginConfig.IoC) {
+          pluginConfig.IoC.CopyTo(this.ioc!);
+        }
+
+        if (pluginConfig.ModifierLookups) {
+          this.modifierLookups!.push(...(pluginConfig.ModifierLookups || []));
+
+          this.modifierLookups = [...new Set(this.modifierLookups)];
+        }
+
+        await this.processPlugins(pluginConfig.Plugins);
       }
-
-      if (pluginConfig.IoC) {
-        pluginConfig.IoC.CopyTo(this.ioc!);
-      }
-
-      if (pluginConfig.ModifierLookups) {
-        this.modifierLookups!.push(...(pluginConfig.ModifierLookups || []));
-
-        this.modifierLookups = [...new Set(this.modifierLookups)];
-      }
-
-      await this.processPlugins(pluginConfig.Plugins);
-    });
+    }
   }
 }
