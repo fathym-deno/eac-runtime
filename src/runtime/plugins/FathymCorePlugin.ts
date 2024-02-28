@@ -1,5 +1,6 @@
 import { EaCRuntimePluginConfig } from '../config/EaCRuntimePluginConfig.ts';
 import { EaCRuntimePlugin } from './EaCRuntimePlugin.ts';
+import FathymEaCServicesPlugin from './FathymEaCServicesPlugin.ts';
 import FathymDFSFileHandlerPlugin from './FathymDFSFileHandlerPlugin.ts';
 import FathymModifierHandlerPlugin from './FathymModifierHandlerPlugin.ts';
 import FathymProcessorHandlerPlugin from './FathymProcessorHandlerPlugin.ts';
@@ -14,6 +15,7 @@ export default class FathymCorePlugin implements EaCRuntimePlugin {
         new FathymModifierHandlerPlugin(),
         new FathymDFSFileHandlerPlugin(),
         new FathymEaCPlugin(),
+        new FathymEaCServicesPlugin(),
       ],
     };
 

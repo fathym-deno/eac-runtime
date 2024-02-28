@@ -1,27 +1,9 @@
 import {
-  AzureAISearchVectorStore,
-  AzureChatOpenAI,
-  AzureOpenAIEmbeddings,
-  BaseLanguageModel,
   EaCApplicationAsCode,
-  EaCAzureOpenAIEmbeddingsDetails,
-  EaCAzureOpenAILLMDetails,
-  EaCAzureSearchAIVectorStoreDetails,
-  EaCDenoKVDatabaseDetails,
   EaCModifierAsCode,
   EaCProjectAsCode,
-  EaCWatsonXLLMDetails,
-  Embeddings,
-  initializeDenoKv,
   IoCContainer,
-  isEaCAzureOpenAIEmbeddingsDetails,
-  isEaCAzureOpenAILLMDetails,
-  isEaCAzureSearchAIVectorStoreDetails,
-  isEaCDenoKVDatabaseDetails,
-  isEaCWatsonXLLMDetails,
   mergeWithArrays,
-  VectorStore,
-  WatsonxAI,
 } from '../src.deps.ts';
 import { EaCRuntimeConfig } from './config/EaCRuntimeConfig.ts';
 import { defaultProcessorHandlerResolver } from './processors/defaultProcessorHandlerResolver.ts';
@@ -60,7 +42,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
 
     this.modifierLookups = this.config.ModifierLookups || [];
 
-    await this.processPlugins(this.config.Plugins);
+    await this.configurePlugins(this.config.Plugins);
 
     if (!this.eac) {
       throw new Error(
@@ -76,7 +58,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
 
     this.revision = Date.now();
 
-    this.configureEaCServices();
+    await this.afterEaCResolved(this.config.Plugins);
 
     this.buildProjectGraph();
 
@@ -105,6 +87,30 @@ export class DefaultEaCRuntime implements EaCRuntime {
     } as EaCRuntimeContext);
 
     return resp;
+  }
+
+  protected async afterEaCResolved(
+    plugins?: (EaCRuntimePlugin | [string, ...args: unknown[]])[],
+  ): Promise<void> {
+    for (let pluginDef of plugins || []) {
+      if (Array.isArray(pluginDef)) {
+        const [plugin, ...args] = pluginDef;
+
+        pluginDef = new (await import(plugin)).default(
+          args,
+        ) as EaCRuntimePlugin;
+      }
+
+      if (pluginDef.AfterEaCResolved) {
+        await pluginDef.AfterEaCResolved(this.eac!, this.ioc);
+      }
+
+      const pluginConfig = pluginDef.Build ? await pluginDef.Build() : undefined;
+
+      if (pluginConfig) {
+        await this.afterEaCResolved(pluginConfig.Plugins);
+      }
+    }
   }
 
   protected async buildApplicationGraph(): Promise<void> {
@@ -196,148 +202,38 @@ export class DefaultEaCRuntime implements EaCRuntime {
     }
   }
 
-  protected configureEaCAI(): void {
-    const aiLookups = Object.keys(this.eac!.AIs || {});
+  protected async configurePlugins(
+    plugins?: (EaCRuntimePlugin | [string, ...args: unknown[]])[],
+  ): Promise<void> {
+    for (let pluginDef of plugins || []) {
+      if (Array.isArray(pluginDef)) {
+        const [plugin, ...args] = pluginDef;
 
-    aiLookups.forEach((aiLookup) => {
-      const ai = this.eac!.AIs![aiLookup];
-
-      const llmLookups = Object.keys(ai.LLMs || {});
-
-      llmLookups.forEach((llmLookup) => {
-        const llm = ai.LLMs![llmLookup];
-
-        if (isEaCAzureOpenAILLMDetails(llm.Details)) {
-          const llmDetails = llm.Details as EaCAzureOpenAILLMDetails;
-
-          this.ioc.Register(
-            AzureChatOpenAI,
-            () =>
-              new AzureChatOpenAI({
-                azureOpenAIEndpoint: llmDetails.Endpoint,
-                azureOpenAIApiKey: llmDetails.APIKey,
-                azureOpenAIEmbeddingsApiDeploymentName: llmDetails.DeploymentName,
-                modelName: llmDetails.ModelName,
-                temperature: 0.7,
-                // maxTokens: 1000,
-                maxRetries: 5,
-                verbose: llmDetails.Verbose,
-                streaming: llmDetails.Streaming,
-                ...(llmDetails.InputParams || {}),
-              }),
-            {
-              Lazy: true,
-              Name: `${aiLookup}|${llmLookup}`,
-              Type: this.ioc.Symbol(BaseLanguageModel.name),
-            },
-          );
-        } else if (isEaCWatsonXLLMDetails(llm.Details)) {
-          const llmDetails = llm.Details as EaCWatsonXLLMDetails;
-
-          this.ioc.Register(
-            WatsonxAI,
-            () =>
-              new WatsonxAI({
-                ibmCloudApiKey: llmDetails.APIKey,
-                projectId: llmDetails.ProjectID,
-                modelId: llmDetails.ModelID,
-                modelParameters: llmDetails.ModelParameters ?? {},
-                verbose: llmDetails.Verbose,
-              }),
-            {
-              Lazy: true,
-              Name: `${aiLookup}|${llmLookup}`,
-              Type: this.ioc.Symbol(BaseLanguageModel.name),
-            },
-          );
-        }
-      });
-
-      const embeddingsLookups = Object.keys(ai.Embeddings || {});
-
-      embeddingsLookups.forEach((embeddingsLookup) => {
-        const embeddings = ai.Embeddings![embeddingsLookup];
-
-        if (isEaCAzureOpenAIEmbeddingsDetails(embeddings.Details)) {
-          const embeddingsDetails = embeddings.Details as EaCAzureOpenAIEmbeddingsDetails;
-
-          this.ioc.Register(
-            AzureOpenAIEmbeddings,
-            () =>
-              new AzureOpenAIEmbeddings({
-                azureOpenAIEndpoint: embeddingsDetails.Endpoint,
-                azureOpenAIApiKey: embeddingsDetails.APIKey,
-                azureOpenAIEmbeddingsApiDeploymentName: embeddingsDetails.DeploymentName,
-              }),
-            {
-              Lazy: true,
-              Name: `${aiLookup}|${embeddingsLookup}`,
-              Type: this.ioc.Symbol(Embeddings.name),
-            },
-          );
-        }
-      });
-
-      const vectorStoreLookups = Object.keys(ai.VectorStores || {});
-
-      vectorStoreLookups.forEach((vectorStoreLookup) => {
-        const vectorStore = ai.VectorStores![vectorStoreLookup];
-
-        if (isEaCAzureSearchAIVectorStoreDetails(vectorStore.Details)) {
-          const vectorStoreDetails = vectorStore.Details as EaCAzureSearchAIVectorStoreDetails;
-
-          this.ioc.Register(
-            AzureAISearchVectorStore,
-            async (ioc) =>
-              new AzureAISearchVectorStore(
-                await ioc.Resolve<Embeddings>(
-                  ioc.Symbol(Embeddings.name),
-                  `${aiLookup}|${vectorStoreDetails.EmbeddingsLookup}`,
-                ),
-                {
-                  endpoint: vectorStoreDetails.Endpoint,
-                  key: vectorStoreDetails.APIKey,
-                  search: {
-                    type: vectorStoreDetails.QueryType,
-                  },
-                },
-              ),
-            {
-              Lazy: true,
-              Name: `${aiLookup}|${vectorStoreLookup}`,
-              Type: this.ioc.Symbol(VectorStore.name),
-            },
-          );
-        }
-      });
-    });
-  }
-
-  protected configureEaCDatabases(): void {
-    const dbLookups = Object.keys(this.eac!.Databases || {});
-
-    dbLookups.forEach((dbLookup) => {
-      const db = this.eac!.Databases![dbLookup];
-
-      if (isEaCDenoKVDatabaseDetails(db.Details)) {
-        const dbDetails = db.Details as EaCDenoKVDatabaseDetails;
-
-        this.ioc.Register(
-          Deno.Kv,
-          () => initializeDenoKv(dbDetails.DenoKVPath),
-          {
-            Lazy: true,
-            Name: dbLookup,
-          },
-        );
+        pluginDef = new (await import(plugin)).default(
+          args,
+        ) as EaCRuntimePlugin;
       }
-    });
-  }
 
-  protected configureEaCServices(): void {
-    this.configureEaCAI();
+      const pluginConfig = pluginDef.Build ? await pluginDef.Build() : undefined;
 
-    this.configureEaCDatabases();
+      if (pluginConfig) {
+        if (pluginConfig.EaC) {
+          this.eac = mergeWithArrays(this.eac || {}, pluginConfig.EaC);
+        }
+
+        if (pluginConfig.IoC) {
+          pluginConfig.IoC.CopyTo(this.ioc!);
+        }
+
+        if (pluginConfig.ModifierLookups) {
+          this.modifierLookups!.push(...(pluginConfig.ModifierLookups || []));
+
+          this.modifierLookups = [...new Set(this.modifierLookups)];
+        }
+
+        await this.configurePlugins(pluginConfig.Plugins);
+      }
+    }
   }
 
   protected async constructPipeline(
@@ -457,39 +353,5 @@ export class DefaultEaCRuntime implements EaCRuntime {
     };
 
     return ctx.next(request);
-  }
-
-  protected async processPlugins(
-    plugins?: (EaCRuntimePlugin | [string, ...args: unknown[]])[],
-  ): Promise<void> {
-    for (let pluginDef of plugins || []) {
-      if (Array.isArray(pluginDef)) {
-        const [plugin, ...args] = pluginDef;
-
-        pluginDef = new (await import(plugin)).default(
-          args,
-        ) as EaCRuntimePlugin;
-      }
-
-      const pluginConfig = await pluginDef.Build();
-
-      if (pluginConfig) {
-        if (pluginConfig.EaC) {
-          this.eac = mergeWithArrays(this.eac || {}, pluginConfig.EaC);
-        }
-
-        if (pluginConfig.IoC) {
-          pluginConfig.IoC.CopyTo(this.ioc!);
-        }
-
-        if (pluginConfig.ModifierLookups) {
-          this.modifierLookups!.push(...(pluginConfig.ModifierLookups || []));
-
-          this.modifierLookups = [...new Set(this.modifierLookups)];
-        }
-
-        await this.processPlugins(pluginConfig.Plugins);
-      }
-    }
   }
 }
