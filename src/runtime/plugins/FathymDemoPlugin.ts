@@ -29,6 +29,10 @@ export default class FathymDemoPlugin implements EaCRuntimePlugin {
                 Hostname: 'localhost',
                 Port: this.port || config.Server.port || 8000,
               },
+              dev2: {
+                Hostname: '127.0.0.1',
+                Port: this.port || config.Server.port || 8000,
+              },
             },
             ModifierLookups: ['keepAlive'],
             ApplicationLookups: {
