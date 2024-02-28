@@ -5,11 +5,12 @@ import {
   processCacheControlHeaders,
 } from '../../src.deps.ts';
 import { ProcessorHandlerResolver } from './ProcessorHandlerResolver.ts';
-import { defaultDFSFileHandlerResolver, DFSFileHandler } from './defaultDFSFileHandlerResolver.ts';
+import { defaultDFSFileHandlerResolver } from '../dfs/defaultDFSFileHandlerResolver.ts';
+import { DFSFileHandler } from '../dfs/DFSFileHandler.ts';
 import { EAC_RUNTIME_DEV } from '../../constants.ts';
 
 export const EaCDFSProcessorHandlerResolver: ProcessorHandlerResolver = {
-  Resolve(_ioc, appProcCfg) {
+  Resolve(ioc, appProcCfg) {
     if (!isEaCDFSProcessor(appProcCfg.Application.Processor)) {
       throw new Deno.errors.NotSupported(
         'The provided processor is not supported for the EaCDFSProcessorHandlerResolver.',
@@ -19,7 +20,8 @@ export const EaCDFSProcessorHandlerResolver: ProcessorHandlerResolver = {
     const processor = appProcCfg.Application.Processor as EaCDFSProcessor;
 
     const filesReady = new Promise<DFSFileHandler>((resolve, reject) => {
-      defaultDFSFileHandlerResolver(processor.DFS)
+      defaultDFSFileHandlerResolver
+        .Resolve(ioc, processor.DFS)
         .then((fileHandler) => {
           resolve(fileHandler);
         })
