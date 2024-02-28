@@ -1,6 +1,5 @@
 export * from './defaultProcessorHandlerResolver.ts';
 export * from './defaultDFSFileHandlerResolver.ts';
-export * from './defaultModifierMiddlewareResolver.ts';
 export * from './EaCAIChatProcessorHandlerResolver.ts';
 export * from './EaCApplicationProcessorConfig.ts';
 export * from './EaCDFSProcessorHandlerResolver.ts';

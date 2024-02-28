@@ -9,10 +9,10 @@ import { UnknownEaCProcessorHandlerResolver } from '../processors/UnknownEaCProc
 import { EaCRuntimePlugin } from './EaCRuntimePlugin.ts';
 import { EaCRuntimePluginConfig } from '../config/EaCRuntimePluginConfig.ts';
 
-export default class FathymAppHandlerPlugin implements EaCRuntimePlugin {
+export default class FathymProcessorHandlerPlugin implements EaCRuntimePlugin {
   public Build(): Promise<EaCRuntimePluginConfig> {
     const config: EaCRuntimePluginConfig = {
-      Name: 'FathymAppHandlerPlugin',
+      Name: 'FathymProcessorHandlerPlugin',
       IoC: new IoCContainer(),
     };
 

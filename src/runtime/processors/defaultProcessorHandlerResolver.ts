@@ -34,8 +34,6 @@ export const defaultProcessorHandlerResolver: ProcessorHandlerResolver = {
       toResolveName,
     );
 
-    const handler = await resolver.Resolve(ioc, appProcCfg);
-
-    return handler;
+    return await resolver.Resolve(ioc, appProcCfg);
   },
 };

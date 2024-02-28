@@ -25,7 +25,7 @@ import {
 } from '../src.deps.ts';
 import { EaCRuntimeConfig } from './config/EaCRuntimeConfig.ts';
 import { defaultProcessorHandlerResolver } from './processors/defaultProcessorHandlerResolver.ts';
-import { defaultModifierMiddlewareResolver } from './processors/defaultModifierMiddlewareResolver.ts';
+import { defaultModifierMiddlewareResolver } from './modifiers/defaultModifierMiddlewareResolver.ts';
 import { EaCApplicationProcessorConfig } from './processors/EaCApplicationProcessorConfig.ts';
 import { EaCProjectProcessorConfig } from './processors/EaCProjectProcessorConfig.ts';
 import { EaCRuntime } from './EaCRuntime.ts';
@@ -147,7 +147,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
             projProcCfg.ProjectLookup
           ]
         ) {
-          const pipeline: EaCRuntimeHandler[] = this.constructPipeline(
+          const pipeline: EaCRuntimeHandler[] = await this.constructPipeline(
             projProcCfg.Project,
             appProcCfg.Application,
             this.eac!.Modifiers || {},
@@ -340,11 +340,11 @@ export class DefaultEaCRuntime implements EaCRuntime {
     this.configureEaCDatabases();
   }
 
-  protected constructPipeline(
+  protected async constructPipeline(
     project: EaCProjectAsCode,
     application: EaCApplicationAsCode,
     modifiers: Record<string, EaCModifierAsCode>,
-  ): EaCRuntimeHandler[] {
+  ): Promise<EaCRuntimeHandler[]> {
     const pipelineModifierLookups: string[] = [];
 
     pipelineModifierLookups.push(...(this.modifierLookups || []));
@@ -355,7 +355,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
 
     pipelineModifierLookups.push(...(application.ModifierLookups || []));
 
-    const pipelineModifiers: EaCModifierAsCode[] = [];
+    let pipelineModifiers: EaCModifierAsCode[] = [];
 
     pipelineModifierLookups?.forEach((ml) => {
       if (ml in modifiers) {
@@ -365,11 +365,15 @@ export class DefaultEaCRuntime implements EaCRuntime {
 
     const pipeline: (EaCRuntimeHandler | undefined)[] = [];
 
-    pipelineModifiers
-      .sort((a, b) => b.Details!.Priority - a.Details!.Priority)
-      .forEach((mod) => {
-        pipeline.push(defaultModifierMiddlewareResolver(mod));
-      });
+    pipelineModifiers = pipelineModifiers.sort(
+      (a, b) => b.Details!.Priority - a.Details!.Priority,
+    );
+
+    for (const mod of pipelineModifiers) {
+      pipeline.push(
+        await defaultModifierMiddlewareResolver.Resolve(this.ioc, mod),
+      );
+    }
 
     return pipeline.filter((p) => p).map((p) => p!);
   }
@@ -377,7 +381,10 @@ export class DefaultEaCRuntime implements EaCRuntime {
   protected async establishApplicationHandler(
     appProcessorConfig: EaCApplicationProcessorConfig,
   ): Promise<EaCRuntimeHandler> {
-    return await defaultProcessorHandlerResolver.Resolve(this.ioc, appProcessorConfig);
+    return await defaultProcessorHandlerResolver.Resolve(
+      this.ioc,
+      appProcessorConfig,
+    );
   }
 
   protected establishProjectHandler(
