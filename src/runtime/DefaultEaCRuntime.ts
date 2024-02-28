@@ -105,7 +105,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
         await pluginDef.AfterEaCResolved(this.eac!, this.ioc);
       }
 
-      const pluginConfig = pluginDef.Build ? await pluginDef.Build() : undefined;
+      const pluginConfig = pluginDef.Build ? await pluginDef.Build(this.config) : undefined;
 
       if (pluginConfig) {
         await this.afterEaCResolved(pluginConfig.Plugins);
@@ -214,7 +214,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
         ) as EaCRuntimePlugin;
       }
 
-      const pluginConfig = pluginDef.Build ? await pluginDef.Build() : undefined;
+      const pluginConfig = pluginDef.Build ? await pluginDef.Build(this.config) : undefined;
 
       if (pluginConfig) {
         if (pluginConfig.EaC) {

@@ -4,35 +4,36 @@ import { EaCKeepAliveModifierHandlerResolver } from '../modifiers/EaCKeepAliveMo
 import { EaCOAuthModifierHandlerResolver } from '../modifiers/EaCOAuthModifierHandlerResolver.ts';
 import { EaCTracingModifierHandlerResolver } from '../modifiers/EaCTracingModifierHandlerResolver.ts';
 import { EaCRuntimePlugin } from './EaCRuntimePlugin.ts';
+import { EaCRuntimeConfig } from '../config/EaCRuntimeConfig.ts';
 import { EaCRuntimePluginConfig } from '../config/EaCRuntimePluginConfig.ts';
 
 export default class FathymModifierHandlerPlugin implements EaCRuntimePlugin {
-  public Build(): Promise<EaCRuntimePluginConfig> {
-    const config: EaCRuntimePluginConfig = {
+  public Build(_config: EaCRuntimeConfig): Promise<EaCRuntimePluginConfig> {
+    const pluginConfig: EaCRuntimePluginConfig = {
       Name: 'FathymModifierHandlerPlugin',
       IoC: new IoCContainer(),
     };
 
-    config.IoC!.Register(() => EaCDenoKVCacheModifierHandlerResolver, {
+    pluginConfig.IoC!.Register(() => EaCDenoKVCacheModifierHandlerResolver, {
       Name: 'EaCDenoKVCacheModifierDetails',
-      Type: config.IoC!.Symbol('ModifierHandlerResolver'),
+      Type: pluginConfig.IoC!.Symbol('ModifierHandlerResolver'),
     });
 
-    config.IoC!.Register(() => EaCKeepAliveModifierHandlerResolver, {
+    pluginConfig.IoC!.Register(() => EaCKeepAliveModifierHandlerResolver, {
       Name: 'EaCKeepAliveModifierDetails',
-      Type: config.IoC!.Symbol('ModifierHandlerResolver'),
+      Type: pluginConfig.IoC!.Symbol('ModifierHandlerResolver'),
     });
 
-    config.IoC!.Register(() => EaCOAuthModifierHandlerResolver, {
+    pluginConfig.IoC!.Register(() => EaCOAuthModifierHandlerResolver, {
       Name: 'EaCOAuthModifierDetails',
-      Type: config.IoC!.Symbol('ModifierHandlerResolver'),
+      Type: pluginConfig.IoC!.Symbol('ModifierHandlerResolver'),
     });
 
-    config.IoC!.Register(() => EaCTracingModifierHandlerResolver, {
+    pluginConfig.IoC!.Register(() => EaCTracingModifierHandlerResolver, {
       Name: 'EaCTracingModifierDetails',
-      Type: config.IoC!.Symbol('ModifierHandlerResolver'),
+      Type: pluginConfig.IoC!.Symbol('ModifierHandlerResolver'),
     });
 
-    return Promise.resolve(config);
+    return Promise.resolve(pluginConfig);
   }
 }

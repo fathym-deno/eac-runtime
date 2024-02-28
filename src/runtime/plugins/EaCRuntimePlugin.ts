@@ -1,4 +1,5 @@
 import { EverythingAsCode, IoCContainer } from '../../src.deps.ts';
+import { EaCRuntimeConfig } from '../config/EaCRuntimeConfig.ts';
 import { EaCRuntimePluginConfig } from '../config/EaCRuntimePluginConfig.ts';
 
 export type EaCRuntimePlugin = {
@@ -7,5 +8,5 @@ export type EaCRuntimePlugin = {
     ioc: IoCContainer,
   ) => Promise<void>;
 
-  Build?: () => Promise<EaCRuntimePluginConfig>;
+  Build?: (config: EaCRuntimeConfig) => Promise<EaCRuntimePluginConfig>;
 };

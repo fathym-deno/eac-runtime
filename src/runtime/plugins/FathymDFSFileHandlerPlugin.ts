@@ -3,30 +3,31 @@ import { EaCLocalDistributedFileSystemHandlerResolver } from '../dfs/EaCLocalDis
 import { EaCNPMDistributedFileSystemHandlerResolver } from '../dfs/EaCNPMDistributedFileSystemHandlerResolver.ts';
 import { UnknownEaCDistributedFileSystemHandlerResolver } from '../dfs/UnknownEaCDistributedFileSystemHandlerResolver.ts';
 import { EaCRuntimePlugin } from './EaCRuntimePlugin.ts';
+import { EaCRuntimeConfig } from '../config/EaCRuntimeConfig.ts';
 import { EaCRuntimePluginConfig } from '../config/EaCRuntimePluginConfig.ts';
 
 export default class FathymDFSFileHandlerPlugin implements EaCRuntimePlugin {
-  public Build(): Promise<EaCRuntimePluginConfig> {
-    const config: EaCRuntimePluginConfig = {
+  public Build(_config: EaCRuntimeConfig): Promise<EaCRuntimePluginConfig> {
+    const pluginConfig: EaCRuntimePluginConfig = {
       Name: 'FathymDFSFileHandlerPlugin',
       IoC: new IoCContainer(),
     };
 
-    config.IoC!.Register(() => EaCLocalDistributedFileSystemHandlerResolver, {
+    pluginConfig.IoC!.Register(() => EaCLocalDistributedFileSystemHandlerResolver, {
       Name: 'EaCLocalDistributedFileSystem',
-      Type: config.IoC!.Symbol('DFSFileHandlerResolver'),
+      Type: pluginConfig.IoC!.Symbol('DFSFileHandlerResolver'),
     });
 
-    config.IoC!.Register(() => EaCNPMDistributedFileSystemHandlerResolver, {
+    pluginConfig.IoC!.Register(() => EaCNPMDistributedFileSystemHandlerResolver, {
       Name: 'EaCNPMDistributedFileSystem',
-      Type: config.IoC!.Symbol('DFSFileHandlerResolver'),
+      Type: pluginConfig.IoC!.Symbol('DFSFileHandlerResolver'),
     });
 
-    config.IoC!.Register(() => UnknownEaCDistributedFileSystemHandlerResolver, {
+    pluginConfig.IoC!.Register(() => UnknownEaCDistributedFileSystemHandlerResolver, {
       Name: 'UnknownEaCDistributedFileSystem',
-      Type: config.IoC!.Symbol('DFSFileHandlerResolver'),
+      Type: pluginConfig.IoC!.Symbol('DFSFileHandlerResolver'),
     });
 
-    return Promise.resolve(config);
+    return Promise.resolve(pluginConfig);
   }
 }

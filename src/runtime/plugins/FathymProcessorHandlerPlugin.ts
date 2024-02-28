@@ -7,50 +7,51 @@ import { EaCProxyProcessorHandlerResolver } from '../processors/EaCProxyProcesso
 import { EaCRedirectProcessorHandlerResolver } from '../processors/EaCRedirectProcessorHandlerResolver.ts';
 import { UnknownEaCProcessorHandlerResolver } from '../processors/UnknownEaCProcessorHandlerResolver.ts';
 import { EaCRuntimePlugin } from './EaCRuntimePlugin.ts';
+import { EaCRuntimeConfig } from '../config/EaCRuntimeConfig.ts';
 import { EaCRuntimePluginConfig } from '../config/EaCRuntimePluginConfig.ts';
 
 export default class FathymProcessorHandlerPlugin implements EaCRuntimePlugin {
-  public Build(): Promise<EaCRuntimePluginConfig> {
-    const config: EaCRuntimePluginConfig = {
+  public Build(_config: EaCRuntimeConfig): Promise<EaCRuntimePluginConfig> {
+    const pluginConfig: EaCRuntimePluginConfig = {
       Name: 'FathymProcessorHandlerPlugin',
       IoC: new IoCContainer(),
     };
 
-    config.IoC!.Register(() => EaCAIChatProcessorHandlerResolver, {
+    pluginConfig.IoC!.Register(() => EaCAIChatProcessorHandlerResolver, {
       Name: 'EaCAIChatProcessor',
-      Type: config.IoC!.Symbol('ProcessorHandlerResolver'),
+      Type: pluginConfig.IoC!.Symbol('ProcessorHandlerResolver'),
     });
 
-    config.IoC!.Register(() => EaCDFSProcessorHandlerResolver, {
+    pluginConfig.IoC!.Register(() => EaCDFSProcessorHandlerResolver, {
       Name: 'EaCDFSProcessor',
-      Type: config.IoC!.Symbol('ProcessorHandlerResolver'),
+      Type: pluginConfig.IoC!.Symbol('ProcessorHandlerResolver'),
     });
 
-    config.IoC!.Register(() => EaCOAuthProcessorHandlerResolver, {
+    pluginConfig.IoC!.Register(() => EaCOAuthProcessorHandlerResolver, {
       Name: 'EaCOAuthProcessor',
-      Type: config.IoC!.Symbol('ProcessorHandlerResolver'),
+      Type: pluginConfig.IoC!.Symbol('ProcessorHandlerResolver'),
     });
 
-    config.IoC!.Register(() => EaCPreactAppProcessorHandlerResolver, {
+    pluginConfig.IoC!.Register(() => EaCPreactAppProcessorHandlerResolver, {
       Name: 'EaCPreactAppProcessor',
-      Type: config.IoC!.Symbol('ProcessorHandlerResolver'),
+      Type: pluginConfig.IoC!.Symbol('ProcessorHandlerResolver'),
     });
 
-    config.IoC!.Register(() => EaCProxyProcessorHandlerResolver, {
+    pluginConfig.IoC!.Register(() => EaCProxyProcessorHandlerResolver, {
       Name: 'EaCProxyProcessor',
-      Type: config.IoC!.Symbol('ProcessorHandlerResolver'),
+      Type: pluginConfig.IoC!.Symbol('ProcessorHandlerResolver'),
     });
 
-    config.IoC!.Register(() => EaCRedirectProcessorHandlerResolver, {
+    pluginConfig.IoC!.Register(() => EaCRedirectProcessorHandlerResolver, {
       Name: 'EaCRedirectProcessor',
-      Type: config.IoC!.Symbol('ProcessorHandlerResolver'),
+      Type: pluginConfig.IoC!.Symbol('ProcessorHandlerResolver'),
     });
 
-    config.IoC!.Register(() => UnknownEaCProcessorHandlerResolver, {
+    pluginConfig.IoC!.Register(() => UnknownEaCProcessorHandlerResolver, {
       Name: 'UnknownEaCProcessor',
-      Type: config.IoC!.Symbol('ProcessorHandlerResolver'),
+      Type: pluginConfig.IoC!.Symbol('ProcessorHandlerResolver'),
     });
 
-    return Promise.resolve(config);
+    return Promise.resolve(pluginConfig);
   }
 }

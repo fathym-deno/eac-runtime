@@ -1,3 +1,4 @@
+import { EaCRuntimeConfig } from '../config/EaCRuntimeConfig.ts';
 import { EaCRuntimePluginConfig } from '../config/EaCRuntimePluginConfig.ts';
 import { EaCRuntimePlugin } from './EaCRuntimePlugin.ts';
 import FathymEaCServicesPlugin from './FathymEaCServicesPlugin.ts';
@@ -7,8 +8,8 @@ import FathymProcessorHandlerPlugin from './FathymProcessorHandlerPlugin.ts';
 import FathymEaCPlugin from './FathymEaCPlugin.ts';
 
 export default class FathymCorePlugin implements EaCRuntimePlugin {
-  public Build(): Promise<EaCRuntimePluginConfig> {
-    const config: EaCRuntimePluginConfig = {
+  public Build(_config: EaCRuntimeConfig): Promise<EaCRuntimePluginConfig> {
+    const pluginConfig: EaCRuntimePluginConfig = {
       Name: 'FathymCorePlugin',
       Plugins: [
         new FathymProcessorHandlerPlugin(),
@@ -19,6 +20,6 @@ export default class FathymCorePlugin implements EaCRuntimePlugin {
       ],
     };
 
-    return Promise.resolve(config);
+    return Promise.resolve(pluginConfig);
   }
 }

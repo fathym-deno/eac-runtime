@@ -6,15 +6,16 @@ import {
   EaCRedirectProcessor,
   EaCTracingModifierDetails,
 } from '../../src.deps.ts';
+import { EaCRuntimeConfig } from '../config/EaCRuntimeConfig.ts';
 import { EaCRuntimePluginConfig } from '../config/EaCRuntimePluginConfig.ts';
 import { EaCRuntimePlugin } from './EaCRuntimePlugin.ts';
 
 export default class FathymDemoPlugin implements EaCRuntimePlugin {
   constructor(protected port?: number) {}
 
-  public Build(): Promise<EaCRuntimePluginConfig> {
-    const config: EaCRuntimePluginConfig = {
-      Name: 'FathymCorePlugin',
+  public Build(config: EaCRuntimeConfig): Promise<EaCRuntimePluginConfig> {
+    const pluginConfig: EaCRuntimePluginConfig = {
+      Name: 'FathymDemoPlugin',
       EaC: {
         Projects: {
           marketing: {
@@ -26,7 +27,7 @@ export default class FathymDemoPlugin implements EaCRuntimePlugin {
             LookupConfigs: {
               dev: {
                 Hostname: 'localhost',
-                Port: this.port || 8000,
+                Port: this.port || config.Server.port || 8000,
               },
             },
             ModifierLookups: ['keepAlive'],
@@ -114,6 +115,6 @@ export default class FathymDemoPlugin implements EaCRuntimePlugin {
       },
     };
 
-    return Promise.resolve(config);
+    return Promise.resolve(pluginConfig);
   }
 }

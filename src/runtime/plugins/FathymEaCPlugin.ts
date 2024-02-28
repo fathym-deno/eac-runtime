@@ -1,10 +1,11 @@
 import { djwt, loadEaCSvc } from '../../src.deps.ts';
+import { EaCRuntimeConfig } from '../config/EaCRuntimeConfig.ts';
 import { EaCRuntimePluginConfig } from '../config/EaCRuntimePluginConfig.ts';
 import { EaCRuntimePlugin } from './EaCRuntimePlugin.ts';
 
 export default class FathymEaCPlugin implements EaCRuntimePlugin {
-  public async Build(): Promise<EaCRuntimePluginConfig> {
-    const config: EaCRuntimePluginConfig = {
+  public async Build(_config: EaCRuntimeConfig): Promise<EaCRuntimePluginConfig> {
+    const pluginConfig: EaCRuntimePluginConfig = {
       Name: 'FathymEaCPlugin',
     };
 
@@ -20,7 +21,7 @@ export default class FathymEaCPlugin implements EaCRuntimePlugin {
 
         const eac = await eacSvc.Get(EnterpriseLookup as string);
 
-        config.EaC = eac;
+        pluginConfig.EaC = eac;
       } catch (err) {
         console.error(
           'Unable to connect to the EaC service, falling back to local config.',
@@ -29,6 +30,6 @@ export default class FathymEaCPlugin implements EaCRuntimePlugin {
       }
     }
 
-    return config;
+    return pluginConfig;
   }
 }
