@@ -18,10 +18,10 @@ export default class FathymDemoPlugin implements EaCRuntimePlugin {
       Name: 'FathymDemoPlugin',
       EaC: {
         Projects: {
-          marketing: {
+          demo: {
             Details: {
-              Name: 'Main marketing website',
-              Description: 'The main marketing website to use.',
+              Name: 'Demo Micro Applications',
+              Description: 'The Demo Micro Applications to use.',
               Priority: 100,
             },
             LookupConfigs: {
