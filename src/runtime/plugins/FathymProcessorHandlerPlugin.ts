@@ -1,5 +1,5 @@
 import { IoCContainer } from '../../src.deps.ts';
-import { DefaultProcessorHandlerResolver } from '../processors/DefaultProcessorHandlerResolver.ts';
+import { DefaultProcessorHandlerResolver } from '../processors/_DefaultProcessorHandlerResolver.ts';
 import { EaCAIChatProcessorHandlerResolver } from '../processors/EaCAIChatProcessorHandlerResolver.ts';
 import { EaCDFSProcessorHandlerResolver } from '../processors/EaCDFSProcessorHandlerResolver.ts';
 import { EaCOAuthProcessorHandlerResolver } from '../processors/EaCOAuthProcessorHandlerResolver.ts';

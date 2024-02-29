@@ -1,4 +1,4 @@
-export * from './DefaultModifierMiddlewareResolver.ts';
+export * from './_DefaultModifierMiddlewareResolver.ts';
 export * from './EaCDenoKVCacheModifierHandlerResolver.ts';
 export * from './EaCKeepAliveModifierHandlerResolver.ts';
 export * from './EaCMarkdownModifierHandlerResolver.ts';

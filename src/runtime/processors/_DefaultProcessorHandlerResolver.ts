@@ -7,9 +7,9 @@ import {
   isEaCProxyProcessor,
   isEaCRedirectProcessor,
   // preactToString,
-} from '../../src.deps.ts';
-import { EaCApplicationProcessorConfig } from './EaCApplicationProcessorConfig.ts';
-import { ProcessorHandlerResolver } from './ProcessorHandlerResolver.ts';
+} from '../../src.deps.js';
+import { EaCApplicationProcessorConfig } from './EaCApplicationProcessorConfig.js';
+import { ProcessorHandlerResolver } from './ProcessorHandlerResolver.js';
 
 export class DefaultProcessorHandlerResolver implements ProcessorHandlerResolver {
   public async Resolve(ioc: IoCContainer, appProcCfg: EaCApplicationProcessorConfig) {

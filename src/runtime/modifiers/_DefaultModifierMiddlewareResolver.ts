@@ -6,8 +6,8 @@ import {
   isEaCMarkdownModifierDetails,
   isEaCOAuthModifierDetails,
   isEaCTracingModifierDetails,
-} from '../../src.deps.ts';
-import { ModifierHandlerResolver } from './ModifierHandlerResolver.ts';
+} from '../../src.deps.js';
+import { ModifierHandlerResolver } from './ModifierHandlerResolver.js';
 
 export class DefaultModifierMiddlewareResolver implements ModifierHandlerResolver {
   public async Resolve(ioc: IoCContainer, modifier: EaCModifierAsCode) {

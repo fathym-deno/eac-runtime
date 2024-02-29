@@ -1,5 +1,5 @@
 import { IoCContainer } from '../../src.deps.ts';
-import { DefaultDFSFileHandlerResolver } from '../dfs/DefaultDFSFileHandlerResolver.ts';
+import { DefaultDFSFileHandlerResolver } from '../dfs/_DefaultDFSFileHandlerResolver.ts';
 import { EaCLocalDistributedFileSystemHandlerResolver } from '../dfs/EaCLocalDistributedFileSystemHandlerResolver.ts';
 import { EaCNPMDistributedFileSystemHandlerResolver } from '../dfs/EaCNPMDistributedFileSystemHandlerResolver.ts';
 import { UnknownEaCDistributedFileSystemHandlerResolver } from '../dfs/UnknownEaCDistributedFileSystemHandlerResolver.ts';
