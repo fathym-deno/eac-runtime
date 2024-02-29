@@ -8,6 +8,7 @@ export const DefaultEaCConfig: EaCRuntimeConfig = {
   ModifierLookups: [],
   Plugins: [new FathymCorePlugin()],
   Runtime: (cfg: EaCRuntimeConfig) => new DefaultEaCRuntime(cfg),
+  EaC: { EnterpriseLookup: 'default-eac' },
   Server: {
     onListen: (params) => {
       const address = colors.green(`http://localhost:${params.port}`);
