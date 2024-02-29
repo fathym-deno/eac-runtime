@@ -28,6 +28,10 @@ Inside of the EverythingAsCodeApplications spec, are a number of features to hel
 
 #### Generative AI
 
+##### Chat
+
+##### Agents
+
 #### Proxies
 
 #### User Authentication
