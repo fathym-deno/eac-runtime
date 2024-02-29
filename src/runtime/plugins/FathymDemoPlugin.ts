@@ -1,6 +1,10 @@
 import {
+  EaCDenoKVCacheModifierDetails,
+  EaCDenoKVDatabaseDetails,
   EaCDFSProcessor,
   EaCKeepAliveModifierDetails,
+  EaCLocalDistributedFileSystem,
+  EaCMarkdownModifierDetails,
   EaCNPMDistributedFileSystem,
   EaCProxyProcessor,
   EaCRedirectProcessor,
@@ -80,7 +84,13 @@ export default class FathymDemoPlugin implements EaCRuntimePlugin {
               Name: 'Home Site',
               Description: 'The home site to be used for the marketing of the project',
             },
-            Processor: {},
+            ModifierLookups: ['denoKvCache', 'markdown'],
+            Processor: {
+              DFS: {
+                DefaultFile: 'README.md',
+                FileRoot: './',
+              } as EaCLocalDistributedFileSystem,
+            } as EaCDFSProcessor,
           },
           publicWebBlog: {
             Details: {
@@ -100,20 +110,48 @@ export default class FathymDemoPlugin implements EaCRuntimePlugin {
         Modifiers: {
           keepAlive: {
             Details: {
-              Name: 'Deno KV Cache',
-              Description: 'Lightweight cache to use that stores data in a DenoKV database.',
+              Name: 'Keep Alive',
+              Description: 'Modifier to support a keep alive workflow.',
               KeepAlivePath: '/_eac/alive',
               Priority: 1000,
             } as EaCKeepAliveModifierDetails,
           },
+          markdown: {
+            Details: {
+              Name: 'Markdown to HTML',
+              Description: 'A modifier to convert markdown to HTML.',
+              Type: 'Markdown',
+              Priority: 10,
+            } as EaCMarkdownModifierDetails,
+          },
+          denoKvCache: {
+            Details: {
+              Name: 'DenoKV Cache',
+              Description:
+                'Lightweight cache to use that stores data in a DenoKV database for static sites.',
+              DenoKVDatabaseLookup: 'cache',
+              CacheSeconds: 60 * 20,
+              Priority: 500,
+            } as EaCDenoKVCacheModifierDetails,
+          },
           tracing: {
             Details: {
-              Name: 'Deno KV Cache',
-              Description: 'Lightweight cache to use that stores data in a DenoKV database.',
+              Name: 'Tracing',
+              Description: 'Allows for tracing of requests and responses.',
               TraceRequest: true,
               TraceResponse: true,
               Priority: 1500,
             } as EaCTracingModifierDetails,
+          },
+        },
+        Databases: {
+          cache: {
+            Details: {
+              Name: 'Local Cache',
+              Description: 'The Deno KV database to use for local caching',
+              DenoKVPath: Deno.env.get('LOCAL_CACHE_DENO_KV_PATH') || undefined,
+              Type: 'DenoKV',
+            } as EaCDenoKVDatabaseDetails,
           },
         },
       },

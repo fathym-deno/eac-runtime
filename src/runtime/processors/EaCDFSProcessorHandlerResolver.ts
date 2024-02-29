@@ -57,7 +57,9 @@ export const EaCDFSProcessorHandlerResolver: ProcessorHandlerResolver = {
         !('content-type' in file.Headers) ||
         !('Content-Type' in file.Headers)
       ) {
-        let mimeType = filePath.endsWith('.ts') ? 'application/typescript' : mime.getType(filePath);
+        let mimeType = file.Path.endsWith('.ts')
+          ? 'application/typescript'
+          : mime.getType(file.Path);
 
         if (!mimeType) {
           mimeType = processor.DFS.DefaultFile?.endsWith('.ts')

@@ -2,7 +2,7 @@ export function getFileCheckPathsToProcess(
   filePath: string,
   defaultFileName?: string,
 ): string[] {
-  const pathParts = filePath.split('/');
+  const pathParts = filePath?.split('/') || [];
 
   const lastPart = pathParts.findLast((pp) => pp);
 

@@ -63,7 +63,18 @@ export default class MyDemoPlugin implements EaCRuntimePlugin {
 
 We start by pulling in our minimum required dependencies, and then define our plugin as a class that implements the `EaCRuntimePlugin`. A couple of quick notes 1) The plugin is exported as default, in order to support external loading and 2) a class is not required to implement the plugin, it is just our preferred way to do things.
 
-There is a build method, which takes the `EaCRuntimeConfig` for the current runtime and returns an `EaCRuntimePluginConfig`. To start, we've simply given our plugin a name, and returned a blank configuration.
+There is a Build method, which takes the `EaCRuntimeConfig` for the current runtime and returns an `EaCRuntimePluginConfig`. To start, we've simply given our plugin a name, and returned a blank configuration.
+
+Now we need to configure this plugin to be used by the runtime. To do this, open the `configs/eac-runtime.config.ts` file and update the plugins to use the new plugin, instead of the FathymDenoPlugin:
+
+```typescript ./configs/eac-runtime.config.ts
+import { DefaultEaCConfig, defineEaCConfig } from '@fathym/eac/runtime';
+import MyDemoPlugin from '../src/plugins/MyDemoPlugin.ts';
+
+export default defineEaCConfig({
+  Plugins: [new MyDemoPlugin(), ...(DefaultEaCConfig.Plugins || [])],
+});
+```
 
 ### The Project
 
@@ -105,12 +116,14 @@ Here we have add a new demo project with some initial details. We have also conf
 
 A project on its own, won't do much. So now we need to configure some applications that we can assign to the project.
 
+#### Redirects
+
 Let's start with a simple application, a redirect to our favorite site:
 
 ```typescript ./src/plugins/MyDemoPlugin.ts
 const pluginConfig: EaCRuntimePluginConfig = {
   Name: 'MyDemoPlugin',
-  EaC: {x``
+  EaC: {
     Applications: {
       fathym: {
         Details: {
@@ -138,7 +151,7 @@ const pluginConfig: EaCRuntimePluginConfig = {
       demo: {
         ApplicationLookups: {
           fathym: {
-            PathPattern: '/fathym',
+            PathPattern: '/redirect',
             Priority: 200,
           },
         },
@@ -148,6 +161,186 @@ const pluginConfig: EaCRuntimePluginConfig = {
 };
 ```
 
-The application lookup must use the same lookup used to define the application. Then we define the `PathPattern`, which gives the project information what it needs to resolve the application processor for a Request.
+The application lookup must use the same key used to define the application. Then we define the `PathPattern`, which gives the project information that it needs to resolve the Request. The priority is used to order applications during request resolution.
 
-If you go ahead and start the runtime, then navigate to `/red9rect`, you should be automatically redirected to the site you configured.
+If you go ahead and start the runtime, then navigate to `/redirect`, you should be automatically redirected to the site you configured.
+
+#### Proxies
+
+Next we will look at configuring a proxy application. This allows us to configure a URL to host our backend services on:
+
+```typescript ./src/plugins/MyDemoPlugin.ts
+const pluginConfig: EaCRuntimePluginConfig = {
+  Name: 'MyDemoPlugin',
+  EaC: {
+    Projects: {
+      demo: {
+        ApplicationLookups: {
+          apiProxy: {
+            PathPattern: '/api-reqres*',
+            Priority: 200,
+          },
+        },
+      },
+    },
+    Applications: {
+      apiProxy: {
+        Details: {
+          Name: 'Simple API Proxy',
+          Description: 'A proxy',
+        },
+        ModifierLookups: ['tracing'],
+        Processor: {
+          ProxyRoot: 'https://reqres.in/api',
+        } as EaCProxyProcessor,
+      },
+    },
+  },
+};
+```
+
+Here we have setup the application and once again assigned it to the project. In PathPattern for this assignment, we use a `*` to denote matching incoming request urls to anything that starts with `/api-reqres`. The rest of the path information after that root path is forwarded as part of the proxy request. Find complete infromation on available patterns <a href="https://developer.mozilla.org/en-US/docs/Web/API/URLPattern" target="_blank">here</a>. You'll also notice that we have added a `tracing` modifier to this application that will log each request and response to the API.
+
+Start the runtime, then navigate to `/api-reqres/users`, you should be automatically redirected to the site you configured.
+
+#### DFS (Distributed File System) Hosting
+
+Now we can look at using the DFS to host a static site we have packaged in NPM. This is a React Docusaurus site, showing how we can leverage multiple architectures.
+
+```typescript ./src/plugins/MyDemoPlugin.ts
+const pluginConfig: EaCRuntimePluginConfig = {
+  Name: 'MyDemoPlugin',
+  EaC: {
+    Projects: {
+      demo: {
+        ApplicationLookups: {
+          publicWebBlog: {
+            PathPattern: '/blog*',
+            Priority: 500,
+          },
+        },
+      },
+    },
+    Applications: {
+      publicWebBlog: {
+        Details: {
+          Name: 'Public Web Blog Site',
+          Description:
+            'The public web blog site to be used for the marketing of the project',
+        },
+        ModifierLookups: ['denoKvCache'],
+        Processor: {
+          DFS: {
+            DefaultFile: 'index.html',
+            Package: '@lowcodeunit/public-web-blog',
+            Version: 'latest',
+          } as EaCNPMDistributedFileSystem,
+        } as EaCDFSProcessor,
+      },
+    },
+  },
+};
+```
+
+Most of this should be starting to look familiar, we've configured the processor and added a `denoKvCache` modifier, then assigned it to the project.
+
+#### Markdown Rendering
+
+The final application that we'll add is for rendering a home page from a Markdown file. This is a very simple use case, without any additional styles or application code.
+
+```typescript ./src/plugins/MyDemoPlugin.ts
+const pluginConfig: EaCRuntimePluginConfig = {
+  Name: 'MyDemoPlugin',
+  EaC: {
+    Projects: {
+      demo: {
+        ApplicationLookups: {
+          publicWebBlog: {
+            PathPattern: '/blog*',
+            Priority: 500,
+          },
+        },
+      },
+    },
+    Applications: {
+      publicWebBlog: {
+        Details: {
+          Name: 'Public Web Blog Site',
+          Description:
+            'The public web blog site to be used for the marketing of the project',
+        },
+        ModifierLookups: ['denoKvCache'],
+        Processor: {
+          DFS: {
+            DefaultFile: 'index.html',
+            Package: '@lowcodeunit/public-web-blog',
+            Version: 'latest',
+          } as EaCNPMDistributedFileSystem,
+        } as EaCDFSProcessor,
+      },
+    },
+  },
+};
+```
+
+#### Modifiers
+
+Modifiers allow us to easily manipulate the requests and responses of the system. In the above applications, we have used three different modifiers, and now we need to configure them:
+
+```typescript ./src/plugins/MyDemoPlugin.ts
+const pluginConfig: EaCRuntimePluginConfig = {
+  Name: 'MyDemoPlugin',
+  EaC: {
+    Modifiers: {
+      keepAlive: {
+        Details: {
+          Name: 'Keep Alive',
+          Description: 'Modifier to support a keep alive workflow.',
+          KeepAlivePath: '/_eac/alive',
+          Priority: 1000,
+        } as EaCKeepAliveModifierDetails,
+      },
+      'static-cache': {
+        Details: {
+          Name: 'Static Cache',
+          Description:
+            'Lightweight cache to use that stores data in a DenoKV database for static sites.',
+          DenoKVDatabaseLookup: 'cache',
+          CacheSeconds: 60 * 20,
+          Priority: 500,
+        } as EaCDenoKVCacheModifierDetails,
+      },
+      tracing: {
+        Details: {
+          Name: 'Tracing',
+          Description: 'Allows for tracing of requests and responses.',
+          TraceRequest: true,
+          TraceResponse: true,
+          Priority: 1500,
+        } as EaCTracingModifierDetails,
+      },
+    },
+  },
+};
+```
+
+These core modifiers support various aspects of your application. The keep alive runs only in dev mode and works to refresh your page anytime you make changes to the eac-runtime. The tracing modifier will log the request and response informatino for the system. Finally, the deno KV cache uses DenoKV to cache configured responses for the applicatios it is configured to. You'll notice with the cache that we have DenoKVDatabaseLookup configured to `cache`. For this to work, we need to add one more configuration for the database:
+
+```typescript ./src/plugins/MyDemoPlugin.ts
+const pluginConfig: EaCRuntimePluginConfig = {
+  Name: 'MyDemoPlugin',
+  EaC: {
+    Databases: {
+      cache: {
+        Details: {
+          Name: 'Local Cache',
+          Description: 'The Deno KV database to use for local caching',
+          DenoKVPath: undefined,
+          Type: 'DenoKV',
+        } as EaCDenoKVDatabaseDetails,
+      },
+    },
+  },
+};
+```
+That's it, run your site and you'll be able to connect with the blog, api, and redirects with ease. For complete information on configuring your eac, visit [here](../configuration/Overview.md).

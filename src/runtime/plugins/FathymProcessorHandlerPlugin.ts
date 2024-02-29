@@ -18,7 +18,7 @@ export default class FathymProcessorHandlerPlugin implements EaCRuntimePlugin {
       IoC: new IoCContainer(),
     };
 
-    pluginConfig.IoC!.Register(() => DefaultProcessorHandlerResolver, {
+    pluginConfig.IoC!.Register(DefaultProcessorHandlerResolver, {
       Type: pluginConfig.IoC!.Symbol('ProcessorHandlerResolver'),
     });
 

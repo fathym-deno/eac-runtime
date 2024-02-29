@@ -14,7 +14,7 @@ export default class FathymDFSFileHandlerPlugin implements EaCRuntimePlugin {
       IoC: new IoCContainer(),
     };
 
-    pluginConfig.IoC!.Register(() => DefaultDFSFileHandlerResolver, {
+    pluginConfig.IoC!.Register(DefaultDFSFileHandlerResolver, {
       Type: pluginConfig.IoC!.Symbol('DFSFileHandler'),
     });
 

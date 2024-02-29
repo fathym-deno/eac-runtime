@@ -12,6 +12,8 @@ export const buildLocalDFSFileHandler = (
       filePath: string,
       defaultFileName?: string,
     ): Promise<DFSFileInfo> {
+      let finalFilePath = filePath;
+
       const fileCheckPaths = getFileCheckPathsToProcess(
         filePath,
         defaultFileName,
@@ -31,6 +33,8 @@ export const buildLocalDFSFileHandler = (
                 read: true,
               }),
             );
+
+            finalFilePath = resolvedPath;
           }
         }
       });
@@ -42,6 +46,7 @@ export const buildLocalDFSFileHandler = (
       if (activeFileResp) {
         const dfsFileInfo: DFSFileInfo = {
           Contents: activeFileResp.readable,
+          Path: finalFilePath,
         };
 
         return dfsFileInfo;

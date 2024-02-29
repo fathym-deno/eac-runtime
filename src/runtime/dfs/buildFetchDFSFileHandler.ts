@@ -11,6 +11,8 @@ export const buildFetchDFSFileHandler = (
       filePath: string,
       defaultFileName?: string,
     ): Promise<DFSFileInfo> {
+      let finalFilePath = filePath;
+
       const fileCheckPaths = getFileCheckPathsToProcess(
         filePath,
         defaultFileName,
@@ -25,6 +27,8 @@ export const buildFetchDFSFileHandler = (
           const fullFilePath = new URL(`.${resolvedPath}`, root);
 
           fileChecks.push(fetch(fullFilePath));
+
+          finalFilePath = resolvedPath;
         }
       });
 
@@ -35,15 +39,18 @@ export const buildFetchDFSFileHandler = (
       if (activeFileResp) {
         const excludeHeaders = ['content-type'];
 
+        const headers = excludeHeaders.reduce((headers, uh) => {
+          if (!activeFileResp.headers.has(uh)) {
+            headers[uh] = activeFileResp.headers.get(uh)!;
+          }
+
+          return headers;
+        }, {} as Record<string, string>);
+
         const dfsFileInfo: DFSFileInfo = {
           Contents: activeFileResp.clone().body!,
-          Headers: excludeHeaders.reduce((headers, uh) => {
-            if (!activeFileResp.headers.has(uh)) {
-              headers[uh] = activeFileResp.headers.get(uh)!;
-            }
-
-            return headers;
-          }, {} as Record<string, string>),
+          Headers: headers,
+          Path: finalFilePath,
         };
 
         return dfsFileInfo;
