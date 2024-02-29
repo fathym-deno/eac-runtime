@@ -13,6 +13,7 @@ export class InstallCommand implements Command {
 
   constructor(protected flags: EaCRuntimeInstallerFlags) {
     this.filesToCreate = [
+      ['../files/README.md', './README.md'],
       ['../files/.gitignore', './.gitignore'],
       ['../files/dev.ts', './dev.ts'],
       ['../files/main.ts', './main.ts'],
