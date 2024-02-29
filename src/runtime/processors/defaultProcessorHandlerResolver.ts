@@ -1,4 +1,5 @@
 import {
+  IoCContainer,
   isEaCAIChatProcessor,
   isEaCDFSProcessor,
   isEaCOAuthProcessor,
@@ -7,10 +8,11 @@ import {
   isEaCRedirectProcessor,
   // preactToString,
 } from '../../src.deps.ts';
+import { EaCApplicationProcessorConfig } from './EaCApplicationProcessorConfig.ts';
 import { ProcessorHandlerResolver } from './ProcessorHandlerResolver.ts';
 
-export const defaultProcessorHandlerResolver: ProcessorHandlerResolver = {
-  async Resolve(ioc, appProcCfg) {
+export class DefaultProcessorHandlerResolver implements ProcessorHandlerResolver {
+  public async Resolve(ioc: IoCContainer, appProcCfg: EaCApplicationProcessorConfig) {
     let toResolveName: string = '';
 
     if (isEaCRedirectProcessor(appProcCfg.Application.Processor)) {
@@ -35,5 +37,5 @@ export const defaultProcessorHandlerResolver: ProcessorHandlerResolver = {
     );
 
     return await resolver.Resolve(ioc, appProcCfg);
-  },
-};
+  }
+}

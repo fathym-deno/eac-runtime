@@ -25,4 +25,6 @@ The `eac-runtime.config` is where you can mange [EaC Runtime settings](../Config
 
 Local configuration is nice, but it requires a redeployment of the runtime with every change. When the only changes we want to make are to our EaC configuration, Fathym's <a target="_blank">EaC Management Platform</a> makes it simple. Providing UIs to easily manage all aspects of the EaC, and automatic renewal of the EaC to keep your runtime in sync with your EaC configuration changes. 
 
-Both configuration techniques can be used [together](./). Provide a default configuration that all deployments use and override it with the configuration from Fathym. 
+## Used Together
+
+Both configuration techniques can be used [together](./). Provide a default configuration that all deployments use via the local config and override it with the configuration for individual Fathym EaCs. This can be used to provide a reusable runtime instance that can still be customized by solution. 

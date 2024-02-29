@@ -6,8 +6,8 @@ import {
   mergeWithArrays,
 } from '../src.deps.ts';
 import { EaCRuntimeConfig } from './config/EaCRuntimeConfig.ts';
-import { defaultProcessorHandlerResolver } from './processors/defaultProcessorHandlerResolver.ts';
-import { defaultModifierMiddlewareResolver } from './modifiers/defaultModifierMiddlewareResolver.ts';
+import { ProcessorHandlerResolver } from './processors/ProcessorHandlerResolver.ts';
+import { ModifierHandlerResolver } from './modifiers/ModifierHandlerResolver.ts';
 import { EaCApplicationProcessorConfig } from './processors/EaCApplicationProcessorConfig.ts';
 import { EaCProjectProcessorConfig } from './processors/EaCProjectProcessorConfig.ts';
 import { EaCRuntime } from './EaCRuntime.ts';
@@ -265,6 +265,10 @@ export class DefaultEaCRuntime implements EaCRuntime {
       (a, b) => b.Details!.Priority - a.Details!.Priority,
     );
 
+    const defaultModifierMiddlewareResolver = await this.ioc.Resolve<ModifierHandlerResolver>(
+      this.ioc.Symbol('ModifierHandlerResolver'),
+    );
+
     for (const mod of pipelineModifiers) {
       pipeline.push(
         await defaultModifierMiddlewareResolver.Resolve(this.ioc, mod),
@@ -277,6 +281,10 @@ export class DefaultEaCRuntime implements EaCRuntime {
   protected async establishApplicationHandler(
     appProcessorConfig: EaCApplicationProcessorConfig,
   ): Promise<EaCRuntimeHandler> {
+    const defaultProcessorHandlerResolver = await this.ioc.Resolve<ProcessorHandlerResolver>(
+      this.ioc.Symbol('ProcessorHandlerResolver'),
+    );
+
     return await defaultProcessorHandlerResolver.Resolve(
       this.ioc,
       appProcessorConfig,

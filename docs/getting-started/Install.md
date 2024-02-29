@@ -1,6 +1,6 @@
 ---
 title: 'EaC Runtime - Installation'
-path: './'
+path: './install'
 description: 'Get started installing the EaC Runtime'
 tags: ['DenoJS', 'EaC Runtime', 'Microfrontends']
 date: '2022-02-22'

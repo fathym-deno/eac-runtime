@@ -5,7 +5,7 @@ import {
   processCacheControlHeaders,
 } from '../../src.deps.ts';
 import { ProcessorHandlerResolver } from './ProcessorHandlerResolver.ts';
-import { defaultDFSFileHandlerResolver } from '../dfs/defaultDFSFileHandlerResolver.ts';
+import { DFSFileHandlerResolver } from '../dfs/DFSFileHandlerResolver.ts';
 import { DFSFileHandler } from '../dfs/DFSFileHandler.ts';
 import { EAC_RUNTIME_DEV } from '../../constants.ts';
 
@@ -20,12 +20,16 @@ export const EaCDFSProcessorHandlerResolver: ProcessorHandlerResolver = {
     const processor = appProcCfg.Application.Processor as EaCDFSProcessor;
 
     const filesReady = new Promise<DFSFileHandler>((resolve, reject) => {
-      defaultDFSFileHandlerResolver
-        .Resolve(ioc, processor.DFS)
-        .then((fileHandler) => {
-          resolve(fileHandler);
-        })
-        .catch((err) => reject(err));
+      ioc
+        .Resolve<DFSFileHandlerResolver>(ioc.Symbol('DFSFileHandler'))
+        .then((defaultDFSFileHandlerResolver: DFSFileHandlerResolver) => {
+          defaultDFSFileHandlerResolver
+            .Resolve(ioc, processor.DFS)
+            .then((fileHandler) => {
+              resolve(fileHandler);
+            })
+            .catch((err) => reject(err));
+        });
     });
 
     filesReady.then();

@@ -1,4 +1,6 @@
 import {
+  EaCModifierAsCode,
+  IoCContainer,
   isEaCDenoKVCacheModifierDetails,
   isEaCKeepAliveModifierDetails,
   isEaCOAuthModifierDetails,
@@ -6,8 +8,8 @@ import {
 } from '../../src.deps.ts';
 import { ModifierHandlerResolver } from './ModifierHandlerResolver.ts';
 
-export const defaultModifierMiddlewareResolver: ModifierHandlerResolver = {
-  async Resolve(ioc, modifier) {
+export class DefaultModifierMiddlewareResolver implements ModifierHandlerResolver {
+  public async Resolve(ioc: IoCContainer, modifier: EaCModifierAsCode) {
     let toResolveName: string = '';
 
     if (isEaCDenoKVCacheModifierDetails(modifier.Details)) {
@@ -26,5 +28,5 @@ export const defaultModifierMiddlewareResolver: ModifierHandlerResolver = {
     );
 
     return await resolver.Resolve(ioc, modifier);
-  },
-};
+  }
+}

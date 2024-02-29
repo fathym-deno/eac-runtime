@@ -46,12 +46,10 @@ Inside of the EverythingAsCodeApplications spec, are a number of features to hel
 
 ### Modifiers
 
-Modifiers work as middleware in the EaC Runtime, providing hooks to transform the Request and Response. Following are the built in modifiers, for more complete docs visit [here](modifiers/Overview.md)
+Modifiers work as middleware in the EaC Runtime, providing hooks to transform the Request and Response.
 
 #### Deno KV Cache
 
 #### Keep Alive
-
-#### User Authentication
 
 #### Tracing

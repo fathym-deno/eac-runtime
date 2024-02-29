@@ -1,8 +1,13 @@
-import { isEaCLocalDistributedFileSystem, isEaCNPMDistributedFileSystem } from '../../src.deps.ts';
+import {
+  EaCDistributedFileSystem,
+  IoCContainer,
+  isEaCLocalDistributedFileSystem,
+  isEaCNPMDistributedFileSystem,
+} from '../../src.deps.ts';
 import { DFSFileHandlerResolver } from './DFSFileHandlerResolver.ts';
 
-export const defaultDFSFileHandlerResolver: DFSFileHandlerResolver = {
-  async Resolve(ioc, dfs) {
+export class DefaultDFSFileHandlerResolver implements DFSFileHandlerResolver {
+  public async Resolve(ioc: IoCContainer, dfs: EaCDistributedFileSystem) {
     let toResolveName: string = '';
 
     if (isEaCNPMDistributedFileSystem(dfs)) {
@@ -14,10 +19,10 @@ export const defaultDFSFileHandlerResolver: DFSFileHandlerResolver = {
     }
 
     const resolver = await ioc.Resolve<DFSFileHandlerResolver>(
-      ioc.Symbol('DFSFileHandlerResolver'),
+      ioc.Symbol('DFSFileHandler'),
       toResolveName,
     );
 
     return await resolver.Resolve(ioc, dfs);
-  },
-};
+  }
+}

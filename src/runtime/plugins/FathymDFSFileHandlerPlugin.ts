@@ -1,4 +1,5 @@
 import { IoCContainer } from '../../src.deps.ts';
+import { DefaultDFSFileHandlerResolver } from '../dfs/DefaultDFSFileHandlerResolver.ts';
 import { EaCLocalDistributedFileSystemHandlerResolver } from '../dfs/EaCLocalDistributedFileSystemHandlerResolver.ts';
 import { EaCNPMDistributedFileSystemHandlerResolver } from '../dfs/EaCNPMDistributedFileSystemHandlerResolver.ts';
 import { UnknownEaCDistributedFileSystemHandlerResolver } from '../dfs/UnknownEaCDistributedFileSystemHandlerResolver.ts';
@@ -13,19 +14,23 @@ export default class FathymDFSFileHandlerPlugin implements EaCRuntimePlugin {
       IoC: new IoCContainer(),
     };
 
+    pluginConfig.IoC!.Register(() => DefaultDFSFileHandlerResolver, {
+      Type: pluginConfig.IoC!.Symbol('DFSFileHandler'),
+    });
+
     pluginConfig.IoC!.Register(() => EaCLocalDistributedFileSystemHandlerResolver, {
       Name: 'EaCLocalDistributedFileSystem',
-      Type: pluginConfig.IoC!.Symbol('DFSFileHandlerResolver'),
+      Type: pluginConfig.IoC!.Symbol('DFSFileHandler'),
     });
 
     pluginConfig.IoC!.Register(() => EaCNPMDistributedFileSystemHandlerResolver, {
       Name: 'EaCNPMDistributedFileSystem',
-      Type: pluginConfig.IoC!.Symbol('DFSFileHandlerResolver'),
+      Type: pluginConfig.IoC!.Symbol('DFSFileHandler'),
     });
 
     pluginConfig.IoC!.Register(() => UnknownEaCDistributedFileSystemHandlerResolver, {
       Name: 'UnknownEaCDistributedFileSystem',
-      Type: pluginConfig.IoC!.Symbol('DFSFileHandlerResolver'),
+      Type: pluginConfig.IoC!.Symbol('DFSFileHandler'),
     });
 
     return Promise.resolve(pluginConfig);

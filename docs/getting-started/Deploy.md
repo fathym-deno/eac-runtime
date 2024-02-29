@@ -1,51 +1,24 @@
 ---
-title: 'EaC Runtime - Installation'
+title: 'EaC Runtime - Deploy'
 path: './'
-description: 'Get started installing the EaC Runtime'
+description: 'Get started deploying the EaC Runtime'
 tags: ['DenoJS', 'EaC Runtime', 'Microfrontends']
 date: '2022-02-22'
 params:
   author: 'Michael Gearhardt (CTO)'
 ---
 
-# EaC Runtime - Installation
+# EaC Runtime - Deploy
+ The EaC Runtime can be deployed in a myriad of ways. We already looked at how to use a Docker to deploy to our local system. Using Docker, we can also empower deployments to the Cloud and at the edge.
 
-Once you have <a href="https://docs.deno.com/runtime/manual/getting_started/installation" target="_blank">DenoJS installed</a>, the next thing you need to do is install the EaC Runtime in a new project. To do that, create/open the directory where you want the project to live (We do most of our development in <a href="https://code.visualstudio.com/download" target="_blank">VSCode</a>), then in a command prompt for that directory run the Deno install script for the runtime:
+## Local Deployments
 
-```
-deno run -A -r https://eac-runtime.fathym.com/deno/install --docker --vscode
-```
+Using a local Docker deployment is a great way to share the EaC Runtime with other groups that may be creating other micro applications for your solution. In addition, Docker serves as the backbone for deploying your containers to many cloud and edge hosting targets. 
 
-This will scaffold a new project with some default configurations already in place. Once installed, we can start the runtime with the following command:
+## Cloud Deployments
 
-```
-deno task dev
-```
+It is often times undesirable to maintain hardware to deploy the EaC Runtime. For this reason, you may want to deploy to any number of cloud service providers. You can use Deno Deploy, Azure, AWS or many more options to host your EaC Runtime.
 
-This will start your new project on `http://localhost:8000`. If that port is already in use, it will pick the first available port in the range 8000 - 8020. If a new port is selected, you will need to update the eac-runtime.config.ts file appropriately so that the initial project is set to this new port.
+## Edge Deployments
 
-If you would like to start a production instance of your site, use the following command:
-
-```
-deno task start
-```
-
-After the runtime is running, you can navigate to `http://localhost:8000/api-reqres/users` to do a demo query for user data. This should return a block of JSON, with a list of users.
-
-See <a href="./Configure.md">here</a> for docs on getting started with configuring your EaC.
-
-## Deploy
-
-Now that our project is configured and running, let's deploy it. There are many ways to deploy your runtime application, from local Docker, to the cloud, or at the edge. 
-
-Make sure that you have <a>installed</a>docker for this next part. Run the following command to build your docker image and start it:
-
-```
-deno task build:docker
-deno task deploy:docker
-```
-
-The output of the command should provide you with a URL to start accessing your deployed application.
-
-For more details on other ways to deploy, visit <a>here</a>.
-
+Referring to more than just edge runtime hosts like Deno Deploy, you can make the EaC Runtime a part of your application delivery architecture. Deploy it on IoT devices, in smart buildings, or as part of your industrial application edge.

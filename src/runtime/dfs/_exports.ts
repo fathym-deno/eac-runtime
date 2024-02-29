@@ -1,6 +1,6 @@
 export * from './buildFetchDFSFileHandler.ts';
 export * from './buildLocalDFSFileHandler.ts';
-export * from './defaultDFSFileHandlerResolver.ts';
+export * from './DefaultDFSFileHandlerResolver.ts';
 export * from './DFSFileHandler.ts';
 export * from './DFSFileHandlerResolver.ts';
 export * from './DFSFileInfo.ts';
