@@ -2,4 +2,7 @@ import { DefaultEaCConfig, defineEaCConfig, FathymDemoPlugin } from '@fathym/eac
 
 export default defineEaCConfig({
   Plugins: [new FathymDemoPlugin(), ...(DefaultEaCConfig.Plugins || [])],
+  EaC: {
+    EnterpriseLookup: 'local-eac',
+  },
 });

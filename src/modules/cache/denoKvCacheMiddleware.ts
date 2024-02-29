@@ -139,7 +139,7 @@ export function establishDenoKvCacheMiddleware(
 
     const patternResult = pattern.exec(reqUrl.href);
 
-    const reqPath = patternResult!.pathname.groups[0]!;
+    const reqPath = patternResult!.pathname.groups[0]! || '/';
 
     const respCacheKey = [
       'Response',
