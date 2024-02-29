@@ -113,6 +113,7 @@ export async function denoKvReadReadableStreamCache(
     return {
       Contents: contents,
       Headers: cachedHeaders.value || undefined,
+      Path: cacheKey.slice(0).pop() as string,
     };
   } else {
     return undefined;
