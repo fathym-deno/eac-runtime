@@ -1,5 +1,5 @@
 import { IoCContainer } from '../../src.deps.ts';
-import { DefaultModifierMiddlewareResolver } from '../modifiers/_DefaultModifierMiddlewareResolver.ts';
+import { DefaultModifierMiddlewareResolver } from '../modifiers/DefaultModifierMiddlewareResolver.ts';
 import { EaCDenoKVCacheModifierHandlerResolver } from '../modifiers/EaCDenoKVCacheModifierHandlerResolver.ts';
 import { EaCKeepAliveModifierHandlerResolver } from '../modifiers/EaCKeepAliveModifierHandlerResolver.ts';
 import { EaCMarkdownModifierHandlerResolver } from '../modifiers/EaCMarkdownModifierHandlerResolver.ts';

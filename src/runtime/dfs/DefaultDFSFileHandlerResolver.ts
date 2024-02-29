@@ -3,8 +3,8 @@ import {
   IoCContainer,
   isEaCLocalDistributedFileSystem,
   isEaCNPMDistributedFileSystem,
-} from '../../src.deps.js';
-import { DFSFileHandlerResolver } from './DFSFileHandlerResolver.js';
+} from '../../src.deps.ts';
+import { DFSFileHandlerResolver } from './DFSFileHandlerResolver.ts';
 
 export class DefaultDFSFileHandlerResolver implements DFSFileHandlerResolver {
   public async Resolve(ioc: IoCContainer, dfs: EaCDistributedFileSystem) {
