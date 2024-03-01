@@ -1,9 +1,9 @@
 import {
   EaCMarkdownToHTMLModifierDetails,
   isEaCMarkdownToHTMLModifierDetails,
-} from '../../src.deps.js';
-import { ModifierHandlerResolver } from './ModifierHandlerResolver.js';
-import { establishMarkdownToHTMLMiddleware } from '../../modules/markdown/markdownToHtmlMiddleware.js';
+} from '../../src.deps.ts';
+import { ModifierHandlerResolver } from './ModifierHandlerResolver.ts';
+import { establishMarkdownToHTMLMiddleware } from '../../modules/markdown/markdownToHtmlMiddleware.ts';
 
 export const EaCMarkdownToHTMLModifierHandlerResolver: ModifierHandlerResolver = {
   Resolve(_ioc, modifier) {
