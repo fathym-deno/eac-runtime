@@ -377,3 +377,194 @@ const pluginConfig: EaCRuntimePluginConfig = {
 ```
 
 That's it, run your site and you'll be able to connect with the blog, api, redirects and READMe with ease. For complete information on configuring your eac, visit [here](../configuration/Overview.md).
+
+Your final code will look something like this:
+
+```typescript ./src/plugins/MyDemoPlugin.ts
+import {
+  EaCRuntimeConfig,
+  EaCRuntimePluginConfig,
+  EaCRuntimePlugin,
+} from '@fathym/eac/runtime';
+import {
+  EaCDFSProcessor,
+  EaCDenoKVCacheModifierDetails,
+  EaCDenoKVDatabaseDetails,
+  EaCKeepAliveModifierDetails,
+  EaCLocalDistributedFileSystem,
+  EaCMarkdownToHTMLModifierDetails,
+  EaCNPMDistributedFileSystem,
+  EaCProxyProcessor,
+  EaCRedirectProcessor,
+  EaCTracingModifierDetails,
+} from '@fathym/eac';
+
+export default class MyDemoPlugin implements EaCRuntimePlugin {
+  constructor() {}
+
+  public Build(config: EaCRuntimeConfig): Promise<EaCRuntimePluginConfig> {
+    const pluginConfig: EaCRuntimePluginConfig = {
+      Name: 'MyDemoPlugin',
+      EaC: {
+        Projects: {
+          demo: {
+            Details: {
+              Name: 'Demo Micro Applications',
+              Description: 'The Demo Micro Applications to use.',
+              Priority: 100,
+            },
+            ResolverConfigs: {
+              dev: {
+                Hostname: 'localhost',
+                Port: config.Server.port || 8000,
+              },
+              dev2: {
+                Hostname: '127.0.0.1',
+                Port: config.Server.port || 8000,
+              },
+            },
+            ModifierResolvers: {
+              keepAlive: {
+                Priority: 1000,
+              },
+            },
+            ApplicationResolvers: {
+              apiProxy: {
+                PathPattern: '/api-reqres*',
+                Priority: 200,
+              },
+              fathym: {
+                PathPattern: '/redirect',
+                Priority: 200,
+              },
+              home: {
+                PathPattern: '/*',
+                Priority: 100,
+              },
+              publicWebBlog: {
+                PathPattern: '/blog*',
+                Priority: 500,
+              },
+            },
+          },
+        },
+        Applications: {
+          apiProxy: {
+            Details: {
+              Name: 'Simple API Proxy',
+              Description: 'A proxy',
+            },
+            ModifierResolvers: {
+              tracing: {
+                Priority: 1500,
+              },
+            },
+            Processor: {
+              Type: 'Proxy',
+              ProxyRoot: 'https://reqres.in/api',
+            } as EaCProxyProcessor,
+          },
+          fathym: {
+            Details: {
+              Name: 'Fathym Redirect',
+              Description: 'A redirect to Fathym',
+            },
+            Processor: {
+              Type: 'Redirect',
+              Redirect: 'https://www.fathym.com/',
+            } as EaCRedirectProcessor,
+          },
+          home: {
+            Details: {
+              Name: 'Home Site',
+              Description:
+                'The home site to be used for the marketing of the project',
+            },
+            ModifierResolvers: {
+              denoKvCache: {
+                Priority: 500,
+              },
+              markdownTohtml: {
+                Priority: 10,
+              },
+            },
+            Processor: {
+              Type: 'DFS',
+              DFS: {
+                Type: 'Local',
+                DefaultFile: 'README.md',
+                FileRoot: './',
+              } as EaCLocalDistributedFileSystem,
+            } as EaCDFSProcessor,
+          },
+          publicWebBlog: {
+            Details: {
+              Name: 'Public Web Blog Site',
+              Description:
+                'The public web blog site to be used for the marketing of the project',
+            },
+            ModifierResolvers: { 'static-cache': { Priority: 500 } },
+            Processor: {
+              Type: 'DFS',
+              DFS: {
+                Type: 'NPM',
+                DefaultFile: 'index.html',
+                Package: '@lowcodeunit/public-web-blog',
+                Version: 'latest',
+              } as EaCNPMDistributedFileSystem,
+            } as EaCDFSProcessor,
+          },
+        },
+        Modifiers: {
+          keepAlive: {
+            Details: {
+              Type: 'KeepAlive',
+              Name: 'Keep Alive',
+              Description: 'Modifier to support a keep alive workflow.',
+              KeepAlivePath: '/_eac/alive',
+            } as EaCKeepAliveModifierDetails,
+          },
+          markdownToHtml: {
+            Details: {
+              Type: 'MarkdownToHTML',
+              Name: 'Markdown to HTML',
+              Description: 'A modifier to convert markdown to HTML.',
+            } as EaCMarkdownToHTMLModifierDetails,
+          },
+          'static-cache': {
+            Details: {
+              Type: 'DenoKVCache',
+              Name: 'Static Cache',
+              Description:
+                'Lightweight cache to use that stores data in a DenoKV database for static sites.',
+              DenoKVDatabaseLookup: 'cache',
+              CacheSeconds: 60 * 20,
+            } as EaCDenoKVCacheModifierDetails,
+          },
+          tracing: {
+            Details: {
+              Type: 'Tracing',
+              Name: 'Tracing',
+              Description: 'Allows for tracing of requests and responses.',
+              TraceRequest: true,
+              TraceResponse: true,
+            } as EaCTracingModifierDetails,
+          },
+        },
+        Databases: {
+          cache: {
+            Details: {
+              Type: 'DenoKV',
+              Name: 'Local Cache',
+              Description: 'The Deno KV database to use for local caching',
+              DenoKVPath: undefined,
+            } as EaCDenoKVDatabaseDetails,
+          },
+        },
+      },
+    };
+
+    return Promise.resolve(pluginConfig);
+  }
+}
+```
