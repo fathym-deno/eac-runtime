@@ -32,10 +32,10 @@ export { BaseChatModel } from 'npm:@langchain/core/language_models/chat_models';
 export { VectorStore } from 'npm:@langchain/core/vectorstores';
 
 // export * from '../../reference-architecture/mod.ts';
-export * from 'https://deno.land/x/fathym_common@v0.0.157/mod.ts';
+export * from 'https://deno.land/x/fathym_common@v0.0.158/mod.ts';
 // export * from '../../everything-as-code/mod.ts';
 export * from 'https://deno.land/x/fathym_everything_as_code@v0.0.369/mod.ts';
 // export * from '../../everything-as-code-api/mod.ts';
-export * from 'https://deno.land/x/fathym_everything_as_code_api@v0.0.9/mod.ts';
+export * from 'https://deno.land/x/fathym_everything_as_code_api@v0.0.10/mod.ts';
 
 import 'https://deno.land/std@0.216.0/dotenv/load.ts';
