@@ -1,8 +1,10 @@
 import {
   EaCApplicationAsCode,
   EaCModifierAsCode,
+  EaCModifierResolverConfiguration,
   EaCProjectAsCode,
   IoCContainer,
+  merge,
   mergeWithArrays,
 } from '../src.deps.ts';
 import { EaCRuntimeConfig } from './config/EaCRuntimeConfig.ts';
@@ -23,7 +25,10 @@ export class DefaultEaCRuntime implements EaCRuntime {
 
   protected ioc: IoCContainer;
 
-  protected modifierLookups?: string[];
+  protected modifierResolvers?: Record<
+    string,
+    EaCModifierResolverConfiguration
+  >;
 
   protected projectGraph?: EaCProjectProcessorConfig[];
 
@@ -40,7 +45,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
 
     this.ioc = this.config.IoC || new IoCContainer();
 
-    this.modifierLookups = this.config.ModifierLookups || [];
+    this.modifierResolvers = this.config.ModifierResolvers || {};
 
     await this.configurePlugins(this.config.Plugins);
 
@@ -135,17 +140,17 @@ export class DefaultEaCRuntime implements EaCRuntime {
               );
             }
 
-            const lookupCfg = projProcCfg.Project.ApplicationLookups[appLookup];
+            const resolverCfg = projProcCfg.Project.ApplicationResolvers[appLookup];
 
             return {
               Application: app,
               ApplicationLookup: appLookup,
-              LookupConfig: lookupCfg,
-              Pattern: new URLPattern({ pathname: lookupCfg.PathPattern }),
+              ResolverConfig: resolverCfg,
+              Pattern: new URLPattern({ pathname: resolverCfg.PathPattern }),
             } as EaCApplicationProcessorConfig;
           })
           .sort((a, b) => {
-            return b.LookupConfig.Priority - a.LookupConfig.Priority;
+            return b.ResolverConfig.Priority - a.ResolverConfig.Priority;
           });
 
         for (
@@ -175,17 +180,17 @@ export class DefaultEaCRuntime implements EaCRuntime {
         .map((projLookup) => {
           const proj = this.eac!.Projects![projLookup];
 
-          const lookupKeys = Object.keys(proj.LookupConfigs);
+          const resolverKeys = Object.keys(proj.ResolverConfigs);
 
           return {
             Project: proj,
             ProjectLookup: projLookup,
-            Patterns: lookupKeys.map((lk) => {
-              const lookupCfg = proj.LookupConfigs[lk];
+            Patterns: resolverKeys.map((lk) => {
+              const resolverCfg = proj.ResolverConfigs[lk];
 
               return new URLPattern({
-                hostname: lookupCfg.Hostname,
-                port: lookupCfg.Port?.toString(),
+                hostname: resolverCfg.Hostname,
+                port: resolverCfg.Port?.toString(),
               });
             }),
           } as EaCProjectProcessorConfig;
@@ -225,10 +230,11 @@ export class DefaultEaCRuntime implements EaCRuntime {
           pluginConfig.IoC.CopyTo(this.ioc!);
         }
 
-        if (pluginConfig.ModifierLookups) {
-          this.modifierLookups!.push(...(pluginConfig.ModifierLookups || []));
-
-          this.modifierLookups = [...new Set(this.modifierLookups)];
+        if (pluginConfig.ModifierResolvers) {
+          this.modifierResolvers = merge(
+            this.modifierResolvers || {},
+            pluginConfig.ModifierResolvers,
+          );
         }
 
         await this.configurePlugins(pluginConfig.Plugins);
@@ -241,29 +247,45 @@ export class DefaultEaCRuntime implements EaCRuntime {
     application: EaCApplicationAsCode,
     modifiers: Record<string, EaCModifierAsCode>,
   ): Promise<EaCRuntimeHandler[]> {
-    const pipelineModifierLookups: string[] = [];
+    let pipelineModifierResolvers: Record<
+      string,
+      EaCModifierResolverConfiguration
+    > = {};
 
-    pipelineModifierLookups.push(...(this.modifierLookups || []));
+    pipelineModifierResolvers = merge(
+      pipelineModifierResolvers,
+      this.modifierResolvers || {},
+    );
 
     // TODO(mcgear): Add application logic middlewares to pipeline
 
-    pipelineModifierLookups.push(...(project.ModifierLookups || []));
+    pipelineModifierResolvers = merge(
+      pipelineModifierResolvers,
+      project.ModifierResolvers || {},
+    );
 
-    pipelineModifierLookups.push(...(application.ModifierLookups || []));
+    pipelineModifierResolvers = merge(
+      pipelineModifierResolvers,
+      application.ModifierResolvers || {},
+    );
 
-    let pipelineModifiers: EaCModifierAsCode[] = [];
+    const pipelineModifiers: EaCModifierAsCode[] = [];
 
-    pipelineModifierLookups?.forEach((ml) => {
-      if (ml in modifiers) {
-        pipelineModifiers.push(modifiers[ml]);
-      }
-    });
+    const modifierLookups = Object.keys(pipelineModifierResolvers);
+
+    modifierLookups
+      .map((ml) => ({
+        Lookup: ml,
+        Config: pipelineModifierResolvers[ml],
+      }))
+      .sort((a, b) => b.Config.Priority - a.Config.Priority)
+      .forEach((ml) => {
+        if (ml.Lookup in modifiers) {
+          pipelineModifiers.push(modifiers[ml.Lookup]);
+        }
+      });
 
     const pipeline: (EaCRuntimeHandler | undefined)[] = [];
-
-    pipelineModifiers = pipelineModifiers.sort(
-      (a, b) => b.Details!.Priority - a.Details!.Priority,
-    );
 
     const defaultModifierMiddlewareResolver = await this.ioc.Resolve<ModifierHandlerResolver>(
       this.ioc.Symbol('ModifierHandlerResolver'),
@@ -298,18 +320,18 @@ export class DefaultEaCRuntime implements EaCRuntime {
       const appProcessorConfig = this.applicationGraph![
         projProcessorConfig.ProjectLookup
       ].find((node) => {
-        const appLookupConfig = projProcessorConfig.Project.ApplicationLookups[
+        const appResolverConfig = projProcessorConfig.Project.ApplicationResolvers[
           node.ApplicationLookup
         ];
 
-        const isAllowedMethod = !appLookupConfig.AllowedMethods ||
-          appLookupConfig.AllowedMethods.length === 0 ||
-          appLookupConfig.AllowedMethods.some(
-            (am) => am.toLowerCase() === req.method.toLowerCase(),
+        const isAllowedMethod = !appResolverConfig.AllowedMethods ||
+          appResolverConfig.AllowedMethods.length === 0 ||
+          appResolverConfig.AllowedMethods.some(
+            (arc) => arc.toLowerCase() === req.method.toLowerCase(),
           );
 
-        const matchesRegex = !appLookupConfig.UserAgentRegex ||
-          new RegExp(appLookupConfig.UserAgentRegex).test(
+        const matchesRegex = !appResolverConfig.UserAgentRegex ||
+          new RegExp(appResolverConfig.UserAgentRegex).test(
             req.headers.get('user-agent') || '',
           );
 

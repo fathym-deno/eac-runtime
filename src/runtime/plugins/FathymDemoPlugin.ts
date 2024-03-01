@@ -4,7 +4,7 @@ import {
   EaCDFSProcessor,
   EaCKeepAliveModifierDetails,
   EaCLocalDistributedFileSystem,
-  EaCMarkdownModifierDetails,
+  EaCMarkdownToHtmlModifierDetails,
   EaCNPMDistributedFileSystem,
   EaCProxyProcessor,
   EaCRedirectProcessor,
@@ -28,7 +28,7 @@ export default class FathymDemoPlugin implements EaCRuntimePlugin {
               Description: 'The Demo Micro Applications to use.',
               Priority: 100,
             },
-            LookupConfigs: {
+            ResolverConfigs: {
               dev: {
                 Hostname: 'localhost',
                 Port: this.port || config.Server.port || 8000,
@@ -38,8 +38,12 @@ export default class FathymDemoPlugin implements EaCRuntimePlugin {
                 Port: this.port || config.Server.port || 8000,
               },
             },
-            ModifierLookups: ['keepAlive'],
-            ApplicationLookups: {
+            ModifierResolvers: {
+              keepAlive: {
+                Priority: 1000,
+              },
+            },
+            ApplicationResolvers: {
               apiProxy: {
                 PathPattern: '/api-reqres*',
                 Priority: 200,
@@ -65,8 +69,13 @@ export default class FathymDemoPlugin implements EaCRuntimePlugin {
               Name: 'Simple API Proxy',
               Description: 'A proxy',
             },
-            ModifierLookups: ['tracing'],
+            ModifierResolvers: {
+              tracing: {
+                Priority: 1500,
+              },
+            },
             Processor: {
+              Type: 'Proxy',
               ProxyRoot: 'https://reqres.in/api',
             } as EaCProxyProcessor,
           },
@@ -76,6 +85,7 @@ export default class FathymDemoPlugin implements EaCRuntimePlugin {
               Description: 'A redirect to Fathym',
             },
             Processor: {
+              Type: 'Redirect',
               Redirect: 'http://www.fathym.com/',
             } as EaCRedirectProcessor,
           },
@@ -84,9 +94,18 @@ export default class FathymDemoPlugin implements EaCRuntimePlugin {
               Name: 'Home Site',
               Description: 'The home site to be used for the marketing of the project',
             },
-            ModifierLookups: ['denoKvCache', 'markdown'],
+            ModifierResolvers: {
+              denoKvCache: {
+                Priority: 500,
+              },
+              markdown: {
+                Priority: 10,
+              },
+            },
             Processor: {
+              Type: 'DFS',
               DFS: {
+                Type: 'Local',
                 DefaultFile: 'README.md',
                 FileRoot: './',
               } as EaCLocalDistributedFileSystem,
@@ -97,9 +116,15 @@ export default class FathymDemoPlugin implements EaCRuntimePlugin {
               Name: 'Public Web Blog Site',
               Description: 'The public web blog site to be used for the marketing of the project',
             },
-            ModifierLookups: ['denoKvCache'],
+            ModifierResolvers: {
+              denoKvCache: {
+                Priority: 500,
+              },
+            },
             Processor: {
+              Type: 'DFS',
               DFS: {
+                Type: 'NPM',
                 DefaultFile: 'index.html',
                 Package: '@lowcodeunit/public-web-blog',
                 Version: 'latest',
@@ -110,47 +135,46 @@ export default class FathymDemoPlugin implements EaCRuntimePlugin {
         Modifiers: {
           keepAlive: {
             Details: {
+              Type: 'KeepAlive',
               Name: 'Keep Alive',
               Description: 'Modifier to support a keep alive workflow.',
               KeepAlivePath: '/_eac/alive',
-              Priority: 1000,
             } as EaCKeepAliveModifierDetails,
           },
           markdown: {
             Details: {
+              Type: 'MarkdownToHtml',
               Name: 'Markdown to HTML',
               Description: 'A modifier to convert markdown to HTML.',
-              Type: 'Markdown',
-              Priority: 10,
-            } as EaCMarkdownModifierDetails,
+            } as EaCMarkdownToHtmlModifierDetails,
           },
           denoKvCache: {
             Details: {
+              Type: 'DenoKVCache',
               Name: 'DenoKV Cache',
               Description:
                 'Lightweight cache to use that stores data in a DenoKV database for static sites.',
               DenoKVDatabaseLookup: 'cache',
               CacheSeconds: 60 * 20,
-              Priority: 500,
             } as EaCDenoKVCacheModifierDetails,
           },
           tracing: {
             Details: {
+              Type: 'Tracing',
               Name: 'Tracing',
               Description: 'Allows for tracing of requests and responses.',
               TraceRequest: true,
               TraceResponse: true,
-              Priority: 1500,
             } as EaCTracingModifierDetails,
           },
         },
         Databases: {
           cache: {
             Details: {
+              Type: 'DenoKV',
               Name: 'Local Cache',
               Description: 'The Deno KV database to use for local caching',
               DenoKVPath: Deno.env.get('LOCAL_CACHE_DENO_KV_PATH') || undefined,
-              Type: 'DenoKV',
             } as EaCDenoKVDatabaseDetails,
           },
         },

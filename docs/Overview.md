@@ -26,11 +26,9 @@ The runtime provides a configuration model, the EaC (Everything as Code) Model, 
 - **Redirects**: Define redirect rules to redirect incoming requests based on various criteria.
 - **More**: As an open source project, our gaol is to provide you more of the features you want, support the development of community plugins, and create an extensible runtime.
 
-## EaC JSON Configuration
+## EaC Runtime Configuration
 
-The core concept behind the EaC Runtime is the configuration of an EaC JSON file. By leveraging this configuration file, you can easily define and customize various aspects of your micro applications, enabling you to enhance their functionality and adapt them to your specific requirements.
-
-At the heart of the EaC Runtime is the EaC JSON configuration file. This file serves as a central point for defining all the necessary configurations for your micro applications. By leveraging a configuration-based approach, you can easily manage and modify your application's behavior without the need for extensive code changes.
+The core concept behind the EaC Runtime is the EaC Runtime configuration. By leveraging this configuration, you can easily define and customize various aspects of your micro applications, enabling you to enhance their functionality and adapt them to your specific requirements. By leveraging a configuration-based approach, you can easily manage and modify your application's behavior without the need for extensive code changes.
 
 Leverage turnkey, community or custom [plugins](configuration/Plugins.md) to easily provide new features to your micro applications.
 

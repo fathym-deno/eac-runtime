@@ -3,7 +3,7 @@ import {
   IoCContainer,
   isEaCDenoKVCacheModifierDetails,
   isEaCKeepAliveModifierDetails,
-  isEaCMarkdownModifierDetails,
+  isEaCMarkdownToHtmlModifierDetails,
   isEaCOAuthModifierDetails,
   isEaCTracingModifierDetails,
 } from '../../src.deps.ts';
@@ -17,7 +17,7 @@ export class DefaultModifierMiddlewareResolver implements ModifierHandlerResolve
       toResolveName = 'EaCDenoKVCacheModifierDetails';
     } else if (isEaCKeepAliveModifierDetails(modifier.Details)) {
       toResolveName = 'EaCKeepAliveModifierDetails';
-    } else if (isEaCMarkdownModifierDetails(modifier.Details)) {
+    } else if (isEaCMarkdownToHtmlModifierDetails(modifier.Details)) {
       toResolveName = 'EaCMarkdownModifierDetails';
     } else if (isEaCOAuthModifierDetails(modifier.Details)) {
       toResolveName = 'EaCOAuthModifierDetails';

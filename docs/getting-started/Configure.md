@@ -19,11 +19,11 @@ There are two ways to configure the EaC Runtime:
 
 ## The EaC Model
 
-The EaC (Everything as Code) model provides an interface and execution runtime for developing dynamic automations for your interface. It provides several modules out-of-the-box and allows for the easy creation of new enhancements. For the EaC Runtime, it serves as the backbone configuration for the micro applications you want to orechestrate togetether.
+The EaC (Everything as Code) model provides an interface and execution runtime for developing dynamic automations for your applications. It provides several modules out-of-the-box and allows for the easy creation of new enhancements. For the EaC Runtime, it serves as the backbone configuration for the micro applications you want to orechestrate together.
 
 ### Local Configuration
 
-The `eac-runtime.config` is where you can mange [EaC Runtime settings](../Configuration.md), like the port it starts on and the EaC used to configure your applications.
+The `eac-runtime.config.ts` is where you can mange [EaC Runtime settings](../Configuration.md), like the port it starts on and the EaC used to configure your applications.
 
 ### Fathym EaC configuration
 
@@ -31,7 +31,7 @@ Local configuration is nice, but it requires a redeployment of the runtime with 
 
 ### Used Together
 
-Both configuration techniques can be used [together](./). Provide a default configuration that all deployments use via the local config and override it with the configuration for individual Fathym EaCs. This can be used to provide a reusable runtime instance that can still be customized by solution.
+Both configuration techniques can be used [together](./). Provide a default configuration that all deployments use via the local config and override it with the configuration for individual Fathym EaCs. This can be used to provide a reusable runtime instance that can still be customized per solution.
 
 ## Recreating the Fathym Demo
 
@@ -39,7 +39,7 @@ Let's get our hands dirty now, and look at re-creating the Fathym Demo solution 
 
 ### The Plugin
 
-The EaC Runtime provides a myriad of ways to customize it, a key aspect of that are plugins. Plugins allow you to configure the EaC, default modifiers, available services (through the IoC pattern), and additional plugins. To start creating a new plugin by creating a `MyDemoPlugin.ts` file in a new `src/plugins` directory:
+The EaC Runtime provides a myriad of ways to customize it, a key aspect of that are plugins. Plugins allow you to configure the EaC, default modifiers, available services (through the IoC pattern), and additional plugins. Start a new plugin by creating a `MyDemoPlugin.ts` file in a new `src/plugins` directory:
 
 ```typescript ./src/plugins/MyDemoPlugin.ts
 import {
@@ -61,11 +61,11 @@ export default class MyDemoPlugin implements EaCRuntimePlugin {
 }
 ```
 
-We start by pulling in our minimum required dependencies, and then define our plugin as a class that implements the `EaCRuntimePlugin`. A couple of quick notes 1) The plugin is exported as default, in order to support external loading and 2) a class is not required to implement the plugin, it is just our preferred way to do things.
+We start by pulling in our minimum required dependencies, and then define our plugin as a class that implements the `EaCRuntimePlugin`. A couple of quick notes 1) The plugin is exported as default in order to support external loading and 2) a class is not required to implement the plugin, it is just our preferred way to do things.
 
 There is a Build method, which takes the `EaCRuntimeConfig` for the current runtime and returns an `EaCRuntimePluginConfig`. To start, we've simply given our plugin a name, and returned a blank configuration.
 
-Now we need to configure this plugin to be used by the runtime. To do this, open the `configs/eac-runtime.config.ts` file and update the plugins to use the new plugin, instead of the FathymDenoPlugin:
+Now we need to configure this plugin to be used by the runtime. To do this, open the `configs/eac-runtime.config.ts` file and update the plugins to use the new plugin, instead of the FathymDemoPlugin:
 
 ```typescript ./configs/eac-runtime.config.ts
 import { DefaultEaCConfig, defineEaCConfig } from '@fathym/eac/runtime';
@@ -78,7 +78,7 @@ export default defineEaCConfig({
 
 ### The Project
 
-Next, in order to handle requests, we'll need to configure our project. A project is responsible for orchestrating the micro applications into a unified experience, and defines the lookup configuration for when this project will run.
+Next, in order to handle requests, we'll need to configure our project. A project is responsible for orchestrating the micro applications into a unified experience, and defines the lookup configuration for when the project will run.
 
 To add a project to our plugin configuration, we'll need to update the EaC with our project definition:
 
@@ -103,14 +103,15 @@ const pluginConfig: EaCRuntimePluginConfig = {
             Port: config.Server.port || 8000,
           },
         },
-        ModifierLookups: ['keepAlive'],
+        ModifierResolvers: ['keepAlive'],
+        ApplicationLookups: {},
       },
     },
   },
 };
 ```
 
-Here we have add a new demo project with some initial details. We have also configured the project lookup configuration to support running the site on localhost or 127.0.0.1 for port 8000 or the port the runtime is currently running on. Lastly, we setup the project to use the development 'keepAlive' modifier to support reloading the site whenever changes are detected. More on the modifier later.
+Here we have added a new demo project with some initial details. We have also configured the project lookup configuration to support running the site on `localhost` or `127.0.0.1` for port 8000 or the port the runtime is currently running on. Lastly, we setup the project to use the development 'keepAlive' modifier to support reloading the site whenever changes are detected. More on the modifier later.
 
 ### Applications
 
@@ -189,7 +190,7 @@ const pluginConfig: EaCRuntimePluginConfig = {
           Name: 'Simple API Proxy',
           Description: 'A proxy',
         },
-        ModifierLookups: ['tracing'],
+        ModifierResolvers: ['tracing'],
         Processor: {
           ProxyRoot: 'https://reqres.in/api',
         } as EaCProxyProcessor,
@@ -228,7 +229,7 @@ const pluginConfig: EaCRuntimePluginConfig = {
           Description:
             'The public web blog site to be used for the marketing of the project',
         },
-        ModifierLookups: ['denoKvCache'],
+        ModifierResolvers: ['denoKvCache'],
         Processor: {
           DFS: {
             DefaultFile: 'index.html',
@@ -269,7 +270,7 @@ const pluginConfig: EaCRuntimePluginConfig = {
           Description:
             'The public web blog site to be used for the marketing of the project',
         },
-        ModifierLookups: ['denoKvCache'],
+        ModifierResolvers: ['denoKvCache'],
         Processor: {
           DFS: {
             DefaultFile: 'index.html',

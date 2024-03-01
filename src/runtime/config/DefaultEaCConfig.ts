@@ -5,7 +5,7 @@ import { fathymGreen } from '../../constants.ts';
 import FathymCorePlugin from '../plugins/FathymCorePlugin.ts';
 
 export const DefaultEaCConfig: EaCRuntimeConfig = {
-  ModifierLookups: [],
+  ModifierResolvers: {},
   Plugins: [new FathymCorePlugin()],
   Runtime: (cfg: EaCRuntimeConfig) => new DefaultEaCRuntime(cfg),
   EaC: { EnterpriseLookup: 'default-eac' },

@@ -1,10 +1,10 @@
-import { EaCApplicationAsCode, EaCApplicationLookupConfiguration } from '../../src.deps.ts';
+import { EaCApplicationAsCode, EaCApplicationResolverConfiguration } from '../../src.deps.ts';
 import { EaCRuntimeHandler } from '../EaCRuntimeHandler.ts';
 
 export type EaCApplicationProcessorConfig = {
   Handlers: EaCRuntimeHandler[];
 
-  LookupConfig: EaCApplicationLookupConfiguration;
+  ResolverConfig: EaCApplicationResolverConfiguration;
 
   Pattern: URLPattern;
 

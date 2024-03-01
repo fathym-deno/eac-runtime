@@ -1,1 +1,1 @@
-export * from './markdownMiddleware.ts';
+export * from './markdownToHtmlMiddleware.ts';

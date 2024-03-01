@@ -1,4 +1,4 @@
-import { IoCContainer } from '../../src.deps.ts';
+import { EaCModifierResolverConfiguration, IoCContainer } from '../../src.deps.ts';
 import { EaCRuntimeEaC } from '../EaCRuntimeEaC.ts';
 import { EaCRuntimePlugin } from '../plugins/EaCRuntimePlugin.ts';
 
@@ -7,7 +7,7 @@ export type EaCRuntimeSetupConfig = {
 
   IoC?: IoCContainer;
 
-  ModifierLookups?: string[];
+  ModifierResolvers?: Record<string, EaCModifierResolverConfiguration>;
 
   Plugins?: (EaCRuntimePlugin | [string, ...args: unknown[]])[];
 };
