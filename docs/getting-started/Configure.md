@@ -286,7 +286,7 @@ const pluginConfig: EaCRuntimePluginConfig = {
           denoKvCache: {
             Priority: 500,
           },
-          markdownTohtml: {
+          markdownToHtml: {
             Priority: 10,
           },
         },
