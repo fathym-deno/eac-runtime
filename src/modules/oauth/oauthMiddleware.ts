@@ -43,7 +43,7 @@ export function establishOAuthMiddleware(
 
     let resp: Response | Promise<Response>;
 
-    if (!ctx.ApplicationProcessorConfig.LookupConfig.IsPrivate) {
+    if (!ctx.ApplicationProcessorConfig.ResolverConfig.IsPrivate) {
       resp = ctx.next();
     } else {
       const helpers = createOAuthHelpers(oAuthConfig);
@@ -52,7 +52,7 @@ export function establishOAuthMiddleware(
 
       if (sessionId) {
         resp = ctx.next();
-      } else if (ctx.ApplicationProcessorConfig.LookupConfig.IsTriggerSignIn) {
+      } else if (ctx.ApplicationProcessorConfig.ResolverConfig.IsTriggerSignIn) {
         const url = new URL(req.url);
 
         const { pathname, search } = url;

@@ -16,7 +16,7 @@ export const EaCProxyProcessorHandlerResolver: ProcessorHandlerResolver = {
       return proxyRequest(
         req,
         processor.ProxyRoot,
-        appProcCfg.LookupConfig.PathPattern,
+        appProcCfg.ResolverConfig.PathPattern,
         processor.RedirectMode,
         !EAC_RUNTIME_DEV() ? processor.CacheControl : undefined,
         processor.ForceCache,

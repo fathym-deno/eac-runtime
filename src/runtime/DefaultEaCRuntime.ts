@@ -127,7 +127,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
 
       for (const projProcCfg of this.projectGraph!) {
         const appLookups = Object.keys(
-          projProcCfg.Project.ApplicationLookups || {},
+          projProcCfg.Project.ApplicationResolvers || {},
         );
 
         this.applicationGraph[projProcCfg.ProjectLookup] = appLookups

@@ -93,7 +93,7 @@ const pluginConfig: EaCRuntimePluginConfig = {
           Description: 'The Demo Micro Applications to use.',
           Priority: 100,
         },
-        LookupConfigs: {
+        ResolverConfigs: {
           dev: {
             Hostname: 'localhost',
             Port: config.Server.port || 8000,

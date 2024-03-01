@@ -133,7 +133,7 @@ export function establishDenoKvCacheMiddleware(
     console.log('Starting cache middleware...');
 
     const pattern = new URLPattern({
-      pathname: ctx.ApplicationProcessorConfig.LookupConfig.PathPattern,
+      pathname: ctx.ApplicationProcessorConfig.ResolverConfig.PathPattern,
     });
 
     const reqUrl = new URL(req.url);

@@ -1,7 +1,7 @@
 import { frontMatter, gfm } from '../../src.deps.ts';
 import { EaCRuntimeHandler } from '../../runtime/EaCRuntimeHandler.ts';
 
-export function establishMarkdownToHtmlMiddleware(): EaCRuntimeHandler {
+export function establishMarkdownToHTMLMiddleware(): EaCRuntimeHandler {
   return async (_req, ctx) => {
     let resp = await ctx.next();
 

@@ -45,7 +45,7 @@ export const EaCOAuthProcessorHandlerResolver: ProcessorHandlerResolver = {
 
             payload?.toString();
           },
-          appProcCfg.LookupConfig.PathPattern,
+          appProcCfg.ResolverConfig.PathPattern,
         );
       } else if (isEaCOAuthProviderDetails(provider.Details)) {
         const oAuthConfig = creatOAuthConfig(
@@ -68,7 +68,7 @@ export const EaCOAuthProcessorHandlerResolver: ProcessorHandlerResolver = {
 
             payload?.toString();
           },
-          appProcCfg.LookupConfig.PathPattern,
+          appProcCfg.ResolverConfig.PathPattern,
         );
       } else {
         throw new Error(

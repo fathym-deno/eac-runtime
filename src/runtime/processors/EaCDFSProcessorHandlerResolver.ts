@@ -40,7 +40,7 @@ export const EaCDFSProcessorHandlerResolver: ProcessorHandlerResolver = {
       const fileHandler = await filesReady;
 
       const pattern = new URLPattern({
-        pathname: appProcCfg.LookupConfig.PathPattern,
+        pathname: appProcCfg.ResolverConfig.PathPattern,
       });
 
       const patternResult = pattern.exec(req.url);

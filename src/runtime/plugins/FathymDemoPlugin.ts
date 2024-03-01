@@ -4,7 +4,7 @@ import {
   EaCDFSProcessor,
   EaCKeepAliveModifierDetails,
   EaCLocalDistributedFileSystem,
-  EaCMarkdownToHtmlModifierDetails,
+  EaCMarkdownToHTMLModifierDetails,
   EaCNPMDistributedFileSystem,
   EaCProxyProcessor,
   EaCRedirectProcessor,
@@ -143,10 +143,10 @@ export default class FathymDemoPlugin implements EaCRuntimePlugin {
           },
           markdown: {
             Details: {
-              Type: 'MarkdownToHtml',
+              Type: 'MarkdownToHTML',
               Name: 'Markdown to HTML',
               Description: 'A modifier to convert markdown to HTML.',
-            } as EaCMarkdownToHtmlModifierDetails,
+            } as EaCMarkdownToHTMLModifierDetails,
           },
           denoKvCache: {
             Details: {
