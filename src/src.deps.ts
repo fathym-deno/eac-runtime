@@ -9,6 +9,7 @@ export * as djwt from 'https://deno.land/x/djwt@v3.0.0/mod.ts';
 export { transpile } from 'https://deno.land/x/emit@0.37.0/mod.ts';
 export * from 'https://deno.land/x/deno_dom@v0.1.45/deno-dom-wasm-noinit.ts';
 export * as gfm from 'https://deno.land/x/gfm@0.2.3/mod.ts';
+import 'https://esm.sh/prismjs@1.29.0/components/prism-typescript?no-check';
 
 import Mime from 'npm:mime';
 export const mime = Mime;

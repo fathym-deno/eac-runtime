@@ -30,7 +30,7 @@ The runtime provides a configuration model, the EaC (Everything as Code) Model, 
 
 The core concept behind the EaC Runtime is the EaC Runtime configuration. By leveraging this configuration, you can easily define and customize various aspects of your micro applications, enabling you to enhance their functionality and adapt them to your specific requirements. By leveraging a configuration-based approach, you can easily manage and modify your application's behavior without the need for extensive code changes.
 
-Leverage turnkey, community or custom [plugins](configuration/Plugins.md) to easily provide new features to your micro applications.
+Leverage turnkey, community or custom [plugins](configuration/plugins/Overview.md) to easily provide new features to your micro applications.
 
 ## Getting Started
 
@@ -38,7 +38,7 @@ To get started with the EaC Runtime, follow these steps:
 
 1. <a href="https://docs.deno.com/runtime/manual/getting_started/installation" target="_blank">Install DenoJS</a> on your system if you haven't already done so.
 2. [Create an EaC Runtime project](getting-started/Install.md) and setup the configuration file for your micro applications.
-3. [Configure](getting-started/Cofigure.md) the necessary settings within the EaC config file according to your requirements, such as redirects, proxies, user authentication, generative AI, and hosting configurations.
+3. [Configure](getting-started/Configure.md) the necessary settings within the EaC config file according to your requirements, such as redirects, proxies, user authentication, generative AI, and hosting configurations.
 4. Start the EaC Runtime using a command line interface.
 5. [Deploy](getting-started/Deploy.md) the Eac Runtime locally, to the cloud or at the edge.
 

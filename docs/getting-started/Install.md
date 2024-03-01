@@ -32,7 +32,7 @@ deno task start
 
 After the runtime is running, you can navigate to <a href="http://localhost:8000/" target="_blank">`http://localhost:8000/`</a> to view the new project readme file.
 
-See <a href="./Configure.md">here</a> for docs on getting started with configuring your EaC.
+See <a href="Configure.md">here</a> for docs on getting started with configuring your EaC.
 
 ## Deploy
 
