@@ -2,7 +2,7 @@ import { IoCContainer } from '../../src.deps.ts';
 import { DefaultModifierMiddlewareResolver } from '../modifiers/DefaultModifierMiddlewareResolver.ts';
 import { EaCDenoKVCacheModifierHandlerResolver } from '../modifiers/EaCDenoKVCacheModifierHandlerResolver.ts';
 import { EaCKeepAliveModifierHandlerResolver } from '../modifiers/EaCKeepAliveModifierHandlerResolver.ts';
-import { EaCMarkdownToHTMLModifierHandlerResolver } from '../modifiers/EaCMarkdownToHTMLModifierHandlerResolver.ts';
+import { EaCMarkdownToHTMLModifierHandlerResolver } from '../modifiers/_EaCMarkdownToHTMLModifierHandlerResolver.ts';
 import { EaCOAuthModifierHandlerResolver } from '../modifiers/EaCOAuthModifierHandlerResolver.ts';
 import { EaCTracingModifierHandlerResolver } from '../modifiers/EaCTracingModifierHandlerResolver.ts';
 import { EaCRuntimePlugin } from './EaCRuntimePlugin.ts';
