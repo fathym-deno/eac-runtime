@@ -1,6 +1,7 @@
 import {
   EaCModifierAsCode,
   IoCContainer,
+  isEaCBaseHREFModifierDetails,
   isEaCDenoKVCacheModifierDetails,
   isEaCKeepAliveModifierDetails,
   isEaCMarkdownToHTMLModifierDetails,
@@ -13,7 +14,9 @@ export class DefaultModifierMiddlewareResolver implements ModifierHandlerResolve
   public async Resolve(ioc: IoCContainer, modifier: EaCModifierAsCode) {
     let toResolveName: string = '';
 
-    if (isEaCDenoKVCacheModifierDetails(modifier.Details)) {
+    if (isEaCBaseHREFModifierDetails(modifier.Details)) {
+      toResolveName = 'EaCBaseHREFModifierDetails';
+    } else if (isEaCDenoKVCacheModifierDetails(modifier.Details)) {
       toResolveName = 'EaCDenoKVCacheModifierDetails';
     } else if (isEaCKeepAliveModifierDetails(modifier.Details)) {
       toResolveName = 'EaCKeepAliveModifierDetails';

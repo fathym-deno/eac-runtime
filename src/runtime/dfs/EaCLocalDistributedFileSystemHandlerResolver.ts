@@ -1,4 +1,4 @@
-import { EaCLocalDistributedFileSystem, isEaCLocalDistributedFileSystem } from '../../src.deps.ts';
+import { isEaCLocalDistributedFileSystem } from '../../src.deps.ts';
 import { DFSFileHandlerResolver } from './DFSFileHandlerResolver.ts';
 import { buildLocalDFSFileHandler } from './buildLocalDFSFileHandler.ts';
 
@@ -10,8 +10,6 @@ export const EaCLocalDistributedFileSystemHandlerResolver: DFSFileHandlerResolve
       );
     }
 
-    const localDFS = dfs as EaCLocalDistributedFileSystem;
-
-    return Promise.resolve(buildLocalDFSFileHandler(localDFS.FileRoot));
+    return Promise.resolve(buildLocalDFSFileHandler(dfs.FileRoot));
   },
 };

@@ -1,4 +1,4 @@
-import { EaCNPMDistributedFileSystem, isEaCNPMDistributedFileSystem } from '../../src.deps.ts';
+import { isEaCNPMDistributedFileSystem } from '../../src.deps.ts';
 import { DFSFileHandlerResolver } from './DFSFileHandlerResolver.ts';
 import { buildFetchDFSFileHandler } from './buildFetchDFSFileHandler.ts';
 
@@ -10,10 +10,8 @@ export const EaCNPMDistributedFileSystemHandlerResolver: DFSFileHandlerResolver 
       );
     }
 
-    const npmDFS = dfs as EaCNPMDistributedFileSystem;
-
     const fileRoot = new URL(
-      `${npmDFS.Package}/`,
+      `${dfs.Package}/`,
       'https://cdn.skypack.dev/',
     );
 

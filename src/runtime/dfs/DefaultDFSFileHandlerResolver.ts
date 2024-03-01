@@ -3,6 +3,7 @@ import {
   IoCContainer,
   isEaCLocalDistributedFileSystem,
   isEaCNPMDistributedFileSystem,
+  isEaCRemoteDistributedFileSystem,
 } from '../../src.deps.ts';
 import { DFSFileHandlerResolver } from './DFSFileHandlerResolver.ts';
 
@@ -14,6 +15,8 @@ export class DefaultDFSFileHandlerResolver implements DFSFileHandlerResolver {
       toResolveName = 'EaCNPMDistributedFileSystem';
     } else if (isEaCLocalDistributedFileSystem(dfs)) {
       toResolveName = 'EaCLocalDistributedFileSystem';
+    } else if (isEaCRemoteDistributedFileSystem(dfs)) {
+      toResolveName = 'EaCRemoteDistributedFileSystem';
     } else {
       toResolveName = 'UnknownEaCDistributedFileSystem';
     }

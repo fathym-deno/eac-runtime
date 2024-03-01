@@ -1,5 +1,4 @@
 // deno-lint-ignore-file no-explicit-any
-import {} from '../../src.deps.ts';
 import { EaCRuntimeHandler } from '../../runtime/EaCRuntimeHandler.ts';
 import { DFSFileInfo } from '../../runtime/dfs/DFSFileInfo.ts';
 
