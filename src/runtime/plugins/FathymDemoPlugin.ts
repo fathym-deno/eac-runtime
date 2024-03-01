@@ -98,7 +98,7 @@ export default class FathymDemoPlugin implements EaCRuntimePlugin {
               denoKvCache: {
                 Priority: 500,
               },
-              markdown: {
+              markdownToHtml: {
                 Priority: 10,
               },
             },
@@ -141,7 +141,7 @@ export default class FathymDemoPlugin implements EaCRuntimePlugin {
               KeepAlivePath: '/_eac/alive',
             } as EaCKeepAliveModifierDetails,
           },
-          markdown: {
+          markdownToHtml: {
             Details: {
               Type: 'MarkdownToHTML',
               Name: 'Markdown to HTML',

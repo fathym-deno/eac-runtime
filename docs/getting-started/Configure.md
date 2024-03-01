@@ -39,7 +39,7 @@ Let's get our hands dirty now, and look at re-creating the Fathym Demo solution 
 
 ### The Plugin
 
-The EaC Runtime provides a myriad of ways to customize it, a key aspect of that are plugins. Plugins allow you to configure the EaC, default modifiers, available services (through the IoC pattern), and additional plugins. Start a new plugin by creating a `MyDemoPlugin.ts` file in a new `src/plugins` directory:
+The EaC Runtime provides a myriad of ways to customize it, a key aspect of that are plugins. Plugins allow you to configure the EaC, default modifiers, available services, and additional plugins. Start a new plugin by creating a `MyDemoPlugin.ts` file in a new `src/plugins` directory:
 
 ```typescript ./src/plugins/MyDemoPlugin.ts
 import {
@@ -78,9 +78,9 @@ export default defineEaCConfig({
 
 ### The Project
 
-Next, in order to handle requests, we'll need to configure our project. A project is responsible for orchestrating the micro applications into a unified experience, and defines the lookup configuration for when the project will run.
+Next, in order to handle requests, we'll need to configure our project. A project is responsible for orchestrating the micro applications into a unified experience, and defines the resolver configuration for when the project will run.
 
-To add a project to our plugin configuration, we'll need to update the EaC with our project definition:
+To add a project to our plugin configuration, we'll need to update the EaC in `MyDemoPlugin.ts` with our project definition:
 
 ```typescript ./src/plugins/MyDemoPlugin.ts
 const pluginConfig: EaCRuntimePluginConfig = {
@@ -103,15 +103,19 @@ const pluginConfig: EaCRuntimePluginConfig = {
             Port: config.Server.port || 8000,
           },
         },
-        ModifierResolvers: ['keepAlive'],
-        ApplicationLookups: {},
+        ModifierResolvers: {
+          keepAlive: {
+            Priority: 1000,
+          },
+        },
+        ApplicationResolvers: {},
       },
     },
   },
 };
 ```
 
-Here we have added a new demo project with some initial details. We have also configured the project lookup configuration to support running the site on `localhost` or `127.0.0.1` for port 8000 or the port the runtime is currently running on. Lastly, we setup the project to use the development 'keepAlive' modifier to support reloading the site whenever changes are detected. More on the modifier later.
+Here we have added a new demo project with some initial details. We have also configured the project resolver configuration to support running the site on `localhost` or `127.0.0.1` for port 8000 or the port the runtime is currently running on. Lastly, we setup the project to use the development 'keepAlive' modifier to support reloading the site whenever changes are detected. More on the modifier later.
 
 ### Applications
 
@@ -132,7 +136,8 @@ const pluginConfig: EaCRuntimePluginConfig = {
           Description: 'A redirect to Fathym',
         },
         Processor: {
-          Redirect: 'http://www.fathym.com/',
+          Type: 'Redirect',
+          Redirect: 'https://www.fathym.com/',
         } as EaCRedirectProcessor,
       },
     },
@@ -140,7 +145,7 @@ const pluginConfig: EaCRuntimePluginConfig = {
 };
 ```
 
-Again we provide some basic details for the application, and then configure processor as a redirect processor to handle the redirect.
+We provide some basic details for the application, and then configure processor as a redirect processor to handle the redirect.
 
 We're close here, but before our redirect will work, we need to assign the application to the project. This allows us to configure many aspects of the application to project relationship:
 
@@ -150,7 +155,7 @@ const pluginConfig: EaCRuntimePluginConfig = {
   EaC: {
     Projects: {
       demo: {
-        ApplicationLookups: {
+        ApplicationResolvers: {
           fathym: {
             PathPattern: '/redirect',
             Priority: 200,
@@ -162,13 +167,13 @@ const pluginConfig: EaCRuntimePluginConfig = {
 };
 ```
 
-The application lookup must use the same key used to define the application. Then we define the `PathPattern`, which gives the project information that it needs to resolve the Request. The priority is used to order applications during request resolution.
+The application lookup must use the same key used to define the application. Then we define the `PathPattern`, which gives the project information that it needs to resolve the Request. The priority is used to order applications during request resolution, with higher piroirty applications being processed first.
 
-If you go ahead and start the runtime, then navigate to `/redirect`, you should be automatically redirected to the site you configured.
+If you go ahead and start the runtime, then navigate to <a href="http://localhost:8000/redirect" target="_blank">`/redirect`</a>, you should be automatically redirected to the site you configured.
 
 #### Proxies
 
-Next we will look at configuring a proxy application. This allows us to configure a URL to host our backend services on:
+Next we will configure a proxy application. This allows us to configure a URL to host our backend services on:
 
 ```typescript ./src/plugins/MyDemoPlugin.ts
 const pluginConfig: EaCRuntimePluginConfig = {
@@ -176,7 +181,7 @@ const pluginConfig: EaCRuntimePluginConfig = {
   EaC: {
     Projects: {
       demo: {
-        ApplicationLookups: {
+        ApplicationResolvers: {
           apiProxy: {
             PathPattern: '/api-reqres*',
             Priority: 200,
@@ -190,8 +195,13 @@ const pluginConfig: EaCRuntimePluginConfig = {
           Name: 'Simple API Proxy',
           Description: 'A proxy',
         },
-        ModifierResolvers: ['tracing'],
+        ModifierResolvers: {
+          tracing: {
+            Priority: 1500,
+          },
+        },
         Processor: {
+          Type: 'Proxy',
           ProxyRoot: 'https://reqres.in/api',
         } as EaCProxyProcessor,
       },
@@ -202,11 +212,11 @@ const pluginConfig: EaCRuntimePluginConfig = {
 
 Here we have setup the application and once again assigned it to the project. In PathPattern for this assignment, we use a `*` to denote matching incoming request urls to anything that starts with `/api-reqres`. The rest of the path information after that root path is forwarded as part of the proxy request. Find complete infromation on available patterns <a href="https://developer.mozilla.org/en-US/docs/Web/API/URLPattern" target="_blank">here</a>. You'll also notice that we have added a `tracing` modifier to this application that will log each request and response to the API.
 
-Start the runtime, then navigate to `/api-reqres/users`, you should be automatically redirected to the site you configured.
+Start the runtime, then navigate to <a href="http://localhost:8000/api-reqres/users" target="_blank">`/api-reqres/users`</a>, you should see the JSON results of the mock API.
 
 #### DFS (Distributed File System) Hosting
 
-Now we can look at using the DFS to host a static site we have packaged in NPM. This is a React Docusaurus site, showing how we can leverage multiple architectures.
+Now we can look at using the DFS to host a static site we have packaged in NPM. This is a React Docusaurus site, showing how we can leverage multiple architectures together in our micro application project.
 
 ```typescript ./src/plugins/MyDemoPlugin.ts
 const pluginConfig: EaCRuntimePluginConfig = {
@@ -214,7 +224,7 @@ const pluginConfig: EaCRuntimePluginConfig = {
   EaC: {
     Projects: {
       demo: {
-        ApplicationLookups: {
+        ApplicationResolvers: {
           publicWebBlog: {
             PathPattern: '/blog*',
             Priority: 500,
@@ -229,9 +239,11 @@ const pluginConfig: EaCRuntimePluginConfig = {
           Description:
             'The public web blog site to be used for the marketing of the project',
         },
-        ModifierResolvers: ['denoKvCache'],
+        ModifierResolvers: { 'static-cache': { Priority: 500 } },
         Processor: {
+          Type: 'DFS',
           DFS: {
+            Type: 'NPM',
             DefaultFile: 'index.html',
             Package: '@lowcodeunit/public-web-blog',
             Version: 'latest',
@@ -243,7 +255,7 @@ const pluginConfig: EaCRuntimePluginConfig = {
 };
 ```
 
-Most of this should be starting to look familiar, we've configured the processor and added a `denoKvCache` modifier, then assigned it to the project.
+Most of this should be starting to look familiar, we've configured the processor and added a `denoKvCache` modifier, then assigned it to the project. View the configured application at <a href="http://localhost:8000/blog" target="_blank">`/blog`</a>, you should see the Fathym blog, and be able to navigate between articles.
 
 #### Markdown Rendering
 
@@ -255,28 +267,36 @@ const pluginConfig: EaCRuntimePluginConfig = {
   EaC: {
     Projects: {
       demo: {
-        ApplicationLookups: {
-          publicWebBlog: {
-            PathPattern: '/blog*',
-            Priority: 500,
+        ApplicationResolvers: {
+          home: {
+            PathPattern: '/*',
+            Priority: 100,
           },
         },
       },
     },
     Applications: {
-      publicWebBlog: {
+      home: {
         Details: {
-          Name: 'Public Web Blog Site',
+          Name: 'Home Site',
           Description:
-            'The public web blog site to be used for the marketing of the project',
+            'The home site to be used for the marketing of the project',
         },
-        ModifierResolvers: ['denoKvCache'],
+        ModifierResolvers: {
+          denoKvCache: {
+            Priority: 500,
+          },
+          markdownTohtml: {
+            Priority: 10,
+          },
+        },
         Processor: {
+          Type: 'DFS',
           DFS: {
-            DefaultFile: 'index.html',
-            Package: '@lowcodeunit/public-web-blog',
-            Version: 'latest',
-          } as EaCNPMDistributedFileSystem,
+            Type: 'Local',
+            DefaultFile: 'README.md',
+            FileRoot: './',
+          } as EaCLocalDistributedFileSystem,
         } as EaCDFSProcessor,
       },
     },
@@ -284,9 +304,13 @@ const pluginConfig: EaCRuntimePluginConfig = {
 };
 ```
 
+Navigate to <a href="http://localhost:8000/" target="_blank">`/`</a> and you should see the README file for the project.
+
+You'll notice that it is rendering raw markdown, next we'll look at bringing all of our modifiers in and will then see this as markdown rendered to html.
+
 #### Modifiers
 
-Modifiers allow us to easily manipulate the requests and responses of the system. In the above applications, we have used three different modifiers, and now we need to configure them:
+Modifiers allow us to easily manipulate the requests and responses of the system. In the above applications, we have used four different modifiers, and now we need to configure them:
 
 ```typescript ./src/plugins/MyDemoPlugin.ts
 const pluginConfig: EaCRuntimePluginConfig = {
@@ -295,29 +319,36 @@ const pluginConfig: EaCRuntimePluginConfig = {
     Modifiers: {
       keepAlive: {
         Details: {
+          Type: 'KeepAlive',
           Name: 'Keep Alive',
           Description: 'Modifier to support a keep alive workflow.',
           KeepAlivePath: '/_eac/alive',
-          Priority: 1000,
         } as EaCKeepAliveModifierDetails,
+      },
+      markdownToHtml: {
+        Details: {
+          Type: 'MarkdownToHTML',
+          Name: 'Markdown to HTML',
+          Description: 'A modifier to convert markdown to HTML.',
+        } as EaCMarkdownToHTMLModifierDetails,
       },
       'static-cache': {
         Details: {
+          Type: 'DenoKVCache',
           Name: 'Static Cache',
           Description:
             'Lightweight cache to use that stores data in a DenoKV database for static sites.',
           DenoKVDatabaseLookup: 'cache',
           CacheSeconds: 60 * 20,
-          Priority: 500,
         } as EaCDenoKVCacheModifierDetails,
       },
       tracing: {
         Details: {
+          Type: 'Tracing',
           Name: 'Tracing',
           Description: 'Allows for tracing of requests and responses.',
           TraceRequest: true,
           TraceResponse: true,
-          Priority: 1500,
         } as EaCTracingModifierDetails,
       },
     },
@@ -325,7 +356,7 @@ const pluginConfig: EaCRuntimePluginConfig = {
 };
 ```
 
-These core modifiers support various aspects of your application. The keep alive runs only in dev mode and works to refresh your page anytime you make changes to the eac-runtime. The tracing modifier will log the request and response informatino for the system. Finally, the deno KV cache uses DenoKV to cache configured responses for the applicatios it is configured to. You'll notice with the cache that we have DenoKVDatabaseLookup configured to `cache`. For this to work, we need to add one more configuration for the database:
+These core modifiers support various aspects of your application. The keep alive runs only in dev mode and works to refresh your page anytime you make changes to the eac-runtime. The tracing modifier will log the request and response informatino for the system. Finally, the deno KV cache uses DenoKV to cache configured responses for the applications it is configured to. You'll notice with the cache that we have DenoKVDatabaseLookup configured to `cache`. For this to work, we need to add one more configuration for the database:
 
 ```typescript ./src/plugins/MyDemoPlugin.ts
 const pluginConfig: EaCRuntimePluginConfig = {
@@ -334,14 +365,15 @@ const pluginConfig: EaCRuntimePluginConfig = {
     Databases: {
       cache: {
         Details: {
+          Type: 'DenoKV',
           Name: 'Local Cache',
           Description: 'The Deno KV database to use for local caching',
           DenoKVPath: undefined,
-          Type: 'DenoKV',
         } as EaCDenoKVDatabaseDetails,
       },
     },
   },
 };
 ```
-That's it, run your site and you'll be able to connect with the blog, api, and redirects with ease. For complete information on configuring your eac, visit [here](../configuration/Overview.md).
+
+That's it, run your site and you'll be able to connect with the blog, api, redirects and READMe with ease. For complete information on configuring your eac, visit [here](../configuration/Overview.md).
