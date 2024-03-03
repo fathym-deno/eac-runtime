@@ -11,12 +11,16 @@ export const buildLocalDFSFileHandler = (
     async GetFileInfo(
       filePath: string,
       defaultFileName?: string,
+      extensions?: string[],
+      useCascading?: boolean,
     ): Promise<DFSFileInfo> {
       let finalFilePath = filePath;
 
       const fileCheckPaths = getFileCheckPathsToProcess(
         filePath,
         defaultFileName,
+        extensions,
+        useCascading,
       );
 
       const fileChecks: Promise<Deno.FsFile>[] = [];

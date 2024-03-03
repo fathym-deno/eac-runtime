@@ -50,6 +50,8 @@ export const EaCDFSProcessorHandlerResolver: ProcessorHandlerResolver = {
       const file = await fileHandler.GetFileInfo(
         filePath,
         processor.DFS.DefaultFile,
+        processor.DFS.Extensions,
+        processor.DFS.UseCascading,
       );
 
       if (
@@ -57,20 +59,20 @@ export const EaCDFSProcessorHandlerResolver: ProcessorHandlerResolver = {
         !('content-type' in file.Headers) ||
         !('Content-Type' in file.Headers)
       ) {
-        let mimeType = file.Path.endsWith('.ts')
+        const mimeType = file.Path.endsWith('.ts')
           ? 'application/typescript'
           : mime.getType(file.Path);
 
-        if (!mimeType) {
-          mimeType = processor.DFS.DefaultFile?.endsWith('.ts')
-            ? 'application/typescript'
-            : mime.getType(processor.DFS.DefaultFile || '');
-        }
+        // if (!mimeType) {
+        //   mimeType = processor.DFS.DefaultFile?.endsWith('.ts')
+        //     ? 'application/typescript'
+        //     : mime.getType(processor.DFS.DefaultFile || '');
+        // }
 
         if (mimeType) {
           file.Headers = {
             ...(file.Headers || {}),
-            'content-type': mimeType,
+            'Content-Type': mimeType,
           };
         }
       }
