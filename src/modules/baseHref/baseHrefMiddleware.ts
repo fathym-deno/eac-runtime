@@ -10,23 +10,15 @@ export function establishBaseHrefMiddleware(): EaCRuntimeHandler {
 
   initCheck.then();
 
-  return async (req, ctx) => {
-    let resp = await ctx.next();
+  return async (_req, ctx) => {
+    let resp = await ctx.Next();
 
     const contType = resp.headers.get('Content-type');
 
     if (contType?.includes('text/html')) {
       await initCheck;
 
-      const pattern = new URLPattern({
-        pathname: ctx.ApplicationProcessorConfig.ResolverConfig.PathPattern,
-      });
-
-      const reqUrl = new URL(req.url);
-
-      const patternResult = pattern.exec(reqUrl.href);
-
-      let baseHref = patternResult!.inputs[0].toString();
+      let baseHref = ctx.Runtime.URLMatch.Base;
 
       if (!baseHref.endsWith('/')) {
         baseHref += '/';

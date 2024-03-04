@@ -14,7 +14,7 @@ export function establishOAuthMiddleware(
   signInPath: string,
 ): EaCRuntimeHandler {
   return async (req, ctx) => {
-    const provider = ctx.EaC.Providers![providerLookup];
+    const provider = ctx.Runtime.EaC.Providers![providerLookup];
 
     let oAuthConfig: DenoKVOAuth.OAuth2ClientConfig;
 
@@ -43,16 +43,16 @@ export function establishOAuthMiddleware(
 
     let resp: Response | Promise<Response>;
 
-    if (!ctx.ApplicationProcessorConfig.ResolverConfig.IsPrivate) {
-      resp = ctx.next();
+    if (!ctx.Runtime.ApplicationProcessorConfig.ResolverConfig.IsPrivate) {
+      resp = ctx.Next();
     } else {
       const helpers = createOAuthHelpers(oAuthConfig);
 
       const sessionId = await helpers.getSessionId(req);
 
       if (sessionId) {
-        resp = ctx.next();
-      } else if (ctx.ApplicationProcessorConfig.ResolverConfig.IsTriggerSignIn) {
+        resp = ctx.Next();
+      } else if (ctx.Runtime.ApplicationProcessorConfig.ResolverConfig.IsTriggerSignIn) {
         const url = new URL(req.url);
 
         const { pathname, search } = url;

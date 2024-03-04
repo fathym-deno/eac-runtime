@@ -34,21 +34,14 @@ export const EaCDFSProcessorHandlerResolver: ProcessorHandlerResolver = {
 
     filesReady.then();
 
-    return Promise.resolve(async (req, _ctx) => {
-      const processor = appProcCfg.Application.Processor as EaCDFSProcessor;
-
+    return Promise.resolve(async (_req, ctx) => {
       const fileHandler = await filesReady;
 
-      const pattern = new URLPattern({
-        pathname: appProcCfg.ResolverConfig.PathPattern,
-      });
-
-      const patternResult = pattern.exec(req.url);
-
-      const filePath = patternResult!.pathname.groups[0]!;
+      const filePath = ctx.Runtime.URLMatch.Path;
 
       const file = await fileHandler.GetFileInfo(
         filePath,
+        ctx.Runtime.Revision,
         processor.DFS.DefaultFile,
         processor.DFS.Extensions,
         processor.DFS.UseCascading,

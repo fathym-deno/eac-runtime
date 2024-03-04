@@ -7,7 +7,7 @@ export function establishTracingMiddleware(
   return async (req, ctx) => {
     traceReq && console.log({ req, ctx });
 
-    const resp = await ctx.next();
+    const resp = await ctx.Next();
 
     if (resp) {
       const cloned = resp.clone();

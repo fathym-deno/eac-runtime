@@ -4,20 +4,36 @@ import { EaCProjectProcessorConfig } from './processors/EaCProjectProcessorConfi
 import { EaCRuntimeEaC } from './EaCRuntimeEaC.ts';
 import { EaCRuntimeConfig } from './config/EaCRuntimeConfig.ts';
 
-export type EaCRuntimeContext = {
-  ApplicationProcessorConfig: EaCApplicationProcessorConfig;
+export type EaCRuntimeContext<TState = Record<string, unknown>> = {
+  Runtime: {
+    ApplicationProcessorConfig: EaCApplicationProcessorConfig;
 
-  Config: EaCRuntimeConfig;
+    Config: EaCRuntimeConfig;
 
-  EaC: EaCRuntimeEaC;
+    EaC: EaCRuntimeEaC;
 
-  Info: Deno.ServeHandlerInfo;
+    Info: Deno.ServeHandlerInfo;
 
-  IoC: IoCContainer;
+    IoC: IoCContainer;
 
-  next: (req?: Request) => Response | Promise<Response>;
+    ProjectProcessorConfig: EaCProjectProcessorConfig;
 
-  ProjectProcessorConfig: EaCProjectProcessorConfig;
+    Revision: number;
 
-  Revision: number;
+    URLMatch: {
+      Base: string;
+
+      Hash?: string;
+
+      Path: string;
+
+      Search?: string;
+    };
+  };
+
+  Next: (req?: Request) => Response | Promise<Response>;
+
+  Params: Record<string, unknown>;
+
+  State: TState;
 };

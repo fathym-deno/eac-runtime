@@ -10,12 +10,12 @@
       "runtimeExecutable": "deno.exe",
       "runtimeArgs": [
         "test",
+        "-A",
         "--config",
         "./deno.jsonc",
         "--inspect-wait"
       ],
-      "attachSimplePort": 9229,
-      
+      "attachSimplePort": 9229
     },
     {
       "request": "launch",

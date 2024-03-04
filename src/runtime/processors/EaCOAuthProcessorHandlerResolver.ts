@@ -21,7 +21,7 @@ export const EaCOAuthProcessorHandlerResolver: ProcessorHandlerResolver = {
     const processor = appProcCfg.Application.Processor as EaCOAuthProcessor;
 
     return Promise.resolve((req, ctx) => {
-      const provider = ctx.EaC.Providers![processor.ProviderLookup];
+      const provider = ctx.Runtime.EaC.Providers![processor.ProviderLookup];
 
       if (isEaCAzureADB2CProviderDetails(provider.Details)) {
         const oAuthConfig = creatAzureADB2COAuthConfig(

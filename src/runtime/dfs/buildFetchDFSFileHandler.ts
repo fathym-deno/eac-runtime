@@ -1,6 +1,7 @@
 import { DFSFileHandler } from './DFSFileHandler.ts';
 import { DFSFileInfo } from './DFSFileInfo.ts';
 import { getFileCheckPathsToProcess } from './getFileCheckPathsToProcess.ts';
+import { withDFSCache } from './withDFSCache.ts';
 
 export const buildFetchDFSFileHandler = (
   root: string,
@@ -9,62 +10,81 @@ export const buildFetchDFSFileHandler = (
   return {
     async GetFileInfo(
       filePath: string,
+      revision: number,
       defaultFileName?: string,
       extensions?: string[],
       useCascading?: boolean,
+      cacheDb?: Deno.Kv,
+      cacheSeconds?: number,
     ): Promise<DFSFileInfo> {
       let finalFilePath = filePath;
 
-      const fileCheckPaths = getFileCheckPathsToProcess(
-        filePath,
-        defaultFileName,
-        extensions,
-        useCascading,
-      );
+      return await withDFSCache(
+        finalFilePath,
+        async () => {
+          const fileCheckPaths = getFileCheckPathsToProcess(
+            filePath,
+            defaultFileName,
+            extensions,
+            useCascading,
+          );
 
-      const fileChecks: Promise<Response>[] = [];
+          const fileChecks: Promise<Response>[] = [];
 
-      fileCheckPaths.forEach((fcp) => {
-        const resolvedPath = pathResolver ? pathResolver(fcp) : fcp;
+          fileCheckPaths.forEach((fcp) => {
+            const resolvedPath = pathResolver ? pathResolver(fcp) : fcp;
 
-        if (resolvedPath) {
-          const fullFilePath = new URL(`.${resolvedPath}`, root);
+            if (resolvedPath) {
+              const fullFilePath = new URL(`.${resolvedPath}`, root);
 
-          fileChecks.push(fetch(fullFilePath));
+              fileChecks.push(fetch(fullFilePath));
+            }
+          });
 
-          finalFilePath = resolvedPath;
-        }
-      });
+          const fileResps = await Promise.all(fileChecks);
 
-      const fileResps = await Promise.all(fileChecks);
+          const activeFileResp = fileResps.find((fileResp, i) => {
+            finalFilePath = fileCheckPaths[i];
 
-      const activeFileResp = fileResps.find((fileResp) => fileResp.ok);
+            return fileResp.ok;
+          });
 
-      if (activeFileResp) {
-        const excludeHeaders = ['content-type'];
+          if (activeFileResp) {
+            const excludeHeaders = ['content-type'];
 
-        const headers = excludeHeaders.reduce((headers, uh) => {
-          if (!activeFileResp.headers.has(uh)) {
-            headers[uh] = activeFileResp.headers.get(uh)!;
+            const headers = excludeHeaders.reduce((headers, uh) => {
+              if (!activeFileResp.headers.has(uh)) {
+                headers[uh] = activeFileResp.headers.get(uh)!;
+              }
+
+              return headers;
+            }, {} as Record<string, string>);
+
+            const dfsFileInfo: DFSFileInfo = {
+              Contents: activeFileResp.clone().body!,
+              Headers: headers,
+              Path: finalFilePath,
+            };
+
+            return dfsFileInfo;
+          } else if (defaultFileName) {
+            throw new Error(
+              `Unable to locate a fetch file at path ${filePath}, and no default file was found for ${defaultFileName}.`,
+            );
+          } else {
+            throw new Error(
+              `Unable to locate a fetch file at path ${filePath}.`,
+            );
           }
+        },
+        revision,
+        cacheDb,
+        cacheSeconds,
+      );
+    },
 
-          return headers;
-        }, {} as Record<string, string>);
-
-        const dfsFileInfo: DFSFileInfo = {
-          Contents: activeFileResp.clone().body!,
-          Headers: headers,
-          Path: finalFilePath,
-        };
-
-        return dfsFileInfo;
-      } else if (defaultFileName) {
-        throw new Error(
-          `Unable to locate a fetch file at path ${filePath}, and no default file was found for ${defaultFileName}.`,
-        );
-      } else {
-        throw new Error(`Unable to locate a fetch file at path ${filePath}.`);
-      }
+    LoadAllPaths(): Promise<string[]> {
+      throw new Deno.errors.NotSupported('Retrieval of ');
     },
   };
 };

@@ -8,3 +8,4 @@ export * from './EaCLocalDistributedFileSystemHandlerResolver.ts';
 export * from './EaCNPMDistributedFileSystemHandlerResolver.ts';
 export * from './getFileCheckPathsToProcess.ts';
 export * from './UnknownEaCDistributedFileSystemHandlerResolver.ts';
+export * from './withDFSCache.ts';

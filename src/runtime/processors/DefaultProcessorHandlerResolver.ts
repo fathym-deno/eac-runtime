@@ -1,6 +1,7 @@
 import {
   IoCContainer,
   isEaCAIChatProcessor,
+  isEaCAPIProcessor,
   isEaCDFSProcessor,
   isEaCOAuthProcessor,
   // isEaCPreactAppProcessor,
@@ -23,6 +24,8 @@ export class DefaultProcessorHandlerResolver implements ProcessorHandlerResolver
       toResolveName = 'EaCProxyProcessor';
     } else if (isEaCOAuthProcessor(appProcCfg.Application.Processor)) {
       toResolveName = 'EaCOAuthProcessor';
+    } else if (isEaCAPIProcessor(appProcCfg.Application.Processor)) {
+      toResolveName = 'EaCAPIProcessor';
     } else if (isEaCAIChatProcessor(appProcCfg.Application.Processor)) {
       toResolveName = 'EaCAIChatProcessor';
     } else if (isEaCDFSProcessor(appProcCfg.Application.Processor)) {

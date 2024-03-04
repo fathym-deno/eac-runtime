@@ -3,7 +3,7 @@ import { EaCRuntimeHandler } from '../../runtime/EaCRuntimeHandler.ts';
 
 export function establishMarkdownToHTMLMiddleware(): EaCRuntimeHandler {
   return async (_req, ctx) => {
-    let resp = await ctx.next();
+    let resp = await ctx.Next();
 
     if (
       resp.headers.has('Content-Type') &&

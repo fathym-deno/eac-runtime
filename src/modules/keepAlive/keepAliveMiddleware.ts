@@ -38,7 +38,7 @@ export function establishKeepAliveMiddleware(
         socket.addEventListener('open', () => {
           socket.send(
             JSON.stringify({
-              revision: ctx.Revision,
+              revision: ctx.Runtime.Revision,
               type: 'keep-alive',
             }),
           );
@@ -62,7 +62,7 @@ export function establishKeepAliveMiddleware(
           },
         });
       } else {
-        let resp = await ctx.next();
+        let resp = await ctx.Next();
 
         const contType = resp.headers.get('Content-type');
 
@@ -76,7 +76,7 @@ export function establishKeepAliveMiddleware(
             const keepAliveClientScriptNode = doc.createElement('script');
             keepAliveClientScriptNode.setAttribute('type', 'module');
             keepAliveClientScriptNode.innerHTML =
-              `import { configureKeepAlive } from '${keepAliveClientPath}?${ctx.Revision}';
+              `import { configureKeepAlive } from '${keepAliveClientPath}?${ctx.Runtime.Revision}';
 
 configureKeepAlive('${keepAlivePath}');`;
             // keepAliveClientScriptNode.setAttribute('src', keepAliveClientPath);
@@ -94,7 +94,7 @@ configureKeepAlive('${keepAlivePath}');`;
         return resp;
       }
     } else {
-      return ctx.next();
+      return ctx.Next();
     }
   };
 }

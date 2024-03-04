@@ -83,12 +83,14 @@ export class DefaultEaCRuntime implements EaCRuntime {
     }
 
     const resp = projProcessorConfig.Handler(request, {
-      Config: this.config,
-      EaC: this.eac,
-      Info: info,
-      IoC: this.ioc,
-      ProjectProcessorConfig: projProcessorConfig,
-      Revision: this.revision,
+      Runtime: {
+        Config: this.config,
+        EaC: this.eac,
+        Info: info,
+        IoC: this.ioc,
+        ProjectProcessorConfig: projProcessorConfig,
+        Revision: this.revision,
+      },
     } as EaCRuntimeContext);
 
     return resp;
@@ -348,10 +350,29 @@ export class DefaultEaCRuntime implements EaCRuntime {
         );
       }
 
-      ctx.ApplicationProcessorConfig = appProcessorConfig;
+      ctx.Runtime.ApplicationProcessorConfig = appProcessorConfig;
+
+      const pattern = new URLPattern({
+        pathname: ctx.Runtime.ApplicationProcessorConfig.ResolverConfig.PathPattern,
+      });
+
+      const reqUrl = new URL(req.url);
+
+      const patternResult = pattern.exec(reqUrl.href);
+
+      const base = patternResult!.inputs[0].toString();
+
+      const path = patternResult!.pathname.groups[0] || '';
+
+      ctx.Runtime.URLMatch = {
+        Base: base.substring(0, base.length - path.length),
+        Hash: reqUrl.hash,
+        Path: path,
+        Search: reqUrl.search,
+      };
 
       return this.executePipeline(
-        ctx.ApplicationProcessorConfig.Handlers,
+        ctx.Runtime.ApplicationProcessorConfig.Handlers,
         req,
         ctx,
       );
@@ -364,7 +385,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
     ctx: EaCRuntimeContext,
     index = -1,
   ): Response | Promise<Response> {
-    ctx.next = async (req) => {
+    ctx.Next = async (req) => {
       req ??= request;
 
       ++index;
@@ -382,6 +403,6 @@ export class DefaultEaCRuntime implements EaCRuntime {
       }
     };
 
-    return ctx.next(request);
+    return ctx.Next(request);
   }
 }

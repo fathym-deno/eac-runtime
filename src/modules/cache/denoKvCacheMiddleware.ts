@@ -126,35 +126,27 @@ export function establishDenoKvCacheMiddleware(
 ): EaCRuntimeHandler {
   console.log('Configuring cache middleware...');
 
-  return async (req, ctx) => {
-    const cacheDb = await ctx.IoC.Resolve(Deno.Kv, dbLookup);
+  return async (_req, ctx) => {
+    const cacheDb = await ctx.Runtime.IoC.Resolve(Deno.Kv, dbLookup);
 
     console.log('Starting cache middleware...');
 
-    const pattern = new URLPattern({
-      pathname: ctx.ApplicationProcessorConfig.ResolverConfig.PathPattern,
-    });
-
-    const reqUrl = new URL(req.url);
-
-    const patternResult = pattern.exec(reqUrl.href);
-
-    const reqPath = patternResult!.pathname.groups[0]! || '/';
+    const reqPath = ctx.Runtime.URLMatch.Path || '/';
 
     const respCacheKey = [
       'Response',
       'EaC',
-      ctx.EaC!.EnterpriseLookup!,
+      ctx.Runtime.EaC!.EnterpriseLookup!,
       'Revision',
-      ctx.Revision,
+      ctx.Runtime.Revision,
       'Project',
-      ctx.ProjectProcessorConfig.ProjectLookup,
+      ctx.Runtime.ProjectProcessorConfig.ProjectLookup,
       'Applications',
-      ctx.ApplicationProcessorConfig.ApplicationLookup,
+      ctx.Runtime.ApplicationProcessorConfig.ApplicationLookup,
       'Path',
       reqPath,
-      ...(reqUrl.search ? ['Search', reqUrl.search] : []),
-      ...(reqUrl.hash ? ['Hash', reqUrl.hash] : []),
+      ...(ctx.Runtime.URLMatch.Search ? ['Search', ctx.Runtime.URLMatch.Search] : []),
+      ...(ctx.Runtime.URLMatch.Hash ? ['Hash', ctx.Runtime.URLMatch.Hash] : []),
     ];
 
     let resp: Response | undefined = undefined;
@@ -187,7 +179,7 @@ export function establishDenoKvCacheMiddleware(
     }
 
     async function loadForCaching() {
-      const toCacheResp = await ctx.next();
+      const toCacheResp = await ctx.Next();
 
       if (cacheDb && toCacheResp?.ok && isCachePathFiltered) {
         console.log(

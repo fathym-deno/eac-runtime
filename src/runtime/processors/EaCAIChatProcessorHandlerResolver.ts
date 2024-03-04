@@ -18,14 +18,14 @@ export const EaCAIChatProcessorHandlerResolver: ProcessorHandlerResolver = {
     const processor = appProcCfg.Application.Processor as EaCAIChatProcessor;
 
     return Promise.resolve(async (req, ctx) => {
-      const llm = await ctx.IoC.Resolve<BaseLanguageModel>(
-        ctx.IoC.Symbol(BaseLanguageModel.name),
+      const llm = await ctx.Runtime.IoC.Resolve<BaseLanguageModel>(
+        ctx.Runtime.IoC.Symbol(BaseLanguageModel.name),
         `${processor.AILookup}|${processor.LLMLookup}`,
       );
 
       const vectorStore = processor.VectorStoreLookup
-        ? await ctx.IoC.Resolve<VectorStore>(
-          ctx.IoC.Symbol(VectorStore.name),
+        ? await ctx.Runtime.IoC.Resolve<VectorStore>(
+          ctx.Runtime.IoC.Symbol(VectorStore.name),
           `${processor.AILookup}|${processor.VectorStoreLookup}`,
         )
         : undefined;
