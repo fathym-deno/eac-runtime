@@ -2,6 +2,7 @@ import { IoCContainer } from '../../src.deps.ts';
 import { DefaultModifierMiddlewareResolver } from '../modifiers/DefaultModifierMiddlewareResolver.ts';
 import { EaCBaseHREFModifierHandlerResolver } from '../modifiers/EaCBaseHREFModifierHandlerResolver.ts';
 import { EaCDenoKVCacheModifierHandlerResolver } from '../modifiers/EaCDenoKVCacheModifierHandlerResolver.ts';
+import { EaCJWTValidationModifierHandlerResolver } from '../modifiers/EaCJWTValidationModifierHandlerResolver.ts';
 import { EaCKeepAliveModifierHandlerResolver } from '../modifiers/EaCKeepAliveModifierHandlerResolver.ts';
 import { EaCMarkdownToHTMLModifierHandlerResolver } from '../modifiers/EaCMarkdownToHTMLModifierHandlerResolver.ts';
 import { EaCOAuthModifierHandlerResolver } from '../modifiers/EaCOAuthModifierHandlerResolver.ts';
@@ -31,8 +32,8 @@ export default class FathymModifierHandlerPlugin implements EaCRuntimePlugin {
       Type: pluginConfig.IoC!.Symbol('ModifierHandlerResolver'),
     });
 
-    pluginConfig.IoC!.Register(() => EaCDenoKVCacheModifierHandlerResolver, {
-      Name: 'EaCDenoKVCacheModifierDetails',
+    pluginConfig.IoC!.Register(() => EaCJWTValidationModifierHandlerResolver, {
+      Name: 'EaCJWTValidationModifierDetails',
       Type: pluginConfig.IoC!.Symbol('ModifierHandlerResolver'),
     });
 

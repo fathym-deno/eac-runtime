@@ -3,6 +3,7 @@ import {
   IoCContainer,
   isEaCBaseHREFModifierDetails,
   isEaCDenoKVCacheModifierDetails,
+  isEaCJWTValidationModifierDetails,
   isEaCKeepAliveModifierDetails,
   isEaCMarkdownToHTMLModifierDetails,
   isEaCOAuthModifierDetails,
@@ -18,6 +19,8 @@ export class DefaultModifierMiddlewareResolver implements ModifierHandlerResolve
       toResolveName = 'EaCBaseHREFModifierDetails';
     } else if (isEaCDenoKVCacheModifierDetails(modifier.Details)) {
       toResolveName = 'EaCDenoKVCacheModifierDetails';
+    } else if (isEaCJWTValidationModifierDetails(modifier.Details)) {
+      toResolveName = 'EaCJWTValidationModifierDetails';
     } else if (isEaCKeepAliveModifierDetails(modifier.Details)) {
       toResolveName = 'EaCKeepAliveModifierDetails';
     } else if (isEaCMarkdownToHTMLModifierDetails(modifier.Details)) {
