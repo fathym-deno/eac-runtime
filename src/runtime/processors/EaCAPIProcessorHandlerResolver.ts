@@ -22,15 +22,16 @@ export const pathToPatternRegexes: [RegExp, string, number][] = [
   [/\[(.*?)\]/g, ':$1', 3],
 ];
 
-export function convertFilePathToPattern(
+export async function convertFilePathToPattern(
+  fileHandler: DFSFileHandler,
   path: string,
-  defaultFile?: string,
-): PathMatch {
+  processor: EaCAPIProcessor,
+): Promise<PathMatch> {
   let parts = path.split('/');
 
   const lastPart = parts.pop();
 
-  if (lastPart && lastPart !== defaultFile) {
+  if (lastPart && lastPart !== processor.DFS.DefaultFile) {
     parts.push(lastPart.replace(/\.\w+$/, ''));
   }
 
@@ -62,7 +63,26 @@ export function convertFilePathToPattern(
 
   const patternText = parts.join('/').replace('/{/:', '{/:');
 
+  const file = await fileHandler.GetFileInfo(
+    path,
+    Date.now(),
+    processor.DFS.DefaultFile,
+    processor.DFS.Extensions,
+    processor.DFS.UseCascading,
+  );
+
+  const fileContents = await toText(file.Contents);
+
+  const enc = base64.encodeBase64(fileContents);
+
+  const apiUrl = `data:application/typescript;base64,${enc}`;
+
+  const apiModule = await import(apiUrl);
+
+  const api = apiModule.default as EaCRuntimeHandlers;
+
   return {
+    APIHandlers: api,
     Path: path,
     Pattern: new URLPattern({
       pathname: patternText,
@@ -73,6 +93,7 @@ export function convertFilePathToPattern(
 }
 
 export type PathMatch = {
+  APIHandlers: EaCRuntimeHandlers;
   Path: string;
   Pattern: URLPattern;
   PatternText: string;
@@ -99,24 +120,28 @@ export const EaCAPIProcessorHandlerResolver: ProcessorHandlerResolver = {
             .Resolve(ioc, processor.DFS)
             .then((fileHandler): void => {
               fileHandler.LoadAllPaths().then((allPaths): void => {
-                apiPathPatterns = allPaths
-                  .map((p) => {
-                    return convertFilePathToPattern(
-                      p,
-                      processor.DFS.DefaultFile,
-                    );
-                  })
-                  .sort((a, b) => b.Priority - a.Priority)
-                  .sort((a, b) => {
-                    const aCatch = a.PatternText.endsWith('*') ? -1 : 1;
-                    const bCatch = b.PatternText.endsWith('*') ? -1 : 1;
+                const apiPathPatternCalls = allPaths.map((p) => {
+                  return convertFilePathToPattern(
+                    fileHandler,
+                    p,
+                    processor,
+                  );
+                });
 
-                    return bCatch - aCatch;
-                  });
+                Promise.all(apiPathPatternCalls).then((app) => {
+                  apiPathPatterns = app
+                    .sort((a, b) => b.Priority - a.Priority)
+                    .sort((a, b) => {
+                      const aCatch = a.PatternText.endsWith('*') ? -1 : 1;
+                      const bCatch = b.PatternText.endsWith('*') ? -1 : 1;
 
-                console.log(apiPathPatterns.map((p) => p.PatternText));
+                      return bCatch - aCatch;
+                    });
 
-                resolve(fileHandler);
+                  console.log(apiPathPatterns.map((p) => p.PatternText));
+
+                  resolve(fileHandler);
+                });
               });
             })
             .catch((err) => reject(err));
@@ -126,7 +151,7 @@ export const EaCAPIProcessorHandlerResolver: ProcessorHandlerResolver = {
     filesReady.then();
 
     return Promise.resolve(async (req, ctx) => {
-      const fileHandler = await filesReady;
+      await filesReady;
 
       const apiTestUrl = new URL(
         `.${ctx.Runtime.URLMatch.Path}`,
@@ -147,30 +172,7 @@ export const EaCAPIProcessorHandlerResolver: ProcessorHandlerResolver = {
 
       ctx.Params = patternResult?.pathname.groups || {};
 
-      const cacheDb = processor.DFS.CacheDBLookup
-        ? await ctx.Runtime.IoC.Resolve(Deno.Kv, processor.DFS.CacheDBLookup)
-        : undefined;
-
-      const file = await fileHandler.GetFileInfo(
-        match!.Path,
-        ctx.Runtime.Revision,
-        processor.DFS.DefaultFile,
-        processor.DFS.Extensions,
-        processor.DFS.UseCascading,
-        cacheDb,
-      );
-
-      const fileContents = await toText(file.Contents);
-
-      const enc = base64.encodeBase64(fileContents);
-
-      const apiUrl = `data:application/typescript;base64,${enc}`;
-
-      const apiModule = await import(apiUrl);
-
-      const api = apiModule.default as EaCRuntimeHandlers;
-
-      const handler = api[req.method.toUpperCase() as KnownMethod];
+      const handler = match.APIHandlers[req.method.toUpperCase() as KnownMethod];
 
       if (!handler) {
         throw new Deno.errors.NotFound(
