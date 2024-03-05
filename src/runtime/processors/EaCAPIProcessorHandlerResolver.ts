@@ -9,7 +9,7 @@ import {
 import { ProcessorHandlerResolver } from './ProcessorHandlerResolver.ts';
 import { DFSFileHandlerResolver } from '../dfs/DFSFileHandlerResolver.ts';
 import { DFSFileHandler } from '../dfs/DFSFileHandler.ts';
-import { EAC_RUNTIME_DEV, IS_BUILDING, SUPPORTS_WASM } from '../../constants.ts';
+import { EAC_RUNTIME_DEV, IS_BUILDING, SUPPORTS_WORKERS } from '../../constants.ts';
 import { EaCRuntimeHandlers } from '../EaCRuntimeHandlers.ts';
 import { KnownMethod } from '../KnownMethod.ts';
 import * as esbuild from 'https://deno.land/x/esbuild@v0.20.1/wasm.js';
@@ -124,7 +124,7 @@ export const EaCAPIProcessorHandlerResolver: ProcessorHandlerResolver = {
             .then((fileHandler): void => {
               esbuild
                 .initialize({
-                  worker: SUPPORTS_WASM(),
+                  worker: SUPPORTS_WORKERS(),
                 })
                 .then(() => {
                   fileHandler.LoadAllPaths().then((allPaths): void => {
