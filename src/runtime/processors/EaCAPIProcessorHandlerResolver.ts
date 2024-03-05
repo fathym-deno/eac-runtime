@@ -122,18 +122,22 @@ export const EaCAPIProcessorHandlerResolver: ProcessorHandlerResolver = {
           defaultDFSFileHandlerResolver
             .Resolve(ioc, processor.DFS)
             .then((fileHandler): void => {
-              fileHandler.LoadAllPaths().then((allPaths): void => {
-                const apiPathPatternCalls = allPaths.map((p) => {
-                  return convertFilePathToPattern(fileHandler, p, processor);
-                });
+              esbuild
+                .initialize({
+                  worker: SUPPORTS_WASM(),
+                })
+                .then(() => {
+                  fileHandler.LoadAllPaths().then((allPaths): void => {
+                    if (!IS_BUILDING) {
+                      const apiPathPatternCalls = allPaths.map((p) => {
+                        return convertFilePathToPattern(
+                          fileHandler,
+                          p,
+                          processor,
+                        );
+                      });
 
-                Promise.all(apiPathPatternCalls).then((app) => {
-                  if (!IS_BUILDING) {
-                    esbuild
-                      .initialize({
-                        worker: SUPPORTS_WASM(),
-                      })
-                      .then(() => {
+                      Promise.all(apiPathPatternCalls).then((app) => {
                         apiPathPatterns = app
                           .sort((a, b) => b.Priority - a.Priority)
                           .sort((a, b) => {
@@ -143,17 +147,18 @@ export const EaCAPIProcessorHandlerResolver: ProcessorHandlerResolver = {
                             return bCatch - aCatch;
                           });
 
-                        // esbuild.stop();
-
                         console.log(apiPathPatterns.map((p) => p.PatternText));
 
                         resolve(fileHandler);
                       });
-                  } else {
-                    resolve(fileHandler);
-                  }
+                    } else {
+                      resolve(fileHandler);
+                    }
+                  });
+                })
+                .finally(() => {
+                  esbuild.stop();
                 });
-              });
             })
             .catch((err) => reject(err));
         });
