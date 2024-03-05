@@ -149,15 +149,14 @@ export const EaCAPIProcessorHandlerResolver: ProcessorHandlerResolver = {
 
                         console.log(apiPathPatterns.map((p) => p.PatternText));
 
+                        esbuild.stop();
+
                         resolve(fileHandler);
                       });
                     } else {
                       resolve(fileHandler);
                     }
                   });
-                })
-                .finally(() => {
-                  esbuild.stop();
                 });
             })
             .catch((err) => reject(err));
