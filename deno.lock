@@ -1686,6 +1686,7 @@
     "https://deno.land/x/emoji@0.2.1/emoji.ts": "59baa579fead2ea631cde96aefa03689ee2f1241ab76398965eddc5c66096047",
     "https://deno.land/x/emoji@0.2.1/mod.ts": "733bed20d9489f91fd16823bc0bff4943d995d7f1fdae6fea458b3e0927bde96",
     "https://deno.land/x/emoji@0.2.1/unicode.ts": "ac8079e8e1da66ae9e601c1fdd0e7641120c2b07ca7bd2875e65fe23e16e6199",
+    "https://deno.land/x/esbuild@v0.20.1/wasm.js": "e8f0675849692f54a928426f70560d3f50c4b1c7afe993e662d8bf06a5afe82e",
     "https://deno.land/x/fathym_common@v0.0.142/mod.ts": "9b9ec6a2599bba9859f9532b5712acb334bff2859c3a8649edb94fc8d133ce6c",
     "https://deno.land/x/fathym_common@v0.0.142/src/_exports.ts": "263c9b4719c61c0450ed2a610dc38a7980479cbfcc3fa98f95c8b733603b5206",
     "https://deno.land/x/fathym_common@v0.0.142/src/iterables/Queue.ts": "b057a89a7f5f326f0214c8a4bd87450eabb632d82128718619020fdc1d0f66d3",

@@ -1,10 +1,10 @@
 import {
-  // base64,
+  base64,
   EaCAPIProcessor,
   establishHeaders,
   isEaCAPIProcessor,
   processCacheControlHeaders,
-  // toText,
+  toText,
 } from '../../src.deps.ts';
 import { ProcessorHandlerResolver } from './ProcessorHandlerResolver.ts';
 import { DFSFileHandlerResolver } from '../dfs/DFSFileHandlerResolver.ts';
@@ -12,7 +12,7 @@ import { DFSFileHandler } from '../dfs/DFSFileHandler.ts';
 import { EAC_RUNTIME_DEV } from '../../constants.ts';
 import { EaCRuntimeHandlers } from '../EaCRuntimeHandlers.ts';
 import { KnownMethod } from '../KnownMethod.ts';
-import { isEaCLocalDistributedFileSystem } from '@fathym/eac';
+import * as esbuild from 'https://deno.land/x/esbuild@v0.20.1/wasm.js';
 
 export const pathToPatternRegexes: [RegExp, string, number][] = [
   // Handle [[optional]]
@@ -24,7 +24,7 @@ export const pathToPatternRegexes: [RegExp, string, number][] = [
 ];
 
 export async function convertFilePathToPattern(
-  _fileHandler: DFSFileHandler,
+  fileHandler: DFSFileHandler,
   filePath: string,
   processor: EaCAPIProcessor,
 ): Promise<PathMatch> {
@@ -64,25 +64,26 @@ export async function convertFilePathToPattern(
 
   const patternText = parts.join('/').replace('/{/:', '{/:');
 
-  // const file = await fileHandler.GetFileInfo(
-  //   filePath,
-  //   Date.now(),
-  //   processor.DFS.DefaultFile,
-  //   processor.DFS.Extensions,
-  //   processor.DFS.UseCascading,
-  // );
+  const file = await fileHandler.GetFileInfo(
+    filePath,
+    Date.now(),
+    processor.DFS.DefaultFile,
+    processor.DFS.Extensions,
+    processor.DFS.UseCascading,
+  );
 
-  // const fileContents = await toText(file.Contents);
+  const fileContents = await toText(file.Contents);
 
   // const enc = base64.encodeBase64(fileContents);
 
   // const apiUrl = `data:application/typescript;base64,${enc}`;
 
-  const apiUrl = isEaCLocalDistributedFileSystem(processor.DFS)
-    ? `@fathym/eac/runtime/web/${processor.DFS.FileRoot}${filePath}`
-    : filePath;
+  const result = await esbuild.transform(fileContents, { loader: 'ts' });
 
-  console.log(apiUrl);
+  const enc = base64.encodeBase64(result.code);
+
+  const apiUrl = `data:application/javascript;base64,${enc}`;
+
   const apiModule = await import(apiUrl);
 
   const api = apiModule.default as EaCRuntimeHandlers;
@@ -127,11 +128,7 @@ export const EaCAPIProcessorHandlerResolver: ProcessorHandlerResolver = {
             .then((fileHandler): void => {
               fileHandler.LoadAllPaths().then((allPaths): void => {
                 const apiPathPatternCalls = allPaths.map((p) => {
-                  return convertFilePathToPattern(
-                    fileHandler,
-                    p,
-                    processor,
-                  );
+                  return convertFilePathToPattern(fileHandler, p, processor);
                 });
 
                 Promise.all(apiPathPatternCalls).then((app) => {
@@ -143,6 +140,8 @@ export const EaCAPIProcessorHandlerResolver: ProcessorHandlerResolver = {
 
                       return bCatch - aCatch;
                     });
+
+                  esbuild.stop();
 
                   console.log(apiPathPatterns.map((p) => p.PatternText));
 
@@ -157,7 +156,9 @@ export const EaCAPIProcessorHandlerResolver: ProcessorHandlerResolver = {
     filesReady.then();
 
     return Promise.resolve(async (req, ctx) => {
+      console.log('Waiting on files ready');
       await filesReady;
+      console.log('Files ready');
 
       const apiTestUrl = new URL(
         `.${ctx.Runtime.URLMatch.Path}`,
@@ -178,6 +179,7 @@ export const EaCAPIProcessorHandlerResolver: ProcessorHandlerResolver = {
 
       ctx.Params = patternResult?.pathname.groups || {};
 
+      console.log('Selectin api handler');
       const handler = match.APIHandlers[req.method.toUpperCase() as KnownMethod];
 
       if (!handler) {
@@ -185,8 +187,11 @@ export const EaCAPIProcessorHandlerResolver: ProcessorHandlerResolver = {
           `There is not handler configured for the '${req.method}' method.`,
         );
       }
+      console.log('Handler selected');
 
       let resp = handler(req, ctx);
+
+      console.log('Handler executed');
 
       if (processor.DefaultContentType) {
         resp = await resp;
