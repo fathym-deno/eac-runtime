@@ -122,22 +122,18 @@ export const EaCAPIProcessorHandlerResolver: ProcessorHandlerResolver = {
           defaultDFSFileHandlerResolver
             .Resolve(ioc, processor.DFS)
             .then((fileHandler): void => {
-              esbuild
-                .initialize({
-                  worker: SUPPORTS_WASM(),
-                })
-                .then(() => {
-                  fileHandler.LoadAllPaths().then((allPaths): void => {
-                    if (!IS_BUILDING) {
-                      const apiPathPatternCalls = allPaths.map((p) => {
-                        return convertFilePathToPattern(
-                          fileHandler,
-                          p,
-                          processor,
-                        );
-                      });
+              fileHandler.LoadAllPaths().then((allPaths): void => {
+                const apiPathPatternCalls = allPaths.map((p) => {
+                  return convertFilePathToPattern(fileHandler, p, processor);
+                });
 
-                      Promise.all(apiPathPatternCalls).then((app) => {
+                Promise.all(apiPathPatternCalls).then((app) => {
+                  if (!IS_BUILDING) {
+                    esbuild
+                      .initialize({
+                        worker: SUPPORTS_WASM(),
+                      })
+                      .then(() => {
                         apiPathPatterns = app
                           .sort((a, b) => b.Priority - a.Priority)
                           .sort((a, b) => {
@@ -153,11 +149,11 @@ export const EaCAPIProcessorHandlerResolver: ProcessorHandlerResolver = {
 
                         resolve(fileHandler);
                       });
-                    } else {
-                      resolve(fileHandler);
-                    }
-                  });
+                  } else {
+                    resolve(fileHandler);
+                  }
                 });
+              });
             })
             .catch((err) => reject(err));
         });
