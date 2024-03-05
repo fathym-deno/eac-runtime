@@ -1,10 +1,10 @@
 import {
-  base64,
+  // base64,
   EaCAPIProcessor,
   establishHeaders,
   isEaCAPIProcessor,
   processCacheControlHeaders,
-  toText,
+  // toText,
 } from '../../src.deps.ts';
 import { ProcessorHandlerResolver } from './ProcessorHandlerResolver.ts';
 import { DFSFileHandlerResolver } from '../dfs/DFSFileHandlerResolver.ts';
@@ -12,6 +12,7 @@ import { DFSFileHandler } from '../dfs/DFSFileHandler.ts';
 import { EAC_RUNTIME_DEV } from '../../constants.ts';
 import { EaCRuntimeHandlers } from '../EaCRuntimeHandlers.ts';
 import { KnownMethod } from '../KnownMethod.ts';
+import { isEaCLocalDistributedFileSystem } from '@fathym/eac';
 
 export const pathToPatternRegexes: [RegExp, string, number][] = [
   // Handle [[optional]]
@@ -23,11 +24,11 @@ export const pathToPatternRegexes: [RegExp, string, number][] = [
 ];
 
 export async function convertFilePathToPattern(
-  fileHandler: DFSFileHandler,
-  path: string,
+  _fileHandler: DFSFileHandler,
+  filePath: string,
   processor: EaCAPIProcessor,
 ): Promise<PathMatch> {
-  let parts = path.split('/');
+  let parts = filePath.split('/');
 
   const lastPart = parts.pop();
 
@@ -63,27 +64,32 @@ export async function convertFilePathToPattern(
 
   const patternText = parts.join('/').replace('/{/:', '{/:');
 
-  const file = await fileHandler.GetFileInfo(
-    path,
-    Date.now(),
-    processor.DFS.DefaultFile,
-    processor.DFS.Extensions,
-    processor.DFS.UseCascading,
-  );
+  // const file = await fileHandler.GetFileInfo(
+  //   filePath,
+  //   Date.now(),
+  //   processor.DFS.DefaultFile,
+  //   processor.DFS.Extensions,
+  //   processor.DFS.UseCascading,
+  // );
 
-  const fileContents = await toText(file.Contents);
+  // const fileContents = await toText(file.Contents);
 
-  const enc = base64.encodeBase64(fileContents);
+  // const enc = base64.encodeBase64(fileContents);
 
-  const apiUrl = `data:application/typescript;base64,${enc}`;
+  // const apiUrl = `data:application/typescript;base64,${enc}`;
 
+  const apiUrl = isEaCLocalDistributedFileSystem(processor.DFS)
+    ? `@fathym/eac/runtime/web/${processor.DFS.FileRoot}${filePath}`
+    : filePath;
+
+  console.log(apiUrl);
   const apiModule = await import(apiUrl);
 
   const api = apiModule.default as EaCRuntimeHandlers;
 
   return {
     APIHandlers: api,
-    Path: path,
+    Path: filePath,
     Pattern: new URLPattern({
       pathname: patternText,
     }),
