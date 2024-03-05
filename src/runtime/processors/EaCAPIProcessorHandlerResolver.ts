@@ -13,6 +13,8 @@ import { EAC_RUNTIME_DEV, IS_BUILDING } from '../../constants.ts';
 import { EaCRuntimeHandlers } from '../EaCRuntimeHandlers.ts';
 import { KnownMethod } from '../KnownMethod.ts';
 import * as esbuild from 'https://deno.land/x/esbuild@v0.20.1/wasm.js';
+// import * as esbuild from "https://deno.land/x/esbuild@v0.19.11/wasm.js";
+// import { denoPlugins } from "https://deno.land/x/esbuild_deno_loader@0.8.5/mod.ts";
 
 export const pathToPatternRegexes: [RegExp, string, number][] = [
   // Handle [[optional]]
@@ -74,9 +76,9 @@ export async function convertFilePathToPattern(
 
   const fileContents = await toText(file.Contents);
 
-  // const enc = base64.encodeBase64(fileContents);
+  // const tsEnc = base64.encodeBase64(fileContents);
 
-  // const apiUrl = `data:application/typescript;base64,${enc}`;
+  // const tsApiUrl = `data:application/typescript;base64,${tsEnc}`;
 
   const result = await esbuild.transform(fileContents, { loader: 'ts' });
 
@@ -126,32 +128,42 @@ export const EaCAPIProcessorHandlerResolver: ProcessorHandlerResolver = {
           defaultDFSFileHandlerResolver
             .Resolve(ioc, processor.DFS)
             .then((fileHandler): void => {
-              fileHandler.LoadAllPaths().then((allPaths): void => {
-                if (!IS_BUILDING) {
-                  const apiPathPatternCalls = allPaths.map((p) => {
-                    return convertFilePathToPattern(fileHandler, p, processor);
-                  });
-
-                  Promise.all(apiPathPatternCalls).then((app) => {
-                    apiPathPatterns = app
-                      .sort((a, b) => b.Priority - a.Priority)
-                      .sort((a, b) => {
-                        const aCatch = a.PatternText.endsWith('*') ? -1 : 1;
-                        const bCatch = b.PatternText.endsWith('*') ? -1 : 1;
-
-                        return bCatch - aCatch;
+              esbuild
+                .initialize({
+                  worker: false,
+                })
+                .then(() => {
+                  fileHandler.LoadAllPaths().then((allPaths): void => {
+                    if (!IS_BUILDING) {
+                      const apiPathPatternCalls = allPaths.map((p) => {
+                        return convertFilePathToPattern(
+                          fileHandler,
+                          p,
+                          processor,
+                        );
                       });
 
-                    esbuild.stop();
+                      Promise.all(apiPathPatternCalls).then((app) => {
+                        apiPathPatterns = app
+                          .sort((a, b) => b.Priority - a.Priority)
+                          .sort((a, b) => {
+                            const aCatch = a.PatternText.endsWith('*') ? -1 : 1;
+                            const bCatch = b.PatternText.endsWith('*') ? -1 : 1;
 
-                    console.log(apiPathPatterns.map((p) => p.PatternText));
+                            return bCatch - aCatch;
+                          });
 
-                    resolve(fileHandler);
+                        esbuild.stop();
+
+                        console.log(apiPathPatterns.map((p) => p.PatternText));
+
+                        resolve(fileHandler);
+                      });
+                    } else {
+                      resolve(fileHandler);
+                    }
                   });
-                } else {
-                  resolve(fileHandler);
-                }
-              });
+                });
             })
             .catch((err) => reject(err));
         });
