@@ -17,53 +17,60 @@ import { EaCRuntimeContext } from './EaCRuntimeContext.ts';
 import { EaCRuntimeEaC } from './EaCRuntimeEaC.ts';
 import { EaCRuntimeHandler } from './EaCRuntimeHandler.ts';
 import { EaCRuntimePlugin } from './plugins/EaCRuntimePlugin.ts';
+import { EaCRuntimeHandlerPipeline } from './EaCRuntimeHandlerPipeline.ts';
 
 export class DefaultEaCRuntime implements EaCRuntime {
   protected applicationGraph?: Record<string, EaCApplicationProcessorConfig[]>;
 
-  protected eac?: EaCRuntimeEaC;
+  protected projectGraph?: EaCProjectProcessorConfig[];
 
-  protected ioc: IoCContainer;
+  public IoC: IoCContainer;
 
-  protected modifierResolvers?: Record<
+  public EaC?: EaCRuntimeEaC;
+
+  public ModifierResolvers?: Record<
     string,
     EaCModifierResolverConfiguration
   >;
 
-  protected projectGraph?: EaCProjectProcessorConfig[];
-
-  protected revision: number;
+  public Revision: number;
 
   constructor(protected config: EaCRuntimeConfig) {
-    this.ioc = new IoCContainer();
+    this.IoC = new IoCContainer();
 
-    this.revision = Date.now();
+    this.Revision = Date.now();
   }
 
-  public async Configure(): Promise<void> {
-    this.eac = this.config.EaC;
+  public async Configure(
+    configure?: (rt: EaCRuntime) => Promise<void>,
+  ): Promise<void> {
+    this.EaC = this.config.EaC;
 
-    this.ioc = this.config.IoC || new IoCContainer();
+    this.IoC = this.config.IoC || new IoCContainer();
 
-    this.modifierResolvers = this.config.ModifierResolvers || {};
+    this.ModifierResolvers = this.config.ModifierResolvers || {};
 
     await this.configurePlugins(this.config.Plugins);
 
-    if (!this.eac) {
+    if (!this.EaC) {
       throw new Error(
         'An EaC must be provided in the config or via a connection to an EaC Service with the EAC_API_KEY environment variable.',
       );
     }
 
-    if (!this.eac!.Projects) {
+    if (!this.EaC!.Projects) {
       throw new Error(
         'The EaC must provide a set of projects to use in the runtime.',
       );
     }
 
-    this.revision = Date.now();
+    this.Revision = Date.now();
 
     await this.afterEaCResolved(this.config.Plugins);
+
+    if (configure) {
+      configure(this);
+    }
 
     this.buildProjectGraph();
 
@@ -85,11 +92,11 @@ export class DefaultEaCRuntime implements EaCRuntime {
     const resp = projProcessorConfig.Handler(request, {
       Runtime: {
         Config: this.config,
-        EaC: this.eac,
+        EaC: this.EaC,
         Info: info,
-        IoC: this.ioc,
+        IoC: this.IoC,
         ProjectProcessorConfig: projProcessorConfig,
-        Revision: this.revision,
+        Revision: this.Revision,
       },
     } as EaCRuntimeContext);
 
@@ -109,7 +116,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
       }
 
       if (pluginDef.AfterEaCResolved) {
-        await pluginDef.AfterEaCResolved(this.eac!, this.ioc);
+        await pluginDef.AfterEaCResolved(this.EaC!, this.IoC);
       }
 
       const pluginConfig = pluginDef.Build ? await pluginDef.Build(this.config) : undefined;
@@ -121,7 +128,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
   }
 
   protected async buildApplicationGraph(): Promise<void> {
-    if (this.eac!.Applications) {
+    if (this.EaC!.Applications) {
       this.applicationGraph = {} as Record<
         string,
         EaCApplicationProcessorConfig[]
@@ -134,7 +141,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
 
         this.applicationGraph[projProcCfg.ProjectLookup] = appLookups
           .map((appLookup) => {
-            const app = this.eac!.Applications![appLookup];
+            const app = this.EaC!.Applications![appLookup];
 
             if (!app) {
               throw new Error(
@@ -160,13 +167,13 @@ export class DefaultEaCRuntime implements EaCRuntime {
             projProcCfg.ProjectLookup
           ]
         ) {
-          const pipeline: EaCRuntimeHandler[] = await this.constructPipeline(
+          const pipeline = await this.constructPipeline(
             projProcCfg.Project,
             appProcCfg.Application,
-            this.eac!.Modifiers || {},
+            this.EaC!.Modifiers || {},
           );
 
-          pipeline.push(await this.establishApplicationHandler(appProcCfg));
+          pipeline.Append(await this.establishApplicationHandler(appProcCfg));
 
           appProcCfg.Handlers = pipeline;
         }
@@ -175,12 +182,12 @@ export class DefaultEaCRuntime implements EaCRuntime {
   }
 
   protected buildProjectGraph(): void {
-    if (this.eac!.Projects) {
-      const projLookups = Object.keys(this.eac?.Projects || {});
+    if (this.EaC!.Projects) {
+      const projLookups = Object.keys(this.EaC?.Projects || {});
 
       this.projectGraph = projLookups
         .map((projLookup) => {
-          const proj = this.eac!.Projects![projLookup];
+          const proj = this.EaC!.Projects![projLookup];
 
           const resolverKeys = Object.keys(proj.ResolverConfigs);
 
@@ -225,16 +232,16 @@ export class DefaultEaCRuntime implements EaCRuntime {
 
       if (pluginConfig) {
         if (pluginConfig.EaC) {
-          this.eac = mergeWithArrays(this.eac || {}, pluginConfig.EaC);
+          this.EaC = mergeWithArrays(this.EaC || {}, pluginConfig.EaC);
         }
 
         if (pluginConfig.IoC) {
-          pluginConfig.IoC.CopyTo(this.ioc!);
+          pluginConfig.IoC.CopyTo(this.IoC!);
         }
 
         if (pluginConfig.ModifierResolvers) {
-          this.modifierResolvers = merge(
-            this.modifierResolvers || {},
+          this.ModifierResolvers = merge(
+            this.ModifierResolvers || {},
             pluginConfig.ModifierResolvers,
           );
         }
@@ -248,7 +255,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
     project: EaCProjectAsCode,
     application: EaCApplicationAsCode,
     modifiers: Record<string, EaCModifierAsCode>,
-  ): Promise<EaCRuntimeHandler[]> {
+  ): Promise<EaCRuntimeHandlerPipeline> {
     let pipelineModifierResolvers: Record<
       string,
       EaCModifierResolverConfiguration
@@ -256,7 +263,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
 
     pipelineModifierResolvers = merge(
       pipelineModifierResolvers,
-      this.modifierResolvers || {},
+      this.ModifierResolvers || {},
     );
 
     // TODO(mcgear): Add application logic middlewares to pipeline
@@ -287,30 +294,30 @@ export class DefaultEaCRuntime implements EaCRuntime {
         }
       });
 
-    const pipeline: (EaCRuntimeHandler | undefined)[] = [];
+    const pipeline = new EaCRuntimeHandlerPipeline();
 
-    const defaultModifierMiddlewareResolver = await this.ioc.Resolve<ModifierHandlerResolver>(
-      this.ioc.Symbol('ModifierHandlerResolver'),
+    const defaultModifierMiddlewareResolver = await this.IoC.Resolve<ModifierHandlerResolver>(
+      this.IoC.Symbol('ModifierHandlerResolver'),
     );
 
     for (const mod of pipelineModifiers) {
-      pipeline.push(
-        await defaultModifierMiddlewareResolver.Resolve(this.ioc, mod),
+      pipeline.Append(
+        await defaultModifierMiddlewareResolver.Resolve(this.IoC, mod),
       );
     }
 
-    return pipeline.filter((p) => p).map((p) => p!);
+    return pipeline;
   }
 
   protected async establishApplicationHandler(
     appProcessorConfig: EaCApplicationProcessorConfig,
   ): Promise<EaCRuntimeHandler> {
-    const defaultProcessorHandlerResolver = await this.ioc.Resolve<ProcessorHandlerResolver>(
-      this.ioc.Symbol('ProcessorHandlerResolver'),
+    const defaultProcessorHandlerResolver = await this.IoC.Resolve<ProcessorHandlerResolver>(
+      this.IoC.Symbol('ProcessorHandlerResolver'),
     );
 
     return await defaultProcessorHandlerResolver.Resolve(
-      this.ioc,
+      this.IoC,
       appProcessorConfig,
     );
   }
@@ -371,38 +378,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
         Search: reqUrl.search,
       };
 
-      return this.executePipeline(
-        ctx.Runtime.ApplicationProcessorConfig.Handlers,
-        req,
-        ctx,
-      );
+      return ctx.Runtime.ApplicationProcessorConfig.Handlers.Execute(req, ctx);
     };
-  }
-
-  protected executePipeline(
-    pipeline: EaCRuntimeHandler[],
-    request: Request,
-    ctx: EaCRuntimeContext,
-    index = -1,
-  ): Response | Promise<Response> {
-    ctx.Next = async (req) => {
-      req ??= request;
-
-      ++index;
-
-      if (pipeline.length > index) {
-        const response = await pipeline[index](req, ctx);
-
-        if (response) {
-          return response;
-        } else {
-          return this.executePipeline(pipeline, req, ctx, index);
-        }
-      } else {
-        throw new Error('A Response must be returned from the pipeline.');
-      }
-    };
-
-    return ctx.Next(request);
   }
 }

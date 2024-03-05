@@ -1,6 +1,7 @@
 import {
   base64,
   EaCAPIProcessor,
+  esbuild,
   establishHeaders,
   isEaCAPIProcessor,
   processCacheControlHeaders,
@@ -10,9 +11,17 @@ import { ProcessorHandlerResolver } from './ProcessorHandlerResolver.ts';
 import { DFSFileHandlerResolver } from '../dfs/DFSFileHandlerResolver.ts';
 import { DFSFileHandler } from '../dfs/DFSFileHandler.ts';
 import { EAC_RUNTIME_DEV, IS_BUILDING, SUPPORTS_WORKERS } from '../../constants.ts';
+import { EaCRuntimeHandler } from '../EaCRuntimeHandler.ts';
+import { EaCRuntimeHandlerPipeline } from '../EaCRuntimeHandlerPipeline.ts';
 import { EaCRuntimeHandlers } from '../EaCRuntimeHandlers.ts';
-import { KnownMethod } from '../KnownMethod.ts';
-import * as esbuild from 'https://deno.land/x/esbuild@v0.20.1/wasm.js';
+
+export type PathMatch = {
+  APIHandlers: EaCRuntimeHandlerPipeline;
+  Path: string;
+  Pattern: URLPattern;
+  PatternText: string;
+  Priority: number;
+};
 
 export const pathToPatternRegexes: [RegExp, string, number][] = [
   // Handle [[optional]]
@@ -27,6 +36,10 @@ export async function convertFilePathToPattern(
   fileHandler: DFSFileHandler,
   filePath: string,
   processor: EaCAPIProcessor,
+  middleware: [
+    string,
+    EaCRuntimeHandler | EaCRuntimeHandler[] | EaCRuntimeHandlers,
+  ][],
 ): Promise<PathMatch> {
   let parts = filePath.split('/');
 
@@ -41,6 +54,8 @@ export async function convertFilePathToPattern(
   if (parts.length === 1) {
     parts.push('');
   }
+
+  const pipeline = new EaCRuntimeHandlerPipeline();
 
   parts = parts.map((part) => {
     const partCheck = pathToPatternRegexes.find(([pc]) => pc.test(part));
@@ -64,6 +79,56 @@ export async function convertFilePathToPattern(
 
   const patternText = parts.join('/').replace('/{/:', '{/:');
 
+  const api = (await loadEaCRuntimeHandlers(
+    fileHandler,
+    filePath,
+    processor,
+  )) as EaCRuntimeHandler | EaCRuntimeHandlers;
+
+  const apiMiddleware = middleware
+    .filter(([root]) => {
+      return filePath.startsWith(root);
+    })
+    .flatMap(([_root, handler]) => Array.isArray(handler) ? handler : [handler]);
+
+  pipeline.Append(...apiMiddleware);
+
+  pipeline.Append(api);
+
+  return {
+    APIHandlers: pipeline,
+    Path: filePath,
+    Pattern: new URLPattern({
+      pathname: patternText,
+    }),
+    PatternText: patternText,
+    Priority: priority,
+  };
+}
+
+export async function loadMiddleware(
+  fileHandler: DFSFileHandler,
+  filePath: string,
+  processor: EaCAPIProcessor,
+): Promise<
+  [string, EaCRuntimeHandler | EaCRuntimeHandler[] | EaCRuntimeHandlers]
+> {
+  const handler = await loadEaCRuntimeHandlers(
+    fileHandler,
+    filePath,
+    processor,
+  );
+
+  const root = filePath.replace('_middleware.ts', '');
+
+  return [root, handler];
+}
+
+export async function loadEaCRuntimeHandlers(
+  fileHandler: DFSFileHandler,
+  filePath: string,
+  processor: EaCAPIProcessor,
+): Promise<EaCRuntimeHandler | EaCRuntimeHandler[] | EaCRuntimeHandlers> {
   const file = await fileHandler.GetFileInfo(
     filePath,
     Date.now(),
@@ -82,26 +147,62 @@ export async function convertFilePathToPattern(
 
   const apiModule = await import(apiUrl);
 
-  const api = apiModule.default as EaCRuntimeHandlers;
+  const handlers = apiModule.default;
 
-  return {
-    APIHandlers: api,
-    Path: filePath,
-    Pattern: new URLPattern({
-      pathname: patternText,
-    }),
-    PatternText: patternText,
-    Priority: priority,
-  };
+  return handlers;
 }
 
-export type PathMatch = {
-  APIHandlers: EaCRuntimeHandlers;
-  Path: string;
-  Pattern: URLPattern;
-  PatternText: string;
-  Priority: number;
-};
+export function loadApiPathPatterns(
+  fileHandler: DFSFileHandler,
+  processor: EaCAPIProcessor,
+): Promise<PathMatch[]> {
+  return fileHandler.LoadAllPaths().then((allPaths) => {
+    return esbuild
+      .initialize({
+        worker: SUPPORTS_WORKERS(),
+      })
+      .then(() => {
+        if (!IS_BUILDING) {
+          const middlewarePaths = allPaths
+            .filter((p) => p.endsWith('_middleware.ts'))
+            .sort((a, b) => a.split('/').length - b.split('/').length);
+
+          const middlewareCalls = middlewarePaths.map((p) => {
+            return loadMiddleware(fileHandler, p, processor);
+          });
+
+          return Promise.all(middlewareCalls).then((middleware) => {
+            console.log(middleware.map((m) => m[0]));
+            const apiPathPatternCalls = allPaths
+              .filter((p) => !p.endsWith('_middleware.ts'))
+              .map((p) => {
+                return convertFilePathToPattern(
+                  fileHandler,
+                  p,
+                  processor,
+                  middleware,
+                );
+              });
+
+            return Promise.all(apiPathPatternCalls).then((patterns) => {
+              esbuild.stop();
+
+              return patterns
+                .sort((a, b) => b.Priority - a.Priority)
+                .sort((a, b) => {
+                  const aCatch = a.PatternText.endsWith('*') ? -1 : 1;
+                  const bCatch = b.PatternText.endsWith('*') ? -1 : 1;
+
+                  return bCatch - aCatch;
+                });
+            });
+          });
+        } else {
+          return [];
+        }
+      });
+  });
+}
 
 export const EaCAPIProcessorHandlerResolver: ProcessorHandlerResolver = {
   Resolve(ioc, appProcCfg) {
@@ -122,42 +223,13 @@ export const EaCAPIProcessorHandlerResolver: ProcessorHandlerResolver = {
           defaultDFSFileHandlerResolver
             .Resolve(ioc, processor.DFS)
             .then((fileHandler): void => {
-              esbuild
-                .initialize({
-                  worker: SUPPORTS_WORKERS(),
-                })
-                .then(() => {
-                  fileHandler.LoadAllPaths().then((allPaths): void => {
-                    if (!IS_BUILDING) {
-                      const apiPathPatternCalls = allPaths.map((p) => {
-                        return convertFilePathToPattern(
-                          fileHandler,
-                          p,
-                          processor,
-                        );
-                      });
+              loadApiPathPatterns(fileHandler, processor).then((patterns) => {
+                apiPathPatterns = patterns;
 
-                      Promise.all(apiPathPatternCalls).then((app) => {
-                        apiPathPatterns = app
-                          .sort((a, b) => b.Priority - a.Priority)
-                          .sort((a, b) => {
-                            const aCatch = a.PatternText.endsWith('*') ? -1 : 1;
-                            const bCatch = b.PatternText.endsWith('*') ? -1 : 1;
+                console.log(apiPathPatterns.map((p) => p.PatternText));
 
-                            return bCatch - aCatch;
-                          });
-
-                        console.log(apiPathPatterns.map((p) => p.PatternText));
-
-                        esbuild.stop();
-
-                        resolve(fileHandler);
-                      });
-                    } else {
-                      resolve(fileHandler);
-                    }
-                  });
-                });
+                resolve(fileHandler);
+              });
             })
             .catch((err) => reject(err));
         });
@@ -166,9 +238,7 @@ export const EaCAPIProcessorHandlerResolver: ProcessorHandlerResolver = {
     filesReady.then();
 
     return Promise.resolve(async (req, ctx) => {
-      console.log('Waiting on files ready');
       await filesReady;
-      console.log('Files ready');
 
       const apiTestUrl = new URL(
         `.${ctx.Runtime.URLMatch.Path}`,
@@ -189,19 +259,7 @@ export const EaCAPIProcessorHandlerResolver: ProcessorHandlerResolver = {
 
       ctx.Params = patternResult?.pathname.groups || {};
 
-      console.log('Selectin api handler');
-      const handler = match.APIHandlers[req.method.toUpperCase() as KnownMethod];
-
-      if (!handler) {
-        throw new Deno.errors.NotFound(
-          `There is not handler configured for the '${req.method}' method.`,
-        );
-      }
-      console.log('Handler selected');
-
-      let resp = handler(req, ctx);
-
-      console.log('Handler executed');
+      let resp = match.APIHandlers.Execute(req, ctx);
 
       if (processor.DefaultContentType) {
         resp = await resp;

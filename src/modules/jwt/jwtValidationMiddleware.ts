@@ -13,10 +13,12 @@ export function establishJwtValidationMiddleware(
       if (!jwtToken) {
         failureRespBody.Message =
           `A JWT token is required, provide it in the '${jwtConfig.Header}' header in the format '${jwtConfig.Schema} {token}'.`;
+
+        failureRespBody.HasError = true;
       }
 
       try {
-        if (!(await jwtConfig.Verify(jwtToken!))) {
+        if (!failureRespBody.HasError && !(await jwtConfig.Verify(jwtToken!))) {
           failureRespBody.Message = 'The provided token is invalid.';
 
           failureRespBody.HasError = true;

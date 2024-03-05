@@ -8,4 +8,5 @@ export * from './EaCRuntime.ts';
 export * from './EaCRuntimeContext.ts';
 export * from './EaCRuntimeEaC.ts';
 export * from './EaCRuntimeHandler.ts';
+export * from './EaCRuntimeHandlerPipeline.ts';
 export * from './EaCRuntimeHandlers.ts';

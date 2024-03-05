@@ -11,6 +11,9 @@ export * from 'https://deno.land/x/deno_dom@v0.1.45/deno-dom-wasm-noinit.ts';
 export * as gfm from 'https://deno.land/x/gfm@0.2.3/mod.ts';
 import 'https://esm.sh/prismjs@1.29.0/components/prism-typescript?no-check';
 
+import * as ESBuild from 'https://deno.land/x/esbuild@v0.20.1/wasm.js';
+export const esbuild = ESBuild;
+
 import Mime from 'npm:mime';
 export const mime = Mime;
 

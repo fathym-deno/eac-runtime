@@ -33,7 +33,7 @@ export type EaCRuntimeContext<TState = Record<string, unknown>> = {
 
   Next: (req?: Request) => Response | Promise<Response>;
 
-  Params: Record<string, unknown>;
+  Params: Record<string, string | undefined>;
 
   State: TState;
 };

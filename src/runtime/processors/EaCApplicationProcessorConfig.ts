@@ -1,8 +1,8 @@
 import { EaCApplicationAsCode, EaCApplicationResolverConfiguration } from '../../src.deps.ts';
-import { EaCRuntimeHandler } from '../EaCRuntimeHandler.ts';
+import { EaCRuntimeHandlerPipeline } from '../EaCRuntimeHandlerPipeline.ts';
 
 export type EaCApplicationProcessorConfig = {
-  Handlers: EaCRuntimeHandler[];
+  Handlers: EaCRuntimeHandlerPipeline;
 
   ResolverConfig: EaCApplicationResolverConfiguration;
 

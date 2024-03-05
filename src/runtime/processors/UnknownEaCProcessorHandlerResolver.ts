@@ -9,7 +9,7 @@ export const UnknownEaCProcessorHandlerResolver: ProcessorHandlerResolver = {
         'Hello, world!\n' +
           JSON.stringify(appProcCfg, null, 2) +
           '\n' +
-          JSON.stringify(ctx.Info.remoteAddr, null, 2),
+          JSON.stringify(ctx.Runtime.Info.remoteAddr, null, 2),
       );
     });
   },

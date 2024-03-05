@@ -1,7 +1,11 @@
+import { EaCRuntime } from '../runtime/EaCRuntime.ts';
 import { EaCRuntimeConfig } from '../runtime/config/EaCRuntimeConfig.ts';
 import { startServer } from './startServer.ts';
 
-export async function start(config: EaCRuntimeConfig): Promise<void> {
+export async function start(
+  config: EaCRuntimeConfig,
+  configure?: (rt: EaCRuntime) => Promise<void>,
+): Promise<void> {
   const portEnv = Deno.env.get('PORT');
 
   if (portEnv) {
@@ -9,7 +13,7 @@ export async function start(config: EaCRuntimeConfig): Promise<void> {
   }
 
   if (config.Server.port) {
-    await startServer(config);
+    await startServer(config, configure);
   } else {
     const [startPort, endPort] = config.Server.StartRange || [8000, 8020];
 
@@ -22,7 +26,7 @@ export async function start(config: EaCRuntimeConfig): Promise<void> {
       try {
         config.Server.port = port;
 
-        await startServer(config);
+        await startServer(config, configure);
 
         firstError = undefined;
 
