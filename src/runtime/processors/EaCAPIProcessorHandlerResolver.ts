@@ -9,12 +9,10 @@ import {
 import { ProcessorHandlerResolver } from './ProcessorHandlerResolver.ts';
 import { DFSFileHandlerResolver } from '../dfs/DFSFileHandlerResolver.ts';
 import { DFSFileHandler } from '../dfs/DFSFileHandler.ts';
-import { EAC_RUNTIME_DEV, IS_BUILDING } from '../../constants.ts';
+import { EAC_RUNTIME_DEV, IS_BUILDING, SUPPORTS_WASM } from '../../constants.ts';
 import { EaCRuntimeHandlers } from '../EaCRuntimeHandlers.ts';
 import { KnownMethod } from '../KnownMethod.ts';
 import * as esbuild from 'https://deno.land/x/esbuild@v0.20.1/wasm.js';
-// import * as esbuild from "https://deno.land/x/esbuild@v0.19.11/wasm.js";
-// import { denoPlugins } from "https://deno.land/x/esbuild_deno_loader@0.8.5/mod.ts";
 
 export const pathToPatternRegexes: [RegExp, string, number][] = [
   // Handle [[optional]]
@@ -76,10 +74,6 @@ export async function convertFilePathToPattern(
 
   const fileContents = await toText(file.Contents);
 
-  // const tsEnc = base64.encodeBase64(fileContents);
-
-  // const tsApiUrl = `data:application/typescript;base64,${tsEnc}`;
-
   const result = await esbuild.transform(fileContents, { loader: 'ts' });
 
   const enc = base64.encodeBase64(result.code);
@@ -130,7 +124,7 @@ export const EaCAPIProcessorHandlerResolver: ProcessorHandlerResolver = {
             .then((fileHandler): void => {
               esbuild
                 .initialize({
-                  worker: false,
+                  worker: SUPPORTS_WASM(),
                 })
                 .then(() => {
                   fileHandler.LoadAllPaths().then((allPaths): void => {
@@ -153,7 +147,7 @@ export const EaCAPIProcessorHandlerResolver: ProcessorHandlerResolver = {
                             return bCatch - aCatch;
                           });
 
-                        esbuild.stop();
+                        // esbuild.stop();
 
                         console.log(apiPathPatterns.map((p) => p.PatternText));
 
