@@ -9,7 +9,7 @@ import {
 import { ProcessorHandlerResolver } from './ProcessorHandlerResolver.ts';
 import { DFSFileHandlerResolver } from '../dfs/DFSFileHandlerResolver.ts';
 import { DFSFileHandler } from '../dfs/DFSFileHandler.ts';
-import { EAC_RUNTIME_DEV } from '../../constants.ts';
+import { EAC_RUNTIME_DEV, IS_BUILDING } from '../../constants.ts';
 import { EaCRuntimeHandlers } from '../EaCRuntimeHandlers.ts';
 import { KnownMethod } from '../KnownMethod.ts';
 import * as esbuild from 'https://deno.land/x/esbuild@v0.20.1/wasm.js';
@@ -127,26 +127,30 @@ export const EaCAPIProcessorHandlerResolver: ProcessorHandlerResolver = {
             .Resolve(ioc, processor.DFS)
             .then((fileHandler): void => {
               fileHandler.LoadAllPaths().then((allPaths): void => {
-                const apiPathPatternCalls = allPaths.map((p) => {
-                  return convertFilePathToPattern(fileHandler, p, processor);
-                });
+                if (!IS_BUILDING) {
+                  const apiPathPatternCalls = allPaths.map((p) => {
+                    return convertFilePathToPattern(fileHandler, p, processor);
+                  });
 
-                Promise.all(apiPathPatternCalls).then((app) => {
-                  apiPathPatterns = app
-                    .sort((a, b) => b.Priority - a.Priority)
-                    .sort((a, b) => {
-                      const aCatch = a.PatternText.endsWith('*') ? -1 : 1;
-                      const bCatch = b.PatternText.endsWith('*') ? -1 : 1;
+                  Promise.all(apiPathPatternCalls).then((app) => {
+                    apiPathPatterns = app
+                      .sort((a, b) => b.Priority - a.Priority)
+                      .sort((a, b) => {
+                        const aCatch = a.PatternText.endsWith('*') ? -1 : 1;
+                        const bCatch = b.PatternText.endsWith('*') ? -1 : 1;
 
-                      return bCatch - aCatch;
-                    });
+                        return bCatch - aCatch;
+                      });
 
-                  esbuild.stop();
+                    esbuild.stop();
 
-                  console.log(apiPathPatterns.map((p) => p.PatternText));
+                    console.log(apiPathPatterns.map((p) => p.PatternText));
 
+                    resolve(fileHandler);
+                  });
+                } else {
                   resolve(fileHandler);
-                });
+                }
               });
             })
             .catch((err) => reject(err));
