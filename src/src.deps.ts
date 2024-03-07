@@ -36,7 +36,7 @@ export { VectorStore } from 'npm:@langchain/core/vectorstores';
 // export * from '../../reference-architecture/mod.ts';
 export * from 'https://deno.land/x/fathym_common@v0.0.162/mod.ts';
 // export * from '../../everything-as-code/mod.ts';
-export * from 'https://deno.land/x/fathym_everything_as_code@v0.0.376/mod.ts';
+export * from 'https://deno.land/x/fathym_everything_as_code@v0.0.381/mod.ts';
 // export * from '../../everything-as-code-api/mod.ts';
 export * from 'https://deno.land/x/fathym_everything_as_code_api@v0.0.19/mod.ts';
 

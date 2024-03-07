@@ -1,6 +1,7 @@
 import {
   EaCDistributedFileSystem,
   IoCContainer,
+  isEaCDenoKVDistributedFileSystem,
   isEaCLocalDistributedFileSystem,
   isEaCNPMDistributedFileSystem,
   isEaCRemoteDistributedFileSystem,
@@ -11,10 +12,12 @@ export class DefaultDFSFileHandlerResolver implements DFSFileHandlerResolver {
   public async Resolve(ioc: IoCContainer, dfs: EaCDistributedFileSystem) {
     let toResolveName: string = '';
 
-    if (isEaCNPMDistributedFileSystem(dfs)) {
-      toResolveName = 'EaCNPMDistributedFileSystem';
+    if (isEaCDenoKVDistributedFileSystem(dfs)) {
+      toResolveName = 'EaCDenoKVDistributedFileSystem';
     } else if (isEaCLocalDistributedFileSystem(dfs)) {
       toResolveName = 'EaCLocalDistributedFileSystem';
+    } else if (isEaCNPMDistributedFileSystem(dfs)) {
+      toResolveName = 'EaCNPMDistributedFileSystem';
     } else if (isEaCRemoteDistributedFileSystem(dfs)) {
       toResolveName = 'EaCRemoteDistributedFileSystem';
     } else {

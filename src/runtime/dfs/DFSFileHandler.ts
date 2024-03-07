@@ -11,5 +11,15 @@ export type DFSFileHandler = {
     cacheSeconds?: number,
   ) => Promise<DFSFileInfo>;
 
-  LoadAllPaths(): Promise<string[]>;
+  LoadAllPaths(revision: number): Promise<string[]>;
+
+  WriteFile(
+    filePath: string,
+    revision: number,
+    stream: ReadableStream<Uint8Array>,
+    ttlSeconds?: number,
+    headers?: Headers,
+    maxChunkSize?: number,
+    cacheDb?: Deno.Kv,
+  ): Promise<void>;
 };

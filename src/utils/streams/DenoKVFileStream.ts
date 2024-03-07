@@ -18,7 +18,9 @@ export class DenoKVFileStream {
 
     const { Data: chunk, ExpiresAt: expiresAt } = firstChunk.value || {};
 
-    return !!chunk && (!expiresAt || Date.now() < new Date(expiresAt).getTime());
+    return (
+      !!chunk && (!expiresAt || Date.now() < new Date(expiresAt).getTime())
+    );
   }
 
   public async Read(key: Deno.KvKey): Promise<
@@ -35,7 +37,9 @@ export class DenoKVFileStream {
     const contents = exists
       ? new ReadableStream<Uint8Array>({
         async start(controller) {
-          const cachedFileChunks = await denoKv.list<DenoKVFileStreamData<Uint8Array>>({
+          const cachedFileChunks = await denoKv.list<
+            DenoKVFileStreamData<Uint8Array>
+          >({
             prefix: [...key, 'Chunks'],
           });
 
@@ -52,10 +56,9 @@ export class DenoKVFileStream {
       : undefined;
 
     if (contents) {
-      const cachedHeaders = await denoKv.get<DenoKVFileStreamData<Record<string, string>>>([
-        ...key,
-        'Headers',
-      ]);
+      const cachedHeaders = await denoKv.get<
+        DenoKVFileStreamData<Record<string, string>>
+      >([...key, 'Headers']);
 
       return {
         Contents: contents,
@@ -142,7 +145,7 @@ export class DenoKVFileStream {
         calls.push(
           denoKv.set(
             [...key, 'Headers'],
-            { headers: headersToCache, expiresAt },
+            { Data: headersToCache, ExpiresAt: expiresAt },
             {
               expireIn: ttl,
             },

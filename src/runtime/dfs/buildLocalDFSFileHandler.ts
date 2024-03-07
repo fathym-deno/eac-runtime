@@ -83,7 +83,7 @@ export const buildLocalDFSFileHandler = (
       );
     },
 
-    async LoadAllPaths(): Promise<string[]> {
+    async LoadAllPaths(_revision: number): Promise<string[]> {
       const dir = await getFilesList({
         Directory: root,
       });
@@ -95,6 +95,18 @@ export const buildLocalDFSFileHandler = (
       }
 
       return paths;
+    },
+
+    WriteFile(
+      _filePath: string,
+      _revision: number,
+      _stream: ReadableStream<Uint8Array>,
+      _ttlSeconds?: number,
+      _headers?: Headers,
+      _maxChunkSize = 8000,
+      _cacheDb?: Deno.Kv,
+    ): Promise<void> {
+      throw new Deno.errors.NotSupported('File writing not yet supported.');
     },
   };
 };

@@ -1,5 +1,6 @@
 import { denoKvCacheReadableStream } from '../../modules/cache/denoKvCacheReadableStream.ts';
 import { denoKvReadReadableStreamCache } from '../../modules/cache/denoKvReadReadableStreamCache.ts';
+import { DenoKVFileStream } from '../../utils/streams/DenoKVFileStream.ts';
 import { DFSFileInfo } from './DFSFileInfo.ts';
 
 export async function withDFSCache(
@@ -11,8 +12,10 @@ export async function withDFSCache(
 ): Promise<DFSFileInfo> {
   const dfsCacheKey = ['DFS', 'Revision', revision, 'Path', filePath];
 
-  if (cacheDb) {
-    const cached = await denoKvReadReadableStreamCache(cacheDb, dfsCacheKey);
+  const fileStream = cacheDb ? new DenoKVFileStream(cacheDb) : undefined;
+
+  if (fileStream) {
+    const cached = await denoKvReadReadableStreamCache(fileStream, dfsCacheKey);
 
     if (cached) {
       return cached;
@@ -21,9 +24,9 @@ export async function withDFSCache(
 
   const dfsFile = await loadFile();
 
-  if (cacheDb && cacheSeconds) {
+  if (fileStream && cacheSeconds) {
     denoKvCacheReadableStream(
-      cacheDb,
+      fileStream,
       dfsCacheKey,
       dfsFile.Contents,
       cacheSeconds,
