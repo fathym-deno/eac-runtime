@@ -3,7 +3,7 @@ export * from './EaCAIChatProcessorHandlerResolver.ts';
 export * from './EaCApplicationProcessorConfig.ts';
 export * from './EaCDFSProcessorHandlerResolver.ts';
 export * from './EaCOAuthProcessorHandlerResolver.ts';
-export * from './EaCPreactAppProcessorHandlerResolver.ts';
+export * from './EaCPreactAppProcessorHandlerResolver.tsx';
 export * from './EaCProjectProcessorConfig.ts';
 export * from './EaCProxyProcessorHandlerResolver.ts';
 export * from './EaCRedirectProcessorHandlerResolver.ts';

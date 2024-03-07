@@ -17,8 +17,7 @@ export const esbuild = ESBuild;
 import Mime from 'npm:mime';
 export const mime = Mime;
 
-import PreactToString from 'https://esm.sh/*preact-render-to-string@6.4.0/';
-export const preactToString = PreactToString;
+export * as PreactRenderToString from 'https://esm.sh/*preact-render-to-string@6.4.0/';
 
 export { AzureChatOpenAI, AzureOpenAIEmbeddings } from 'npm:@langchain/azure-openai';
 export { WatsonxAI } from 'npm:@langchain/community/llms/watsonx_ai';
@@ -35,9 +34,9 @@ export { BaseChatModel } from 'npm:@langchain/core/language_models/chat_models';
 export { VectorStore } from 'npm:@langchain/core/vectorstores';
 
 // export * from '../../reference-architecture/mod.ts';
-export * from 'https://deno.land/x/fathym_common@v0.0.160/mod.ts';
+export * from 'https://deno.land/x/fathym_common@v0.0.162/mod.ts';
 // export * from '../../everything-as-code/mod.ts';
-export * from 'https://deno.land/x/fathym_everything_as_code@v0.0.375/mod.ts';
+export * from 'https://deno.land/x/fathym_everything_as_code@v0.0.376/mod.ts';
 // export * from '../../everything-as-code-api/mod.ts';
 export * from 'https://deno.land/x/fathym_everything_as_code_api@v0.0.19/mod.ts';
 

@@ -4,10 +4,9 @@ import {
   isEaCAPIProcessor,
   isEaCDFSProcessor,
   isEaCOAuthProcessor,
-  // isEaCPreactAppProcessor,
+  isEaCPreactAppProcessor,
   isEaCProxyProcessor,
   isEaCRedirectProcessor,
-  // preactToString,
 } from '../../src.deps.ts';
 import { EaCApplicationProcessorConfig } from './EaCApplicationProcessorConfig.ts';
 import { ProcessorHandlerResolver } from './ProcessorHandlerResolver.ts';
@@ -18,8 +17,8 @@ export class DefaultProcessorHandlerResolver implements ProcessorHandlerResolver
 
     if (isEaCRedirectProcessor(appProcCfg.Application.Processor)) {
       toResolveName = 'EaCRedirectProcessor';
-      // } else if (isEaCPreactAppProcessor(appProcCfg.Application.Processor)) {
-      //   toResolveName = 'EaCPreactAppProcessor';
+    } else if (isEaCPreactAppProcessor(appProcCfg.Application.Processor)) {
+      toResolveName = 'EaCPreactAppProcessor';
     } else if (isEaCProxyProcessor(appProcCfg.Application.Processor)) {
       toResolveName = 'EaCProxyProcessor';
     } else if (isEaCOAuthProcessor(appProcCfg.Application.Processor)) {

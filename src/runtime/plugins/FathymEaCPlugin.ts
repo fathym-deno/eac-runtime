@@ -22,11 +22,10 @@ export default class FathymEaCPlugin implements EaCRuntimePlugin {
         const eac = await eacSvc.Get(EnterpriseLookup as string);
 
         pluginConfig.EaC = eac;
-      } catch (err) {
+      } catch (_err) {
         console.error(
           'Unable to connect to the EaC service, falling back to local config.',
         );
-        console.error(err);
       }
     }
 

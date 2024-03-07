@@ -1,13 +1,6 @@
-import {
-  EaCDFSProcessor,
-  isEaCDFSProcessor,
-  mime,
-  processCacheControlHeaders,
-} from '../../src.deps.ts';
+import { EaCDFSProcessor, isEaCDFSProcessor, mime } from '../../src.deps.ts';
 import { ProcessorHandlerResolver } from './ProcessorHandlerResolver.ts';
-import { DFSFileHandlerResolver } from '../dfs/DFSFileHandlerResolver.ts';
-import { DFSFileHandler } from '../dfs/DFSFileHandler.ts';
-import { EAC_RUNTIME_DEV } from '../../constants.ts';
+import { filesReadyCheck } from '../../utils/dfs/filesReadyCheck.ts';
 
 export const EaCDFSProcessorHandlerResolver: ProcessorHandlerResolver = {
   Resolve(ioc, appProcCfg) {
@@ -19,18 +12,11 @@ export const EaCDFSProcessorHandlerResolver: ProcessorHandlerResolver = {
 
     const processor = appProcCfg.Application.Processor as EaCDFSProcessor;
 
-    const filesReady = new Promise<DFSFileHandler>((resolve, reject) => {
-      ioc
-        .Resolve<DFSFileHandlerResolver>(ioc.Symbol('DFSFileHandler'))
-        .then((defaultDFSFileHandlerResolver: DFSFileHandlerResolver) => {
-          defaultDFSFileHandlerResolver
-            .Resolve(ioc, processor.DFS)
-            .then((fileHandler) => {
-              resolve(fileHandler);
-            })
-            .catch((err) => reject(err));
-        });
-    });
+    const filesReady = filesReadyCheck(ioc, processor.DFS).then(
+      (fileHandler) => {
+        return fileHandler;
+      },
+    );
 
     filesReady.then();
 
@@ -70,17 +56,9 @@ export const EaCDFSProcessorHandlerResolver: ProcessorHandlerResolver = {
         }
       }
 
-      let resp = new Response(file.Contents, {
+      const resp = new Response(file.Contents, {
         headers: file.Headers,
       });
-
-      if (processor.CacheControl && !EAC_RUNTIME_DEV()) {
-        resp = processCacheControlHeaders(
-          resp,
-          processor.CacheControl,
-          processor.ForceCache,
-        );
-      }
 
       return resp;
     });

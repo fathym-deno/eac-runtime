@@ -3,10 +3,13 @@ import {
   EaCModifierAsCode,
   EaCModifierResolverConfiguration,
   EaCProjectAsCode,
+  esbuild,
   IoCContainer,
   merge,
   mergeWithArrays,
+  processCacheControlHeaders,
 } from '../src.deps.ts';
+import { EAC_RUNTIME_DEV, SUPPORTS_WORKERS } from '../constants.ts';
 import { EaCRuntimeConfig } from './config/EaCRuntimeConfig.ts';
 import { ProcessorHandlerResolver } from './processors/ProcessorHandlerResolver.ts';
 import { ModifierHandlerResolver } from './modifiers/ModifierHandlerResolver.ts';
@@ -28,10 +31,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
 
   public EaC?: EaCRuntimeEaC;
 
-  public ModifierResolvers?: Record<
-    string,
-    EaCModifierResolverConfiguration
-  >;
+  public ModifierResolvers?: Record<string, EaCModifierResolverConfiguration>;
 
   public Revision: number;
 
@@ -72,9 +72,18 @@ export class DefaultEaCRuntime implements EaCRuntime {
       configure(this);
     }
 
+    try {
+      await esbuild.initialize({
+        worker: SUPPORTS_WORKERS(),
+      });
+    } catch {
+      console.log();
+    }
     this.buildProjectGraph();
 
     await this.buildApplicationGraph();
+
+    esbuild.stop();
   }
 
   public Handle(
@@ -98,6 +107,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
         ProjectProcessorConfig: projProcessorConfig,
         Revision: this.Revision,
       },
+      State: {},
     } as EaCRuntimeContext);
 
     return resp;
@@ -316,10 +326,31 @@ export class DefaultEaCRuntime implements EaCRuntime {
       this.IoC.Symbol('ProcessorHandlerResolver'),
     );
 
-    return await defaultProcessorHandlerResolver.Resolve(
+    let handler = await defaultProcessorHandlerResolver.Resolve(
       this.IoC,
       appProcessorConfig,
     );
+
+    if (
+      appProcessorConfig.Application.Processor.CacheControl &&
+      !EAC_RUNTIME_DEV()
+    ) {
+      const cacheHandler = handler;
+
+      handler = async (req, ctx) => {
+        let resp = await cacheHandler(req, ctx);
+
+        resp = processCacheControlHeaders(
+          resp,
+          appProcessorConfig.Application.Processor.CacheControl,
+          appProcessorConfig.Application.Processor.ForceCache,
+        );
+
+        return resp;
+      };
+    }
+
+    return handler;
   }
 
   protected establishProjectHandler(

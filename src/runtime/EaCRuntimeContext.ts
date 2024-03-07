@@ -4,7 +4,16 @@ import { EaCProjectProcessorConfig } from './processors/EaCProjectProcessorConfi
 import { EaCRuntimeEaC } from './EaCRuntimeEaC.ts';
 import { EaCRuntimeConfig } from './config/EaCRuntimeConfig.ts';
 
-export type EaCRuntimeContext<TState = Record<string, unknown>> = {
+export type EaCRuntimeContext<
+  TState = Record<string, unknown>,
+  TData = Record<string, unknown>,
+> = {
+  Next: (req?: Request) => Response | Promise<Response>;
+
+  Params: Record<string, string | undefined>;
+
+  Render: (data: TData) => Response | Promise<Response>;
+
   Runtime: {
     ApplicationProcessorConfig: EaCApplicationProcessorConfig;
 
@@ -30,10 +39,6 @@ export type EaCRuntimeContext<TState = Record<string, unknown>> = {
       Search?: string;
     };
   };
-
-  Next: (req?: Request) => Response | Promise<Response>;
-
-  Params: Record<string, string | undefined>;
 
   State: TState;
 };

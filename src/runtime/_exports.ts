@@ -1,3 +1,4 @@
+export * from './apps/_exports.ts';
 export * from './config/_exports.ts';
 export * from './dfs/_exports.ts';
 export * from './modifiers/_exports.ts';
@@ -9,4 +10,5 @@ export * from './EaCRuntimeContext.ts';
 export * from './EaCRuntimeEaC.ts';
 export * from './EaCRuntimeHandler.ts';
 export * from './EaCRuntimeHandlerPipeline.ts';
+export * from './EaCRuntimeHandlerResult.ts';
 export * from './EaCRuntimeHandlers.ts';

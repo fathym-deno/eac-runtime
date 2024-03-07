@@ -1,7 +1,5 @@
-import {
-  denoKvCacheReadableStream,
-  denoKvReadReadableStreamCache,
-} from '../../modules/cache/denoKvCacheMiddleware.ts';
+import { denoKvCacheReadableStream } from '../../modules/cache/denoKvCacheReadableStream.ts';
+import { denoKvReadReadableStreamCache } from '../../modules/cache/denoKvReadReadableStreamCache.ts';
 import { DFSFileInfo } from './DFSFileInfo.ts';
 
 export async function withDFSCache(
