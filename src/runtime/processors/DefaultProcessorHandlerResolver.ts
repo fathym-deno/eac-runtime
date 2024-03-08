@@ -7,12 +7,18 @@ import {
   isEaCPreactAppProcessor,
   isEaCProxyProcessor,
   isEaCRedirectProcessor,
+  isEaCTailwindProcessor,
 } from '../../src.deps.ts';
 import { EaCApplicationProcessorConfig } from './EaCApplicationProcessorConfig.ts';
+import { EaCRuntimeEaC } from '../EaCRuntimeEaC.ts';
 import { ProcessorHandlerResolver } from './ProcessorHandlerResolver.ts';
 
 export class DefaultProcessorHandlerResolver implements ProcessorHandlerResolver {
-  public async Resolve(ioc: IoCContainer, appProcCfg: EaCApplicationProcessorConfig) {
+  public async Resolve(
+    ioc: IoCContainer,
+    appProcCfg: EaCApplicationProcessorConfig,
+    eac: EaCRuntimeEaC,
+  ) {
     let toResolveName: string = '';
 
     if (isEaCRedirectProcessor(appProcCfg.Application.Processor)) {
@@ -29,6 +35,8 @@ export class DefaultProcessorHandlerResolver implements ProcessorHandlerResolver
       toResolveName = 'EaCAIChatProcessor';
     } else if (isEaCDFSProcessor(appProcCfg.Application.Processor)) {
       toResolveName = 'EaCDFSProcessor';
+    } else if (isEaCTailwindProcessor(appProcCfg.Application.Processor)) {
+      toResolveName = 'EaCTailwindProcessor';
     } else {
       toResolveName = 'UnknownEaCProcessor';
     }
@@ -38,6 +46,6 @@ export class DefaultProcessorHandlerResolver implements ProcessorHandlerResolver
       toResolveName,
     );
 
-    return await resolver.Resolve(ioc, appProcCfg);
+    return await resolver.Resolve(ioc, appProcCfg, eac);
   }
 }

@@ -20,10 +20,21 @@ import { EaCRuntimeContext } from './EaCRuntimeContext.ts';
 import { EaCRuntimeEaC } from './EaCRuntimeEaC.ts';
 import { EaCRuntimeHandler } from './EaCRuntimeHandler.ts';
 import { EaCRuntimePlugin } from './plugins/EaCRuntimePlugin.ts';
+import { EaCRuntimePluginConfig } from './config/EaCRuntimePluginConfig.ts';
 import { EaCRuntimeHandlerPipeline } from './EaCRuntimeHandlerPipeline.ts';
 
 export class DefaultEaCRuntime implements EaCRuntime {
   protected applicationGraph?: Record<string, EaCApplicationProcessorConfig[]>;
+
+  protected pluginConfigs: Map<
+    EaCRuntimePlugin | [string, ...args: unknown[]],
+    EaCRuntimePluginConfig | undefined
+  >;
+
+  protected pluginDefs: Map<
+    EaCRuntimePlugin | [string, ...args: unknown[]],
+    EaCRuntimePlugin
+  >;
 
   protected projectGraph?: EaCProjectProcessorConfig[];
 
@@ -36,6 +47,10 @@ export class DefaultEaCRuntime implements EaCRuntime {
   public Revision: number;
 
   constructor(protected config: EaCRuntimeConfig) {
+    this.pluginConfigs = new Map();
+
+    this.pluginDefs = new Map();
+
     this.IoC = new IoCContainer();
 
     this.Revision = Date.now();
@@ -44,6 +59,10 @@ export class DefaultEaCRuntime implements EaCRuntime {
   public async Configure(
     configure?: (rt: EaCRuntime) => Promise<void>,
   ): Promise<void> {
+    this.pluginConfigs = new Map();
+
+    this.pluginDefs = new Map();
+
     this.EaC = this.config.EaC;
 
     this.IoC = this.config.IoC || new IoCContainer();
@@ -66,7 +85,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
 
     this.Revision = Date.now();
 
-    await this.afterEaCResolved(this.config.Plugins);
+    await this.afterEaCResolved();
 
     if (configure) {
       configure(this);
@@ -113,26 +132,10 @@ export class DefaultEaCRuntime implements EaCRuntime {
     return resp;
   }
 
-  protected async afterEaCResolved(
-    plugins?: (EaCRuntimePlugin | [string, ...args: unknown[]])[],
-  ): Promise<void> {
-    for (let pluginDef of plugins || []) {
-      if (Array.isArray(pluginDef)) {
-        const [plugin, ...args] = pluginDef;
-
-        pluginDef = new (await import(plugin)).default(
-          args,
-        ) as EaCRuntimePlugin;
-      }
-
+  protected async afterEaCResolved(): Promise<void> {
+    for (const pluginDef of this.pluginDefs.values() || []) {
       if (pluginDef.AfterEaCResolved) {
         await pluginDef.AfterEaCResolved(this.EaC!, this.IoC);
-      }
-
-      const pluginConfig = pluginDef.Build ? await pluginDef.Build(this.config) : undefined;
-
-      if (pluginConfig) {
-        await this.afterEaCResolved(pluginConfig.Plugins);
       }
     }
   }
@@ -166,6 +169,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
               ApplicationLookup: appLookup,
               ResolverConfig: resolverCfg,
               Pattern: new URLPattern({ pathname: resolverCfg.PathPattern }),
+              Revision: this.Revision,
             } as EaCApplicationProcessorConfig;
           })
           .sort((a, b) => {
@@ -230,6 +234,8 @@ export class DefaultEaCRuntime implements EaCRuntime {
     plugins?: (EaCRuntimePlugin | [string, ...args: unknown[]])[],
   ): Promise<void> {
     for (let pluginDef of plugins || []) {
+      const pluginKey = pluginDef;
+
       if (Array.isArray(pluginDef)) {
         const [plugin, ...args] = pluginDef;
 
@@ -238,7 +244,15 @@ export class DefaultEaCRuntime implements EaCRuntime {
         ) as EaCRuntimePlugin;
       }
 
-      const pluginConfig = pluginDef.Build ? await pluginDef.Build(this.config) : undefined;
+      this.pluginDefs.set(pluginKey, pluginDef);
+
+      const pluginConfig = this.pluginConfigs.has(pluginKey)
+        ? this.pluginConfigs.get(pluginKey)
+        : pluginDef.Build
+        ? await pluginDef.Build(this.config)
+        : undefined;
+
+      this.pluginConfigs.set(pluginKey, pluginConfig);
 
       if (pluginConfig) {
         if (pluginConfig.EaC) {
@@ -329,6 +343,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
     let handler = await defaultProcessorHandlerResolver.Resolve(
       this.IoC,
       appProcessorConfig,
+      this.EaC!,
     );
 
     if (

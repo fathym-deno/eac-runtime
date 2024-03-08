@@ -11,8 +11,6 @@ export function establishDenoKvCacheMiddleware(
   console.log('Configuring cache middleware...');
 
   return async (_req, ctx) => {
-    console.log('Starting cache middleware...');
-
     const reqPath = ctx.Runtime.URLMatch.Path || '/';
 
     const respCacheKey = [
@@ -40,16 +38,16 @@ export function establishDenoKvCacheMiddleware(
     const fileStream = cacheDb ? new DenoKVFileStream(cacheDb) : undefined;
 
     if (fileStream && isCachePathFiltered) {
-      console.log(
-        `Lookuping up item in cache middleware: ${respCacheKey.join('|')}`,
-      );
+      // console.log(
+      //   `Lookuping up item in cache middleware: ${respCacheKey.join('|')}`,
+      // );
 
       const cached = await denoKvReadReadableStreamCache(fileStream, respCacheKey);
 
       if (cached) {
-        console.log(
-          `Return item from cache middleware: ${respCacheKey.join('|')}`,
-        );
+        // console.log(
+        //   `Return item from cache middleware: ${respCacheKey.join('|')}`,
+        // );
 
         resp = new Response(cached.Contents, {
           headers: cached.Headers || {},
@@ -68,9 +66,9 @@ export function establishDenoKvCacheMiddleware(
       const toCacheResp = await ctx.Next();
 
       if (fileStream && toCacheResp?.ok && isCachePathFiltered) {
-        console.log(
-          `Storing item in cache middleware: ${respCacheKey.join('|')}`,
-        );
+        // console.log(
+        //   `Storing item in cache middleware: ${respCacheKey.join('|')}`,
+        // );
 
         denoKvCacheReadableStream(
           fileStream,

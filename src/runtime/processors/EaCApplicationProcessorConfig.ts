@@ -2,13 +2,15 @@ import { EaCApplicationAsCode, EaCApplicationResolverConfiguration } from '../..
 import { EaCRuntimeHandlerPipeline } from '../EaCRuntimeHandlerPipeline.ts';
 
 export type EaCApplicationProcessorConfig = {
-  Handlers: EaCRuntimeHandlerPipeline;
-
-  ResolverConfig: EaCApplicationResolverConfiguration;
-
-  Pattern: URLPattern;
-
   ApplicationLookup: string;
 
   Application: EaCApplicationAsCode;
+
+  Handlers: EaCRuntimeHandlerPipeline;
+
+  Pattern: URLPattern;
+
+  ResolverConfig: EaCApplicationResolverConfiguration;
+
+  Revision: number;
 };

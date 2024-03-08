@@ -17,6 +17,19 @@ export const esbuild = ESBuild;
 import Mime from 'npm:mime';
 export const mime = Mime;
 
+import TailwindCSS from 'npm:tailwindcss@3.4.1';
+export const tailwindCss = TailwindCSS;
+export { type Config as TailwindConfig } from 'npm:tailwindcss@3.4.1';
+
+import postcss from 'npm:postcss@8.4.35';
+export { postcss };
+
+import cssnano from 'npm:cssnano@6.0.3';
+export { cssnano };
+
+import autoprefixer from 'npm:autoprefixer@10.4.17';
+export { autoprefixer };
+
 export * as PreactRenderToString from 'https://esm.sh/*preact-render-to-string@6.4.0/';
 
 export { AzureChatOpenAI, AzureOpenAIEmbeddings } from 'npm:@langchain/azure-openai';
@@ -35,8 +48,8 @@ export { VectorStore } from 'npm:@langchain/core/vectorstores';
 
 // export * from '../../reference-architecture/mod.ts';
 export * from 'https://deno.land/x/fathym_common@v0.0.162/mod.ts';
-// export * from '../../everything-as-code/mod.ts';
-export * from 'https://deno.land/x/fathym_everything_as_code@v0.0.381/mod.ts';
+export * from '../../everything-as-code/mod.ts';
+// export * from 'https://deno.land/x/fathym_everything_as_code@v0.0.382/mod.ts';
 // export * from '../../everything-as-code-api/mod.ts';
 export * from 'https://deno.land/x/fathym_everything_as_code_api@v0.0.19/mod.ts';
 

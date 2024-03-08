@@ -1,22 +1,17 @@
-// deno-lint-ignore-file no-explicit-any
-import { ComponentType, EaCDistributedFileSystem } from '../../src.deps.ts';
-import { DFSFileHandler } from '../../runtime/dfs/DFSFileHandler.ts';
+import { EaCDistributedFileSystem } from '../../src.deps.ts';
 import { EaCRuntimeHandlerPipeline } from '../../runtime/EaCRuntimeHandlerPipeline.ts';
 import { EaCRuntimeHandlerResult } from '../../runtime/EaCRuntimeHandlerResult.ts';
 import { PathMatch, pathToPatternRegexes } from './PathMatch.ts';
 
 export async function convertFilePathToPattern(
-  fileHandler: DFSFileHandler,
+  allPaths: string[],
   filePath: string,
   dfs: EaCDistributedFileSystem,
   loadHandlers: (
-    fileHandler: DFSFileHandler,
+    allPaths: string[],
     filePath: string,
-    dfs: EaCDistributedFileSystem,
-    layouts: [string, ComponentType<any>][],
   ) => Promise<EaCRuntimeHandlerResult>,
   middleware: [string, EaCRuntimeHandlerResult][],
-  layouts: [string, ComponentType<any>][],
 ): Promise<PathMatch> {
   let parts = filePath.split('/');
 
@@ -54,7 +49,7 @@ export async function convertFilePathToPattern(
 
   const patternText = parts.join('/').replace('/{/:', '{/:');
 
-  const apiMiddleware = middleware
+  const reqMiddleware = middleware
     .filter(([root]) => {
       return filePath.startsWith(root);
     })
@@ -62,9 +57,9 @@ export async function convertFilePathToPattern(
 
   const pipeline = new EaCRuntimeHandlerPipeline();
 
-  pipeline.Append(...apiMiddleware);
+  pipeline.Append(...reqMiddleware);
 
-  const handler = await loadHandlers(fileHandler, filePath, dfs, layouts);
+  const handler = await loadHandlers(allPaths, filePath);
 
   pipeline.Append(...(Array.isArray(handler) ? handler : [handler]));
 

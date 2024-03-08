@@ -1,17 +1,12 @@
 // deno-lint-ignore-file no-explicit-any
 import { ComponentType, RenderableProps } from '../../../src.deps.ts';
-import { IslandData } from './IslandData.tsx';
-
-export type IslandComponentType<T = RenderableProps<any>> = ComponentType<T> & {
-  IsIsland: boolean;
-};
+import { IslandDataStore } from './IslandDataStore.tsx';
 
 export function asIsland<T extends RenderableProps<any>>(
   Component: ComponentType<T>,
-): IslandComponentType<T> {
+  islandId: string,
+): ComponentType<T> {
   const islandComponent: ComponentType<T> = (props) => {
-    const islandId = IslandData.Store(Component, props);
-
     return (
       <>
         {/*@ts-ignore unstable features not supported in types*/}
@@ -27,8 +22,5 @@ export function asIsland<T extends RenderableProps<any>>(
     );
   };
 
-  return {
-    ...islandComponent,
-    IsIsland: true,
-  } as IslandComponentType<T>;
+  return islandComponent;
 }

@@ -1,47 +1,23 @@
-// deno-lint-ignore-file no-explicit-any
-import { ComponentType, RenderableProps } from 'preact';
-import { IslandDataStore } from './IslandDataStore.ts';
+import { JSX } from 'preact';
+import { IslandDataStore } from './IslandDataStore.tsx';
 
 type IslandDataProps = {
   clientModulePath: string;
 };
 
-export function IslandData(props: IslandDataProps) {
-  return (
-    <script
-      type='module'
-      dangerouslySetInnerHTML={{ __html: IslandData.Render(props.clientModulePath) }}
-    />
-  );
-}
-
-IslandData.Data = {} as IslandDataStore | undefined;
-
-IslandData.Render = (clientModulePath: string) => {
-  const data = JSON.stringify(IslandData.Data);
-
-  IslandData.Data = undefined;
-
-  return `import { renderIslands } from '${clientModulePath}';
-
-renderIslands(${data});
-  `;
-};
-
-IslandData.Store = (
-  component: ComponentType<RenderableProps<any>>,
-  props: RenderableProps<any>,
-) => {
-  const islandId = crypto.randomUUID();
-
-  if (!IslandData.Data) {
-    IslandData.Data = {};
-  }
-
-  IslandData.Data[islandId] = {
-    Name: component.displayName || component.name,
-    Props: props,
+export function buildIslandData(islandData: IslandDataStore) {
+  return function IslandData(props: IslandDataProps): JSX.Element {
+    const data = Array.from(islandData.GetData());
+    return (
+      <script
+        type='module'
+        dangerouslySetInnerHTML={{
+          __html: `import { renderIslands } from '${props.clientModulePath}';
+  
+renderIslands(${JSON.stringify(data)});
+`,
+        }}
+      />
+    );
   };
-
-  return islandId;
-};
+}

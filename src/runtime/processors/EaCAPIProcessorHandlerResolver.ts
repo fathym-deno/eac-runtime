@@ -6,7 +6,7 @@ import { loadEaCRuntimeHandlers } from '../../utils/dfs/loadEaCRuntimeHandlers.t
 import { executePathMatch } from '../../utils/dfs/executePathMatch.ts';
 
 export const EaCAPIProcessorHandlerResolver: ProcessorHandlerResolver = {
-  Resolve(ioc, appProcCfg) {
+  Resolve(ioc, appProcCfg, eac) {
     if (!isEaCAPIProcessor(appProcCfg.Application.Processor)) {
       throw new Deno.errors.NotSupported(
         'The provided processor is not supported for the EaCAPIProcessorHandlerResolver.',
@@ -15,12 +15,17 @@ export const EaCAPIProcessorHandlerResolver: ProcessorHandlerResolver = {
 
     const processor = appProcCfg.Application.Processor as EaCAPIProcessor;
 
-    const patternsReady = filesReadyCheck(ioc, processor.DFS).then(
+    const dfs = eac.DFS![processor.DFSLookup];
+
+    const patternsReady = filesReadyCheck(ioc, dfs).then(
       (fileHandler) => {
         return loadRequestPathPatterns(
           fileHandler,
-          processor.DFS,
-          loadEaCRuntimeHandlers,
+          dfs,
+          (_allPaths, filePath) => {
+            return loadEaCRuntimeHandlers(fileHandler, filePath, dfs);
+          },
+          appProcCfg.Revision,
         ).then((patterns) => {
           console.log(patterns.map((p) => p.PatternText));
 
