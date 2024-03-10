@@ -7,7 +7,15 @@ export async function loadClientScript(
 ): Promise<string> {
   const clientUrl = new URL(`.${clientPath}`, import.meta.url);
 
-  let clientScript = await Deno.readTextFile(clientUrl);
+  let clientScript: string;
+
+  if (clientUrl.href.startsWith('file:///')) {
+    clientScript = await Deno.readTextFile(clientUrl);
+  } else {
+    const clientScriptResp = await fetch(clientUrl);
+
+    clientScript = await clientScriptResp.text();
+  }
 
   if (transform) {
     const result = await esbuild.transform(clientScript, {
