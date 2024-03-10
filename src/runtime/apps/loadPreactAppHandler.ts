@@ -11,17 +11,17 @@ export async function loadPreactAppHandler(
   fileHandler: DFSFileHandler,
   filePath: string,
   dfs: EaCDistributedFileSystem,
-  layouts: [string, ComponentType<any>, boolean][],
+  layouts: [string, ComponentType<any>, boolean, string][],
   renderHandler: PreactRenderHandler,
 ): Promise<EaCRuntimeHandlerResult> {
-  let [pageHandlers, component, isIsland] = await loadPreactAppPageHandler(
+  let [pageHandlers, component, isIsland, contents] = await loadPreactAppPageHandler(
     fileHandler,
     filePath,
     dfs,
   );
 
   if (isIsland) {
-    renderHandler.AddIsland(component);
+    renderHandler.AddIsland(component, filePath, contents);
   }
 
   const pageLayouts = layouts
@@ -36,11 +36,7 @@ export async function loadPreactAppHandler(
 
   const renderSetupHandler: EaCRuntimeHandler = (_req, ctx) => {
     ctx.Render = async (data) => {
-      const html = await renderHandler.RenderPage(
-        renderStack,
-        data,
-        ctx,
-      );
+      const html = await renderHandler.RenderPage(renderStack, data, ctx);
 
       return respond(html);
     };
@@ -49,7 +45,6 @@ export async function loadPreactAppHandler(
   };
 
   if (!Array.isArray(pageHandlers)) {
-    console.log(pageHandlers);
     pageHandlers = [pageHandlers];
   }
 

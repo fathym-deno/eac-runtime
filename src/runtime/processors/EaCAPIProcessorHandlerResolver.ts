@@ -27,7 +27,9 @@ export const EaCAPIProcessorHandlerResolver: ProcessorHandlerResolver = {
           },
           appProcCfg.Revision,
         ).then((patterns) => {
+          console.log('APIs: ');
           console.log(patterns.map((p) => p.PatternText));
+          console.log();
 
           return patterns;
         });

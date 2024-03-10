@@ -1,5 +1,5 @@
 // deno-lint-ignore-file no-explicit-any
-import { PreactRenderToString } from '../../../src.deps.ts';
+import { jsonc, path, PreactRenderToString } from '../../../src.deps.ts';
 import {
   ClassAttributes,
   Component,
@@ -11,6 +11,8 @@ import {
   type VNode,
 } from 'preact';
 import { AdvancedPreactOptions } from './AdvancedPreactOptions.ts';
+import { DenoConfig } from '../../../utils/DenoConfig.ts';
+import { Island } from '../islands/Island.ts';
 import { IslandDataStore } from '../islands/IslandDataStore.tsx';
 import { PageProps } from '../PageProps.ts';
 import { PreactHookTypes } from './PreactHookTypes.ts';
@@ -18,9 +20,13 @@ import { EaCRuntimeContext } from '../../EaCRuntimeContext.ts';
 
 export class PreactRenderHandler {
   //#region Fields
+  protected clientImports: string[];
+
+  protected denoJson: DenoConfig;
+
   public islandsData: IslandDataStore;
 
-  protected islandsMap: Map<string, ComponentType>;
+  protected islandsMap: Map<string, Island>;
 
   protected origBeforeDiff;
 
@@ -60,11 +66,19 @@ export class PreactRenderHandler {
   //#endregion
 
   constructor(protected options: AdvancedPreactOptions) {
+    this.clientImports = [];
+
     this.islandsData = new IslandDataStore();
 
     this.islandsMap = new Map();
 
     this.tracking = this.refreshTracking();
+
+    const denoJsonPath = path.join(Deno.cwd(), './deno.jsonc');
+
+    const denoJsonsStr = Deno.readTextFileSync(denoJsonPath);
+
+    this.denoJson = jsonc.parse(denoJsonsStr) as DenoConfig;
 
     this.origBeforeDiff = options.__b;
 
@@ -88,8 +102,24 @@ export class PreactRenderHandler {
   }
 
   //#region API Methods
-  public AddIsland(island: ComponentType): void {
-    this.islandsMap.set(island.displayName || island.name, island);
+  public AddIsland(
+    island: ComponentType,
+    path: string,
+    contents: string,
+  ): void {
+    this.islandsMap.set(island.displayName || island.name, {
+      Component: island,
+      Contents: contents,
+      Path: path,
+    });
+  }
+
+  public AddClientImport(path: string): void {
+    this.clientImports.push(path);
+  }
+
+  public ClearImports() {
+    this.clientImports = [];
   }
 
   public ClearRendering() {
@@ -103,6 +133,14 @@ export class PreactRenderHandler {
 
   public ClearTemplate() {
     this.tracking = this.refreshTracking();
+  }
+
+  public LoadIslands(): Record<string, [string, string]> {
+    return Array.from(this.islandsMap).reduce((files, [islandName, island]) => {
+      files[island.Path] = [islandName, island.Contents];
+
+      return files;
+    }, {} as Record<string, [string, string]>);
   }
 
   public async RenderPage(
@@ -153,7 +191,7 @@ export class PreactRenderHandler {
     let bodyHtml = await PreactRenderToString.renderToStringAsync(finalComp);
 
     if (this.islandsData.HasData()) {
-      const islandsClientPath = `./eacIslandsClient.ts?revision=${ctx.Runtime.Revision}`;
+      const islandsClientPath = `./eacIslandsClient.js?revision=${ctx.Runtime.Revision}`;
 
       bodyHtml += this.islandsData.Render(islandsClientPath);
     }
@@ -167,6 +205,14 @@ export class PreactRenderHandler {
         'head',
         this.tracking.template.headProps || {},
         h('base', { href: baseUrl.href }),
+        h('script', {
+          type: 'importmap',
+          dangerouslySetInnerHTML: {
+            __html: JSON.stringify({
+              imports: this.denoJson.imports || {},
+            }),
+          },
+        }),
         !this.tracking.template.userTemplate
           ? h(
             Fragment,
@@ -184,13 +230,13 @@ export class PreactRenderHandler {
         // opts.preloads.map((src) =>
         //   h("link", { rel: "modulepreload", href: withBase(src, state.basePath) })
         // ),
-        // opts.moduleScripts.map(([src, nonce]) =>
-        //   h("script", {
-        //     src: withBase(src, state.basePath),
-        //     nonce,
-        //     type: "module",
-        //   })
-        // ),
+        this.clientImports.map((src) =>
+          h('script', {
+            src,
+            // nonce,
+            type: 'module',
+          })
+        ),
         // filteredHeadNodes,
       ),
       h('body', {
@@ -373,13 +419,13 @@ export class PreactRenderHandler {
                 // )
               }
 
-              const island = h(originalType, props) as VNode;
+              const islandNode = h(originalType, props) as VNode;
 
               const islandId = this.islandsData.Store(originalType, props);
 
-              this.tracking.patched.add(island);
+              this.tracking.patched.add(islandNode);
 
-              return this.asIsland(island, islandId);
+              return this.asIsland(islandNode, islandId);
             };
           }
         }

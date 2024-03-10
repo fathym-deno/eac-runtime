@@ -7,7 +7,7 @@ export async function importDFSTypescriptModule(
   filePath: string,
   dfs: EaCDistributedFileSystem,
   loader: 'ts' | 'tsx',
-): Promise<any> {
+): Promise<{ module: any; contents: string }> {
   const file = await fileHandler.GetFileInfo(
     filePath,
     Date.now(),
@@ -32,5 +32,7 @@ export async function importDFSTypescriptModule(
   // const apiUrl = `data:application/typescript;base64,${enc}`;
   const apiUrl = `data:application/javascript;base64,${enc}`;
 
-  return await import(apiUrl);
+  const module = await import(apiUrl);
+
+  return { module, contents: result.code };
 }

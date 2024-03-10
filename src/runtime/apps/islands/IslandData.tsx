@@ -7,14 +7,16 @@ type IslandDataProps = {
 
 export function buildIslandData(islandData: IslandDataStore) {
   return function IslandData(props: IslandDataProps): JSX.Element {
-    const data = Array.from(islandData.GetData());
+    const data = Array.from(islandData.GetData().entries());
     return (
       <script
         type='module'
         dangerouslySetInnerHTML={{
           __html: `import { renderIslands } from '${props.clientModulePath}';
   
-renderIslands(${JSON.stringify(data)});
+(function () {
+  renderIslands(new Map(${JSON.stringify(data)}));
+})();
 `,
         }}
       />

@@ -7,8 +7,8 @@ export async function loadLayout(
   fileHandler: DFSFileHandler,
   filePath: string,
   dfs: EaCDistributedFileSystem,
-): Promise<[string, ComponentType<any>, boolean]> {
-  const layoutModule = await importDFSTypescriptModule(
+): Promise<[string, ComponentType<any>, boolean, string]> {
+  const { module: layoutModule, contents } = await importDFSTypescriptModule(
     fileHandler,
     filePath,
     dfs,
@@ -27,5 +27,5 @@ export async function loadLayout(
 
   const isIsland = 'IsIsland' in layoutModule ? layoutModule.IsIsland : false;
 
-  return [root, layout, isIsland];
+  return [root, layout, isIsland, contents];
 }

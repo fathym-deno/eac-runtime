@@ -28,8 +28,6 @@ export class IslandDataStore {
   }
 
   public Render(clientModulePath: string): string {
-    const data = JSON.stringify(this.data);
-
     const IslandData = buildIslandData(this);
 
     const islandDataHtml = PreactRenderToString.renderToString(
@@ -46,7 +44,7 @@ export class IslandDataStore {
     const islandId = Array.from(this.data.keys()).length.toString();
 
     this.data.set(islandId, {
-      Name: (component.displayName || component.name).substring(1),
+      Name: (component.displayName || component.name),
       Props: props,
     });
 

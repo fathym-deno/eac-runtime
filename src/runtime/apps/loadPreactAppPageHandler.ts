@@ -8,10 +8,8 @@ export async function loadPreactAppPageHandler(
   fileHandler: DFSFileHandler,
   filePath: string,
   dfs: EaCDistributedFileSystem,
-): Promise<
-  [EaCRuntimeHandlerResult, ComponentType<any>, boolean]
-> {
-  const module = await importDFSTypescriptModule(
+): Promise<[EaCRuntimeHandlerResult, ComponentType<any>, boolean, string]> {
+  const { module, contents } = await importDFSTypescriptModule(
     fileHandler,
     filePath,
     dfs,
@@ -36,5 +34,5 @@ export async function loadPreactAppPageHandler(
     };
   }
 
-  return [handler, component, isIsland];
+  return [handler, component, isIsland, contents];
 }
