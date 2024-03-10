@@ -1,4 +1,4 @@
-export * from './asIsland.tsx';
+export * from './client/client.deps.ts';
 export * from './client/eacIslandsClient.tsx';
 export * from './Island.ts';
 export * from './IslandData.tsx';

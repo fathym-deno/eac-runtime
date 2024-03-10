@@ -1,8 +1,8 @@
-import { BuildOptions, denoPlugins, esbuild, jsonc, path, Plugin } from '../../../src.deps.ts';
-import { EAC_RUNTIME_DEV } from '../../../constants.ts';
-import { DenoConfig } from '../../../utils/DenoConfig.ts';
+import { BuildOptions, denoPlugins, esbuild, jsonc, path, Plugin } from '../src.deps.ts';
+import { EAC_RUNTIME_DEV } from '../constants.ts';
+import { DenoConfig } from './DenoConfig.ts';
 
-export class EaCIslandsClientBuilder {
+export class EaCESBuilder {
   protected denoJson: DenoConfig;
 
   protected denoJsonPath: string;
@@ -12,6 +12,7 @@ export class EaCIslandsClientBuilder {
   constructor(
     protected entryPoints: string[],
     protected files: Record<string, string>,
+    protected options: { external?: string[] } = {},
   ) {
     const absWorkingDir = Deno.cwd();
 
@@ -24,7 +25,7 @@ export class EaCIslandsClientBuilder {
     this.isDev = EAC_RUNTIME_DEV();
   }
 
-  static ConfigurePlugin(builder: EaCIslandsClientBuilder): Plugin {
+  static ConfigurePlugin(builder: EaCESBuilder): Plugin {
     return {
       name: 'EaCIslandsClientBuilder',
       setup(build) {
@@ -38,7 +39,7 @@ export class EaCIslandsClientBuilder {
     };
   }
 
-  public async Build() {
+  public async Build(options: Partial<BuildOptions> = {}) {
     try {
       const jsx = this.denoJson.compilerOptions?.jsx;
 
@@ -77,11 +78,12 @@ export class EaCIslandsClientBuilder {
         treeShaking: false, //true,
         ...minifyOptions,
         plugins: [
-          EaCIslandsClientBuilder.ConfigurePlugin(this),
+          EaCESBuilder.ConfigurePlugin(this),
           //   devClientUrlPlugin(opts.basePath),
           //   buildIdPlugin(opts.buildID),
           ...denoPlugins({ configPath: this.denoJsonPath }),
         ],
+        ...options,
       } as BuildOptions);
 
       return bundle;
@@ -139,7 +141,11 @@ export class EaCIslandsClientBuilder {
       path = this.denoJson.imports![importPath] + path.replace(importPath, '');
     }
 
-    if (path.startsWith('https://') || path.startsWith('http://')) {
+    if (
+      path.startsWith('https://') ||
+      path.startsWith('http://') ||
+      this.options.external?.some((ext) => ext === path)
+    ) {
       return { path: args.path, external: true };
     }
 

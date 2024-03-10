@@ -260,11 +260,16 @@ export class PreactRenderHandler {
   //#region Helpers
   protected asIsland(vnode: VNode, islandId: string): VNode {
     return h(
-      'span',
-      {
-        'data-eac-island-id': islandId,
-        'data-eac-island-key': vnode.key,
-      } as ClassAttributes<HTMLElement>,
+      Fragment,
+      {},
+      h(
+        'script',
+        {
+          'data-eac-island-id': islandId,
+          'data-eac-island-key': vnode.key,
+          type: 'application/island-marker',
+        } as ClassAttributes<HTMLElement>,
+      ),
       vnode,
     );
 
