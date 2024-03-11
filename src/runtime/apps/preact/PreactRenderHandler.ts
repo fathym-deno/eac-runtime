@@ -38,6 +38,15 @@ export class PreactRenderHandler {
 
   protected origVNodeHook;
 
+  protected SlotTracker = (
+    props: { id: string; children?: ComponentChildren },
+  ): VNode => {
+    current?.slots.delete(props.id);
+    
+    // deno-lint-ignore no-explicit-any
+    return props.children as any;
+  }
+
   protected tracking: {
     ownerStack: VNode[];
 
@@ -58,6 +67,8 @@ export class PreactRenderHandler {
 
       htmlProps?: Record<string, unknown>;
 
+      slots: new Map<string, ComponentChildren>();
+  
       titleNode?: VNode<any>;
 
       userTemplate: boolean;
@@ -328,6 +339,7 @@ export class PreactRenderHandler {
         headChildNodes: [],
         headProps: undefined,
         htmlProps: undefined,
+        slots: new Map(),
         titleNode: undefined,
         userTemplate: false,
       },
