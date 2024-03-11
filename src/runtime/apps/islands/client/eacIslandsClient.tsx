@@ -1,14 +1,14 @@
 import { componentMap, createRootFragment, render } from './client.deps.ts';
 
-export function renderIslands(
-  data: Map<string, { Name: string; Props: Record<string, unknown> }>,
+function processIslandMarkers(
+  data: Map<string, { Name: string; Props: Record<string, unknown> }>
 ) {
   const islandMarkers = document.querySelectorAll(
-    'script[data-eac-island-id]',
+    'script[data-eac-id][type="application/marker-island"]'
   );
 
   for (const islandMarker of islandMarkers) {
-    const id = islandMarker.getAttribute('data-eac-island-id')!;
+    const id = islandMarker.getAttribute('data-eac-id')!;
 
     const islandData = data.get(id)!;
 
@@ -18,9 +18,15 @@ export function renderIslands(
 
     render(
       <Comp {...islandData.Props} />,
-      createRootFragment(island.parentElement!, island),
+      createRootFragment(island.parentElement!, island)
     );
 
     islandMarker.remove();
   }
+}
+
+export function renderIslands(
+  data: Map<string, { Name: string; Props: Record<string, unknown> }>
+) {
+  processIslandMarkers(data);
 }

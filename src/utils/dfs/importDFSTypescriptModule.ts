@@ -1,19 +1,24 @@
 // deno-lint-ignore-file no-explicit-any
-import { base64, EaCDistributedFileSystem, esbuild, toText } from '../../src.deps.ts';
+import {
+  base64,
+  EaCDistributedFileSystem,
+  esbuild,
+  toText,
+} from '../../src.deps.ts';
 import { DFSFileHandler } from '../../runtime/dfs/DFSFileHandler.ts';
 
 export async function importDFSTypescriptModule(
   fileHandler: DFSFileHandler,
   filePath: string,
   dfs: EaCDistributedFileSystem,
-  loader: 'ts' | 'tsx',
+  loader: 'ts' | 'tsx'
 ): Promise<{ module: any; contents: string }> {
   const file = await fileHandler.GetFileInfo(
     filePath,
     Date.now(),
     dfs.DefaultFile,
     dfs.Extensions,
-    dfs.UseCascading,
+    dfs.UseCascading
   );
 
   let fileContents = await toText(file.Contents);
@@ -28,6 +33,7 @@ export async function importDFSTypescriptModule(
     jsxImportSource: 'preact',
     jsxFactory: 'h',
     jsxFragment: 'Fragment',
+    platform: 'browser',
   });
 
   // const enc = base64.encodeBase64(fileContents);

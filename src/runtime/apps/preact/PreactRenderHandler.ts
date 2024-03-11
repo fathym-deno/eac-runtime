@@ -258,16 +258,16 @@ export class PreactRenderHandler {
   //#endregion
 
   //#region Helpers
-  protected asIsland(vnode: VNode, islandId: string): VNode {
+  protected addMarker(vnode: VNode, islandId: string, markerType: 'island' | 'container' = 'island'): VNode {
     return h(
       Fragment,
       {},
       h(
         'script',
         {
-          'data-eac-island-id': islandId,
+          'data-eac-id': islandId,
           'data-eac-island-key': vnode.key,
-          type: 'application/island-marker',
+          type: `application/marker-${markerType}`,
         } as ClassAttributes<HTMLElement>,
       ),
       vnode,
@@ -430,7 +430,7 @@ export class PreactRenderHandler {
 
               this.tracking.patched.add(islandNode);
 
-              return this.asIsland(islandNode, islandId);
+              return this.addMarker(islandNode, islandId);
             };
           }
         }

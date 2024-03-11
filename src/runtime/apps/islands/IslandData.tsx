@@ -8,6 +8,7 @@ type IslandDataProps = {
 export function buildIslandData(islandData: IslandDataStore) {
   return function IslandData(props: IslandDataProps): JSX.Element {
     const data = Array.from(islandData.GetData().entries());
+    console.log(data);
     return (
       <script
         type='module'
