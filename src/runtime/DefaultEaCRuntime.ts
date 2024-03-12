@@ -77,8 +77,6 @@ export class DefaultEaCRuntime implements EaCRuntime {
       ? await import('https://deno.land/x/esbuild@v0.20.1/wasm.js')
       : await import('https://deno.land/x/esbuild@v0.20.1/mod.js');
 
-    // const esbuild: ESBuild = await import('https://deno.land/x/esbuild@v0.20.1/wasm.js');
-
     try {
       const worker = IS_DENO_DEPLOY() ? false : undefined;
 
