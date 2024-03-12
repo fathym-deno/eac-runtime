@@ -61,7 +61,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
   }
 
   public async Configure(
-    _configure?: (rt: EaCRuntime) => Promise<void>,
+    configure?: (rt: EaCRuntime) => Promise<void>,
   ): Promise<void> {
     this.pluginConfigs = new Map();
 
@@ -73,55 +73,53 @@ export class DefaultEaCRuntime implements EaCRuntime {
 
     this.ModifierResolvers = this.config.ModifierResolvers || {};
 
-    const _esbuild: ESBuild = IS_DENO_DEPLOY()
+    const esbuild: ESBuild = IS_DENO_DEPLOY()
       ? await import('https://deno.land/x/esbuild@v0.20.1/wasm.js')
       : await import('https://deno.land/x/esbuild@v0.20.1/mod.js');
 
     try {
       const worker = IS_DENO_DEPLOY() ? false : undefined;
 
-      throw new Error(worker?.toString());
+      await esbuild.initialize({
+        worker,
+      });
 
-      // await esbuild.initialize({
-      //   worker,
-      // });
-
-      // this.IoC.Register<ESBuild>(() => esbuild, {
-      //   Type: this.IoC!.Symbol('ESBuild'),
-      // });
+      this.IoC.Register<ESBuild>(() => esbuild, {
+        Type: this.IoC!.Symbol('ESBuild'),
+      });
     } catch (err) {
       console.log('There was an error initializing esbuild');
 
       throw err;
     }
 
-    // await this.configurePlugins(this.config.Plugins);
+    await this.configurePlugins(this.config.Plugins);
 
-    // if (!this.EaC) {
-    //   throw new Error(
-    //     'An EaC must be provided in the config or via a connection to an EaC Service with the EAC_API_KEY environment variable.',
-    //   );
-    // }
+    if (!this.EaC) {
+      throw new Error(
+        'An EaC must be provided in the config or via a connection to an EaC Service with the EAC_API_KEY environment variable.',
+      );
+    }
 
-    // if (!this.EaC!.Projects) {
-    //   throw new Error(
-    //     'The EaC must provide a set of projects to use in the runtime.',
-    //   );
-    // }
+    if (!this.EaC!.Projects) {
+      throw new Error(
+        'The EaC must provide a set of projects to use in the runtime.',
+      );
+    }
 
-    // this.Revision = Date.now();
+    this.Revision = Date.now();
 
-    // await this.afterEaCResolved();
+    await this.afterEaCResolved();
 
-    // if (configure) {
-    //   configure(this);
-    // }
+    if (configure) {
+      configure(this);
+    }
 
-    // this.buildProjectGraph();
+    this.buildProjectGraph();
 
-    // await this.buildApplicationGraph();
+    await this.buildApplicationGraph();
 
-    // esbuild.stop();
+    esbuild.stop();
   }
 
   public Handle(
