@@ -80,9 +80,12 @@ export class DefaultEaCRuntime implements EaCRuntime {
     // const esbuild: ESBuild = await import('https://deno.land/x/esbuild@v0.20.1/wasm.js');
 
     try {
+      const worker = !IS_DENO_DEPLOY() ? undefined : SUPPORTS_WORKERS();
+
+      console.log(worker);
+
       await esbuild.initialize({
-        worker: !IS_DENO_DEPLOY() ? undefined : SUPPORTS_WORKERS(),
-        // worker: SUPPORTS_WORKERS(),
+        worker,
       });
 
       this.IoC.Register<ESBuild>(() => esbuild, {
