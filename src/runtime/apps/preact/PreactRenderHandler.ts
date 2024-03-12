@@ -1,15 +1,15 @@
 // deno-lint-ignore-file no-explicit-any
-import { jsonc, path, PreactRenderToString } from '../../../src.deps.ts';
 import {
-  ClassAttributes,
   Component,
-  // type ComponentChildren,
+  ComponentChildren,
   ComponentType,
   Fragment,
   h,
-  isValidElement,
+  jsonc,
+  path,
+  PreactRenderToString,
   type VNode,
-} from 'preact';
+} from '../../../src.deps.ts';
 import { AdvancedPreactOptions } from './AdvancedPreactOptions.ts';
 import { DenoConfig } from '../../../utils/DenoConfig.ts';
 import { Island } from '../islands/Island.ts';
@@ -26,7 +26,9 @@ export class PreactRenderHandler {
 
   public islandsData: IslandDataStore;
 
-  protected islandsMap: Map<string, Island>;
+  protected islandsMap: Map<ComponentType, Island>;
+
+  protected islandsTypeMap: Map<string, ComponentType>;
 
   protected origBeforeDiff;
 
@@ -38,16 +40,18 @@ export class PreactRenderHandler {
 
   protected origVNodeHook;
 
-  protected SlotTracker = (
-    props: { id: string; children?: ComponentChildren },
-  ): VNode => {
-    current?.slots.delete(props.id);
-    
-    // deno-lint-ignore no-explicit-any
+  protected ContainerTracker = (props: {
+    id: string;
+    children?: ComponentChildren;
+  }): VNode => {
+    this.tracking.containers.delete(props.id);
+
     return props.children as any;
-  }
+  };
 
   protected tracking: {
+    containers: Map<string, ComponentChildren>;
+
     ownerStack: VNode[];
 
     owners: Map<VNode, VNode>;
@@ -67,8 +71,8 @@ export class PreactRenderHandler {
 
       htmlProps?: Record<string, unknown>;
 
-      slots: new Map<string, ComponentChildren>();
-  
+      islandDepth: number;
+
       titleNode?: VNode<any>;
 
       userTemplate: boolean;
@@ -82,6 +86,8 @@ export class PreactRenderHandler {
     this.islandsData = new IslandDataStore();
 
     this.islandsMap = new Map();
+
+    this.islandsTypeMap = new Map();
 
     this.tracking = this.refreshTracking();
 
@@ -118,7 +124,9 @@ export class PreactRenderHandler {
     path: string,
     contents: string,
   ): void {
-    this.islandsMap.set(island.displayName || island.name, {
+    this.islandsTypeMap.set(island.displayName || island.name, island);
+
+    this.islandsMap.set(island, {
       Component: island,
       Contents: contents,
       Path: path,
@@ -147,8 +155,11 @@ export class PreactRenderHandler {
   }
 
   public LoadIslands(): Record<string, [string, string]> {
-    return Array.from(this.islandsMap).reduce((files, [islandName, island]) => {
-      files[island.Path] = [islandName, island.Contents];
+    return Array.from(this.islandsMap).reduce((files, [islandComp, island]) => {
+      files[island.Path] = [
+        islandComp.displayName || islandComp.name,
+        island.Contents,
+      ];
 
       return files;
     }, {} as Record<string, [string, string]>);
@@ -159,6 +170,8 @@ export class PreactRenderHandler {
     data: Record<string, unknown>,
     ctx: EaCRuntimeContext,
   ): Promise<string> {
+    const start = Date.now();
+
     const base = ctx.Runtime.URLMatch.Base.endsWith('/')
       ? ctx.Runtime.URLMatch.Base
       : `${ctx.Runtime.URLMatch.Base}/`;
@@ -180,9 +193,25 @@ export class PreactRenderHandler {
 
     this.SetRendering();
 
+    // const componentStack = new Array(renderStack.length).fill(null);
+
+    // for (let i = 0; i < renderStack.length; i++) {
+    //   const fn = renderStack[i];
+    //   if (!fn) continue;
+
+    //   componentStack[i] = () => {
+    //     return h(fn, {
+    //       ...pageProps,
+    //       Component() {
+    //         return h(componentStack[i + 1], null);
+    //       },
+    //     } as any);
+    //   };
+    // }
+
     const routeComponent = renderStack[renderStack.length - 1];
 
-    let finalComp = h(routeComponent, pageProps);
+    let finalComp = h(routeComponent, pageProps) as VNode;
 
     let i = renderStack.length - 1;
 
@@ -196,7 +225,7 @@ export class PreactRenderHandler {
         Component() {
           return curComp;
         },
-      });
+      } as any) as VNode;
     }
 
     let bodyHtml = await PreactRenderToString.renderToStringAsync(finalComp);
@@ -204,10 +233,12 @@ export class PreactRenderHandler {
     if (this.islandsData.HasData()) {
       const islandsClientPath = `./eacIslandsClient.js?revision=${ctx.Runtime.Revision}`;
 
-      bodyHtml += this.islandsData.Render(islandsClientPath);
+      bodyHtml += this.islandsData.Render(islandsClientPath, {
+        render: () => this.ClearRendering(),
+      });
+    } else {
+      this.ClearRendering();
     }
-
-    this.ClearRendering();
 
     const page = h(
       'html',
@@ -256,9 +287,21 @@ export class PreactRenderHandler {
       }),
     ) as VNode;
 
-    const pageHtml = await PreactRenderToString.renderToStringAsync(page);
+    let pageHtml = await PreactRenderToString.renderToStringAsync(page);
+
+    if (Array.from(this.tracking.containers.keys()).length > 0) {
+      for (const [id, children] of this.tracking.containers.entries()) {
+        const containerHtml = await PreactRenderToString.renderToStringAsync(
+          h(Fragment, null, children),
+        );
+
+        pageHtml += `<template id="${id}>${containerHtml}</template>`;
+      }
+    }
 
     this.ClearTemplate();
+
+    console.log(Date.now() - start);
 
     return `<!DOCTYPE html>${pageHtml}`;
   }
@@ -269,34 +312,55 @@ export class PreactRenderHandler {
   //#endregion
 
   //#region Helpers
-  protected addMarker(vnode: VNode, islandId: string, markerType: 'island' | 'container' = 'island'): VNode {
-    return h(
-      Fragment,
-      {},
-      h(
-        'script',
-        {
-          'data-eac-id': islandId,
-          'data-eac-island-key': vnode.key,
-          type: `application/marker-${markerType}`,
-        } as ClassAttributes<HTMLElement>,
-      ),
-      vnode,
-    );
-
+  protected addMarker(
+    vnode: ComponentChildren,
+    id: string,
+    markerType: 'island' | 'container' = 'island',
+  ) {
     // return h(
     //   Fragment,
-    //   null,
-    //   // h(Fragment, {
-    //   //   // @ts-ignore unstable property is not typed
-    //   //   UNSTABLE_comment: markerText,
-    //   // }),
-    //   // vnode,
-    //   // h(Fragment, {
-    //   //   // @ts-ignore unstable property is not typed
-    //   //   UNSTABLE_comment: "/" + markerText,
-    //   // }),
+    //   {},
+    //   h('script', {
+    //     'data-eac-id': id,
+    //     // 'data-eac-island-key': vnode.key,
+    //     type: `application/marker-${markerType}`,
+    //   } as ClassAttributes<HTMLElement>),
+    //   vnode
     // );
+
+    return h(
+      Fragment,
+      null,
+      h(Fragment, {
+        // @ts-ignore unstable property is not typed
+        UNSTABLE_comment: `eac|${markerType}|${id}`,
+      }),
+      vnode,
+      h(Fragment, {
+        // @ts-ignore unstable property is not typed
+        UNSTABLE_comment: `/eac|${markerType}|${id}`,
+      }),
+    );
+  }
+
+  protected configureOwners(vnode: VNode): void {
+    // if (this.tracking.renderingUserTemplate) {
+    this.tracking.owners.set(
+      vnode,
+      this.tracking.ownerStack[this.tracking.ownerStack.length - 1],
+    );
+    // }
+  }
+
+  protected configureVNode(vnode: VNode): void {
+    if (typeof vnode.type === 'string') {
+      this.processEaCBypassNodes({
+        ...vnode,
+        type: vnode.type as string,
+      });
+    } else if (this.shouldProcessOwners(vnode)) {
+      this.configureOwners(vnode);
+    }
   }
 
   protected excludeChildren(
@@ -314,17 +378,181 @@ export class PreactRenderHandler {
 
     let owner;
 
-    while ((owner = this.tracking.owners.get(tmpVNode)) !== undefined) {
-      const ownerType = owner.type as ComponentType;
+    do {
+      owner = this.tracking.owners.get(tmpVNode);
 
-      if (this.islandsMap.has(ownerType.displayName || ownerType.name)) {
-        return true;
+      if (owner) {
+        const ownerType = owner.type as ComponentType;
+
+        if (this.islandsMap.has(ownerType)) {
+          return true;
+        }
+
+        tmpVNode = owner;
       }
-
-      tmpVNode = owner;
-    }
+    } while (owner !== undefined);
 
     return false;
+  }
+
+  protected loadEaCType(
+    vnodeType: string | ComponentType,
+  ): string | ComponentType {
+    if (typeof vnodeType !== 'string') {
+      // Islands are loaded virtually, so when a new vnode is found
+      //  to be of an island type, we must override the vnode type
+      //  with the virtual island type.
+      const islandType = this.islandsTypeMap.get(
+        vnodeType.displayName || vnodeType.name,
+      );
+
+      if (islandType) {
+        vnodeType = islandType;
+      }
+    }
+
+    return vnodeType;
+  }
+
+  protected processComponentMarkup(
+    vnode: VNode<Record<string, unknown>>,
+  ): void {
+    if (typeof vnode.type === 'function') {
+      const island = this.islandsMap.get(vnode.type as ComponentType);
+
+      if (
+        vnode.type !== Fragment &&
+        island &&
+        !this.tracking.patched.has(vnode)
+      ) {
+        this.tracking.template.islandDepth++;
+
+        if (!this.hasIslandOwner(vnode)) {
+          const originalType = vnode.type;
+
+          this.tracking.patched.add(vnode);
+
+          vnode.type = (props) => {
+            // for (const propKey of Object.keys(props)) {
+            // const prop = props[propKey];
+            // if ('children' in props) {
+            //   if (
+            //     typeof props.children === 'function' ||
+            //     (props.children !== null &&
+            //       typeof props.children === 'object' &&
+            //       !Array.isArray(props.children) &&
+            //       !isValidElement(props.children))
+            //   ) {
+            //     const name =
+            //       originalType.displayName || originalType.name || 'Anonymous';
+
+            //     throw new Error(
+            //       `Invalid JSX child passed to island <${name} />. To resolve this error, pass the data as a standard prop instead.`
+            //     );
+            //   }
+
+            //   const children: ComponentChildren = props.children;
+
+            //   const containerId = Array.from(
+            //     this.tracking.containers.keys()
+            //   ).length.toString();
+            //   // @ts-ignore nonono
+            //   props.children = this.addMarker(
+            //     children,
+            //     containerId,
+            //     'container'
+            //   );
+
+            //   this.tracking.containers.set(containerId, children);
+
+            //   (props as any).children = h(
+            //     this.ContainerTracker,
+            //     { id: containerId },
+            //     children
+            //   );
+            // }
+
+            const islandNode = h(originalType, props) as VNode;
+
+            const islandId = this.islandsData.Store(originalType, props);
+
+            this.tracking.patched.add(islandNode);
+
+            return this.addMarker(islandNode, islandId);
+          };
+        }
+      } else if (vnode.key && this.tracking.template.islandDepth > 0) {
+        const child = h(vnode.type, vnode.props);
+
+        vnode.type = Fragment;
+
+        vnode.props = {
+          children: this.addMarker(child, `eac-key:${vnode.key}`),
+        };
+      }
+    }
+  }
+
+  protected processStandardMarkup(vnode: VNode<Record<string, unknown>>): void {
+    if (typeof vnode.type === 'string') {
+      if (vnode.type === 'html') {
+        this.tracking.template.userTemplate = true;
+
+        this.tracking.template.htmlProps = this.excludeChildren(vnode.props);
+
+        vnode.type = Fragment;
+      } else if (vnode.type === 'head') {
+        this.tracking.template.headProps = this.excludeChildren(vnode.props);
+
+        this.tracking.template.hasHeadChildren = true;
+
+        vnode.type = Fragment;
+
+        vnode.props = {
+          __eacHead: true,
+          children: vnode.props.children,
+        };
+      } else if (vnode.type === 'body') {
+        this.tracking.template.bodyProps = this.excludeChildren(vnode.props);
+
+        vnode.type = Fragment;
+      } else if (this.tracking.template.hasHeadChildren) {
+        if (vnode.type === 'title') {
+          this.tracking.template.titleNode = h('title', vnode.props);
+        } else if (vnode.type === 'base') {
+          // Do nothing, so it is stripped it out
+        } else {
+          this.tracking.template.headChildNodes.push({
+            type: vnode.type,
+            props: vnode.props,
+          });
+        }
+
+        vnode.type = Fragment;
+
+        vnode.props = { children: null };
+      }
+    }
+  }
+
+  protected processEaCBypassNodes(
+    vnode: { type: string } & VNode<Record<string, unknown>>,
+  ) {
+    if (!vnode.props['data-eac-bypass-base']) {
+      if (
+        typeof vnode.props.href === 'string' &&
+        vnode.props.href.startsWith('/')
+      ) {
+        vnode.props.href = `.${vnode.props.href}`;
+      }
+
+      if (
+        typeof vnode.props.src === 'string' &&
+        vnode.props.src.startsWith('/')
+      ) {
+        vnode.props.src = `.${vnode.props.src}`;
+      }
+    }
   }
 
   protected refreshTracking(): typeof this.tracking {
@@ -333,119 +561,49 @@ export class PreactRenderHandler {
       owners: new Map<VNode, VNode>(),
       patched: new WeakSet<VNode>(),
       renderingUserTemplate: false,
+      containers: new Map(),
       template: {
         bodyProps: undefined,
         hasHeadChildren: false,
         headChildNodes: [],
         headProps: undefined,
         htmlProps: undefined,
-        slots: new Map(),
+        islandDepth: 0,
         titleNode: undefined,
         userTemplate: false,
       },
     };
   }
 
+  protected shouldProcessOwners(vnode: VNode): boolean {
+    return (
+      typeof vnode.type === 'function' &&
+      vnode.type !== Fragment &&
+      this.tracking.ownerStack.length > 0
+    );
+  }
+
+  protected vnodeDiffed(vnode: VNode<Record<string, unknown>>) {
+    if (typeof vnode.type === 'function') {
+      if (vnode.type !== Fragment) {
+        if (this.islandsMap.has(vnode.type)) {
+          this.tracking.template.islandDepth--;
+        }
+
+        this.tracking.ownerStack.pop();
+      } else if (vnode.props.__eacHead) {
+        this.tracking.template.hasHeadChildren = false;
+      }
+    }
+  }
+
   //#region Options Hooks Overrides
   protected beforeDiffHook(vnode: VNode<Record<string, unknown>>) {
     if (this.tracking.renderingUserTemplate) {
       if (typeof vnode.type === 'string') {
-        if (vnode.type === 'html') {
-          this.tracking.template.userTemplate = true;
-
-          this.tracking.template.htmlProps = this.excludeChildren(vnode.props);
-
-          vnode.type = Fragment;
-        } else if (vnode.type === 'head') {
-          this.tracking.template.headProps = this.excludeChildren(vnode.props);
-
-          this.tracking.template.hasHeadChildren = true;
-
-          vnode.type = Fragment;
-
-          vnode.props = {
-            __eacHead: true,
-            children: vnode.props.children,
-          };
-        } else if (vnode.type === 'body') {
-          this.tracking.template.bodyProps = this.excludeChildren(vnode.props);
-
-          vnode.type = Fragment;
-        } else if (this.tracking.template.hasHeadChildren) {
-          if (vnode.type === 'title') {
-            this.tracking.template.titleNode = h('title', vnode.props);
-          } else if (vnode.type === 'base') {
-            // Do nothing, so it is stripped it out
-          } else {
-            this.tracking.template.headChildNodes.push({
-              type: vnode.type,
-              props: vnode.props,
-            });
-          }
-
-          vnode.type = Fragment;
-
-          vnode.props = { children: null };
-        }
+        this.processStandardMarkup(vnode);
       } else if (typeof vnode.type === 'function') {
-        const island = this.islandsMap.get(
-          vnode.type.displayName || vnode.type.name,
-        );
-
-        if (
-          vnode.type !== Fragment &&
-          island &&
-          !this.tracking.patched.has(vnode)
-        ) {
-          if (!this.hasIslandOwner(vnode)) {
-            const originalType = vnode.type;
-
-            this.tracking.patched.add(vnode);
-
-            vnode.type = (props) => {
-              // for (const propKey of Object.keys(props)) {
-              // const prop = props[propKey];
-              if ('children' in props) {
-                const children = props.children;
-
-                if (
-                  typeof children === 'function' ||
-                  (children !== null &&
-                    typeof children === 'object' &&
-                    !Array.isArray(children) &&
-                    !isValidElement(children))
-                ) {
-                  const name = originalType.displayName ||
-                    originalType.name ||
-                    'Anonymous';
-
-                  throw new Error(
-                    `Invalid JSX child passed to island <${name} />. To resolve this error, pass the data as a standard prop instead.`,
-                  );
-                }
-
-                // const islandId = this.islandsData.Store(children, props);
-
-                // // @ts-ignore nonono
-                // props.children = asIsland(children, islandId);
-
-                // (props as any).children = h(
-                //   SlotTracker,
-                //   { id: markerText },
-                //   children,
-                // )
-              }
-
-              const islandNode = h(originalType, props) as VNode;
-
-              const islandId = this.islandsData.Store(originalType, props);
-
-              this.tracking.patched.add(islandNode);
-
-              return this.addMarker(islandNode, islandId);
-            };
-          }
-        }
+        this.processComponentMarkup(vnode);
       }
     }
 
@@ -465,51 +623,19 @@ export class PreactRenderHandler {
     index: number,
     type: PreactHookTypes,
   ) {
-    console.log('__h');
-    console.log(component);
-
     this.origHook?.(component, index, type);
   }
 
   protected diffedHook(vnode: VNode<Record<string, unknown>>) {
-    if (typeof vnode.type === 'function') {
-      if (vnode.type !== Fragment) {
-        this.tracking.ownerStack.pop();
-      } else if (vnode.props.__eacHead) {
-        this.tracking.template.hasHeadChildren = false;
-      }
-    }
+    this.vnodeDiffed(vnode);
 
     this.origDiffed?.(vnode);
   }
 
   protected vNodeCreateHook(vnode: VNode<Record<string, unknown>>): void {
-    if (
-      typeof vnode.type === 'function' &&
-      vnode.type !== Fragment &&
-      this.tracking.ownerStack.length > 0
-    ) {
-      this.tracking.owners.set(
-        vnode,
-        this.tracking.ownerStack[this.tracking.ownerStack.length - 1],
-      );
-    }
+    vnode.type = this.loadEaCType(vnode.type);
 
-    if (!vnode.props['eac-bypass-base']) {
-      if (
-        typeof vnode.props.href === 'string' &&
-        vnode.props.href.startsWith('/')
-      ) {
-        vnode.props.href = `.${vnode.props.href}`;
-      }
-
-      if (
-        typeof vnode.props.src === 'string' &&
-        vnode.props.src.startsWith('/')
-      ) {
-        vnode.props.src = `.${vnode.props.src}`;
-      }
-    }
+    this.configureVNode(vnode);
 
     this.origVNodeHook?.(vnode);
   }

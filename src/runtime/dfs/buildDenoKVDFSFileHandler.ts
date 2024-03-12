@@ -105,8 +105,6 @@ export const buildDenoKVDFSFileHandler = (
 
       const paths: string[] = [];
 
-      // debugger;
-
       for await (const fileRevisionEntry of fileRevisionEntries) {
         const filePath = fileRevisionEntry.key[
           fileRevisionEntry.key.length - 3

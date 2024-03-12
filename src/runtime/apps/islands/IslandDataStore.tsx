@@ -20,19 +20,38 @@ export class IslandDataStore {
   }
 
   public GetData(): Map<string, IslandDataStoreType> {
-    return this.data;
+    return new Map(Array.from(this.data));
   }
 
   public HasData(): boolean {
     return Array.from(this.data).length > 0;
   }
 
-  public Render(clientModulePath: string): string {
-    const IslandData = buildIslandData(this);
+  public PrepareRender(clientModulePath: string) {
+    const IslandData = buildIslandData(this.GetData());
+
+    return IslandData;
+  }
+
+  public Render(
+    clientModulePath: string,
+    events?: {
+      pre?: () => void;
+      post?: () => void;
+      render?: () => void;
+    },
+  ): string {
+    events?.pre?.();
+
+    const IslandData = buildIslandData(this.GetData());
+
+    events?.render?.();
 
     const islandDataHtml = PreactRenderToString.renderToString(
       <IslandData clientModulePath={clientModulePath} />,
     );
+
+    events?.post?.();
 
     return islandDataHtml;
   }
@@ -44,7 +63,7 @@ export class IslandDataStore {
     const islandId = Array.from(this.data.keys()).length.toString();
 
     this.data.set(islandId, {
-      Name: (component.displayName || component.name),
+      Name: component.displayName || component.name,
       Props: props,
     });
 
