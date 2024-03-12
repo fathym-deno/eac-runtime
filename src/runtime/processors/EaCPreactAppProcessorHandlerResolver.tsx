@@ -25,7 +25,7 @@ export const EaCPreactAppProcessorHandlerResolver: ProcessorHandlerResolver = {
   async Resolve(ioc, appProcCfg, eac) {
     if (!isEaCPreactAppProcessor(appProcCfg.Application.Processor)) {
       throw new Deno.errors.NotSupported(
-        'The provided processor is not supported for the EaCPreactAppProcessorHandlerResolver.'
+        'The provided processor is not supported for the EaCPreactAppProcessorHandlerResolver.',
       );
     }
 
@@ -36,7 +36,7 @@ export const EaCPreactAppProcessorHandlerResolver: ProcessorHandlerResolver = {
     const appDFS = eac.DFS![processor.AppDFSLookup];
 
     const componentDFSs = processor.ComponentDFSLookups?.map(
-      (compDFSLookup) => eac.DFS![compDFSLookup]
+      (compDFSLookup) => eac.DFS![compDFSLookup],
     );
 
     const esbuild = await ioc.Resolve<ESBuild>(ioc.Symbol('ESBuild'));
@@ -73,47 +73,42 @@ export const EaCPreactAppProcessorHandlerResolver: ProcessorHandlerResolver = {
           const compLoader = async () => {
             if (componentDFSs) {
               const loadCompDFS = async (
-                componentDFS: EaCDistributedFileSystem
+                componentDFS: EaCDistributedFileSystem,
               ) => {
                 const componentFileHandler = await filesReadyCheck(
                   ioc,
-                  componentDFS
+                  componentDFS,
                 );
 
                 const compPaths = await componentFileHandler.LoadAllPaths(
-                  appProcCfg.Revision
+                  appProcCfg.Revision,
                 );
 
                 const loadComponent = async (
-                  compPath: string
+                  compPath: string,
                 ): Promise<[string, ComponentType<any>, boolean, string]> => {
-                  const { module: compModule, contents } =
-                    await importDFSTypescriptModule(
-                      esbuild,
-                      componentFileHandler,
-                      compPath,
-                      componentDFS,
-                      'tsx'
-                    );
+                  const { module: compModule, contents } = await importDFSTypescriptModule(
+                    esbuild,
+                    componentFileHandler,
+                    compPath,
+                    componentDFS,
+                    'tsx',
+                  );
 
-                  const comp: ComponentType<any> | undefined =
-                    compModule.default;
+                  const comp: ComponentType<any> | undefined = compModule.default;
 
                   if (comp) {
-                    const isCompIsland =
-                      'IsIsland' in compModule ? compModule.IsIsland : false;
+                    const isCompIsland = 'IsIsland' in compModule ? compModule.IsIsland : false;
 
                     return [compPath, comp, isCompIsland, contents];
                   }
 
                   throw new Deno.errors.NotFound(
-                    `Unable to load component for '${compPath}'`
+                    `Unable to load component for '${compPath}'`,
                   );
                 };
 
-                const compCalls = compPaths.map((compPath) =>
-                  loadComponent(compPath)
-                );
+                const compCalls = compPaths.map((compPath) => loadComponent(compPath));
 
                 return await Promise.all(compCalls);
               };
@@ -164,7 +159,7 @@ export const EaCPreactAppProcessorHandlerResolver: ProcessorHandlerResolver = {
             filePath,
             appDFS,
             layouts,
-            renderHandler
+            renderHandler,
           );
         },
         (filePath, pipeline, { middleware }) => {
@@ -172,13 +167,11 @@ export const EaCPreactAppProcessorHandlerResolver: ProcessorHandlerResolver = {
             .filter(([root]) => {
               return filePath.startsWith(root);
             })
-            .flatMap(([_root, handler]) =>
-              Array.isArray(handler) ? handler : [handler]
-            );
+            .flatMap(([_root, handler]) => Array.isArray(handler) ? handler : [handler]);
 
           pipeline.Prepend(...reqMiddleware);
         },
-        appProcCfg.Revision
+        appProcCfg.Revision,
       );
 
       console.log('Apps');
@@ -191,7 +184,7 @@ export const EaCPreactAppProcessorHandlerResolver: ProcessorHandlerResolver = {
         loadClientScript(
           esbuild,
           `./islands/client/eacIslandsClient.tsx`,
-          'tsx'
+          'tsx',
         ),
         loadClientScript(esbuild, `./islands/client/client.deps.ts`, 'ts'),
       ]);
@@ -205,13 +198,12 @@ export const EaCPreactAppProcessorHandlerResolver: ProcessorHandlerResolver = {
 
       clientDepsScript += islandNamePaths
         .map(
-          ([islandName, islandPath]) =>
-            `import ${islandName} from '${islandPath}';`
+          ([islandName, islandPath]) => `import ${islandName} from '${islandPath}';`,
         )
         .join('\n');
 
       const islandCompMaps = islandNamePaths.map(
-        ([islandName]) => `componentMap.set('${islandName}', ${islandName});`
+        ([islandName]) => `componentMap.set('${islandName}', ${islandName});`,
       );
 
       clientDepsScript += islandCompMaps.join('\n');

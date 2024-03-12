@@ -24,7 +24,7 @@ export class EaCESBuilder {
     protected esbuild: ESBuild,
     protected entryPoints: string[],
     protected files: Record<string, string>,
-    protected options: { external?: string[] } = {}
+    protected options: { external?: string[] } = {},
   ) {
     const absWorkingDir = Deno.cwd();
 
@@ -58,10 +58,10 @@ export class EaCESBuilder {
 
     const minifyOptions: Partial<ESBuildOptions> = this.isDev
       ? {
-          minifyIdentifiers: false,
-          minifySyntax: false, //true,
-          minifyWhitespace: false, //true,
-        }
+        minifyIdentifiers: false,
+        minifySyntax: false, //true,
+        minifyWhitespace: false, //true,
+      }
       : { minify: true };
 
     const bundle = await this.esbuild.build({
@@ -70,14 +70,13 @@ export class EaCESBuilder {
       platform: 'browser',
       format: 'esm',
       target: ['chrome99', 'firefox99', 'safari15'],
-      jsx:
-        jsx === 'react'
-          ? 'transform'
-          : jsx === 'react-native' || jsx === 'preserve'
-          ? 'preserve'
-          : !jsxImportSrc
-          ? 'transform'
-          : 'automatic',
+      jsx: jsx === 'react'
+        ? 'transform'
+        : jsx === 'react-native' || jsx === 'preserve'
+        ? 'preserve'
+        : !jsxImportSrc
+        ? 'transform'
+        : 'automatic',
       jsxImportSource: jsxImportSrc || 'preact',
       jsxFactory: 'h',
       jsxFragment: 'Fragment',
@@ -144,7 +143,7 @@ export class EaCESBuilder {
       importKeys.some((imp) => imp.endsWith('/') && path.startsWith(imp))
     ) {
       const importPath = importKeys.find(
-        (imp) => imp.endsWith('/') && path.startsWith(imp)
+        (imp) => imp.endsWith('/') && path.startsWith(imp),
       )!;
 
       path = this.denoJson.imports![importPath] + path.replace(importPath, '');
