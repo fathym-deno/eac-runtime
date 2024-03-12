@@ -9,7 +9,7 @@ import {
   mergeWithArrays,
   processCacheControlHeaders,
 } from '../src.deps.ts';
-import { EAC_RUNTIME_DEV, IS_BUILDING, IS_DENO_DEPLOY, SUPPORTS_WORKERS } from '../constants.ts';
+import { EAC_RUNTIME_DEV, IS_BUILDING, IS_DENO_DEPLOY } from '../constants.ts';
 import { EaCRuntimeConfig } from './config/EaCRuntimeConfig.ts';
 import { ProcessorHandlerResolver } from './processors/ProcessorHandlerResolver.ts';
 import { ModifierHandlerResolver } from './modifiers/ModifierHandlerResolver.ts';
@@ -80,9 +80,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
     // const esbuild: ESBuild = await import('https://deno.land/x/esbuild@v0.20.1/wasm.js');
 
     try {
-      const worker = !IS_DENO_DEPLOY() ? undefined : SUPPORTS_WORKERS();
-
-      console.log(worker);
+      const worker = !IS_DENO_DEPLOY() ? undefined : false;
 
       await esbuild.initialize({
         worker,
