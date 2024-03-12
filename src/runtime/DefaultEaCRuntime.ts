@@ -69,6 +69,14 @@ export class DefaultEaCRuntime implements EaCRuntime {
 
     this.ModifierResolvers = this.config.ModifierResolvers || {};
 
+    try {
+      await esbuild.initialize({
+        worker: SUPPORTS_WORKERS(),
+      });
+    } catch {
+      console.log();
+    }
+
     await this.configurePlugins(this.config.Plugins);
 
     if (!this.EaC) {
@@ -89,14 +97,6 @@ export class DefaultEaCRuntime implements EaCRuntime {
 
     if (configure) {
       configure(this);
-    }
-
-    try {
-      await esbuild.initialize({
-        worker: SUPPORTS_WORKERS(),
-      });
-    } catch {
-      console.log();
     }
 
     this.buildProjectGraph();
