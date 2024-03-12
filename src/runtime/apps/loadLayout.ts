@@ -1,14 +1,16 @@
 // deno-lint-ignore-file no-explicit-any
-import { ComponentType, EaCDistributedFileSystem } from '../../src.deps.ts';
+import { ComponentType, EaCDistributedFileSystem, ESBuild } from '../../src.deps.ts';
 import { DFSFileHandler } from '../dfs/DFSFileHandler.ts';
 import { importDFSTypescriptModule } from '../../utils/dfs/importDFSTypescriptModule.ts';
 
 export async function loadLayout(
+  esbuild: ESBuild,
   fileHandler: DFSFileHandler,
   filePath: string,
   dfs: EaCDistributedFileSystem,
 ): Promise<[string, ComponentType<any>, boolean, string]> {
   const { module: layoutModule, contents } = await importDFSTypescriptModule(
+    esbuild,
     fileHandler,
     filePath,
     dfs,

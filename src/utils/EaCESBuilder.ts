@@ -1,4 +1,15 @@
-import { BuildOptions, denoPlugins, esbuild, jsonc, path, Plugin } from '../src.deps.ts';
+import {
+  denoPlugins,
+  ESBuild,
+  ESBuildOnLoadArgs,
+  ESBuildOnLoadResult,
+  ESBuildOnResolveArgs,
+  ESBuildOnResolveResult,
+  ESBuildOptions,
+  ESBuildPlugin,
+  jsonc,
+  path,
+} from '../src.deps.ts';
 import { EAC_RUNTIME_DEV } from '../constants.ts';
 import { DenoConfig } from './DenoConfig.ts';
 
@@ -10,9 +21,10 @@ export class EaCESBuilder {
   protected isDev: boolean;
 
   constructor(
+    protected esbuild: ESBuild,
     protected entryPoints: string[],
     protected files: Record<string, string>,
-    protected options: { external?: string[] } = {},
+    protected options: { external?: string[] } = {}
   ) {
     const absWorkingDir = Deno.cwd();
 
@@ -25,7 +37,7 @@ export class EaCESBuilder {
     this.isDev = EAC_RUNTIME_DEV();
   }
 
-  static ConfigurePlugin(builder: EaCESBuilder): Plugin {
+  static ConfigurePlugin(builder: EaCESBuilder): ESBuildPlugin {
     return {
       name: 'EaCIslandsClientBuilder',
       setup(build) {
@@ -36,63 +48,60 @@ export class EaCESBuilder {
           return builder.ResolveFile(args);
         });
       },
-    };
+    } as ESBuildPlugin;
   }
 
-  public async Build(options: Partial<BuildOptions> = {}) {
-    try {
-      const jsx = this.denoJson.compilerOptions?.jsx;
+  public async Build(options: Partial<ESBuildOptions> = {}) {
+    const jsx = this.denoJson.compilerOptions?.jsx;
 
-      const jsxImportSrc = this.denoJson.compilerOptions?.jsxImportSource;
+    const jsxImportSrc = this.denoJson.compilerOptions?.jsxImportSource;
 
-      const minifyOptions: Partial<BuildOptions> = this.isDev
-        ? {
+    const minifyOptions: Partial<ESBuildOptions> = this.isDev
+      ? {
           minifyIdentifiers: false,
           minifySyntax: false, //true,
           minifyWhitespace: false, //true,
         }
-        : { minify: true };
+      : { minify: true };
 
-      const bundle = await esbuild.build({
-        entryPoints: this.entryPoints,
-        absWorkingDir: '/',
-        platform: 'browser',
-        format: 'esm',
-        target: ['chrome99', 'firefox99', 'safari15'],
-        jsx: jsx === 'react'
+    const bundle = await this.esbuild.build({
+      entryPoints: this.entryPoints,
+      absWorkingDir: Deno.Command ? Deno.cwd() : '/',
+      platform: 'browser',
+      format: 'esm',
+      target: ['chrome99', 'firefox99', 'safari15'],
+      jsx:
+        jsx === 'react'
           ? 'transform'
           : jsx === 'react-native' || jsx === 'preserve'
           ? 'preserve'
           : !jsxImportSrc
           ? 'transform'
           : 'automatic',
-        jsxImportSource: jsxImportSrc || 'preact',
-        jsxFactory: 'h',
-        jsxFragment: 'Fragment',
-        sourcemap: this.isDev ? 'linked' : false,
-        outdir: '.',
-        write: false,
-        metafile: true,
-        bundle: true,
-        splitting: false, //true,
-        treeShaking: false, //true,
-        ...minifyOptions,
-        plugins: [
-          EaCESBuilder.ConfigurePlugin(this),
-          //   devClientUrlPlugin(opts.basePath),
-          //   buildIdPlugin(opts.buildID),
-          ...denoPlugins({ configPath: this.denoJsonPath }),
-        ],
-        ...options,
-      } as BuildOptions);
+      jsxImportSource: jsxImportSrc || 'preact',
+      jsxFactory: 'h',
+      jsxFragment: 'Fragment',
+      sourcemap: this.isDev ? 'linked' : false,
+      outdir: '.',
+      write: false,
+      metafile: true,
+      bundle: true,
+      splitting: false, //true,
+      treeShaking: false, //true,
+      ...minifyOptions,
+      plugins: [
+        EaCESBuilder.ConfigurePlugin(this),
+        //   devClientUrlPlugin(opts.basePath),
+        //   buildIdPlugin(opts.buildID),
+        ...denoPlugins({ configPath: this.denoJsonPath }),
+      ],
+      ...options,
+    } as ESBuildOptions);
 
-      return bundle;
-    } finally {
-      esbuild.stop();
-    }
+    return bundle;
   }
 
-  public LoadFile(args: esbuild.OnLoadArgs): esbuild.OnLoadResult {
+  public LoadFile(args: ESBuildOnLoadArgs): ESBuildOnLoadResult {
     if (args.namespace === '$') {
       const filePath = args.path;
 
@@ -124,7 +133,7 @@ export class EaCESBuilder {
     };
   }
 
-  public ResolveFile(args: esbuild.OnResolveArgs): esbuild.OnResolveResult {
+  public ResolveFile(args: ESBuildOnResolveArgs): ESBuildOnResolveResult {
     let [path, namespace] = args.path.split('|');
 
     const importKeys = Object.keys(this.denoJson.imports || {});
@@ -135,7 +144,7 @@ export class EaCESBuilder {
       importKeys.some((imp) => imp.endsWith('/') && path.startsWith(imp))
     ) {
       const importPath = importKeys.find(
-        (imp) => imp.endsWith('/') && path.startsWith(imp),
+        (imp) => imp.endsWith('/') && path.startsWith(imp)
       )!;
 
       path = this.denoJson.imports![importPath] + path.replace(importPath, '');

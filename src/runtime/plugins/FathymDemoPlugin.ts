@@ -104,11 +104,7 @@ export default class FathymDemoPlugin implements EaCRuntimePlugin {
             },
             Processor: {
               Type: 'DFS',
-              DFS: {
-                Type: 'Local',
-                DefaultFile: 'README.md',
-                FileRoot: './',
-              } as EaCLocalDistributedFileSystem,
+              DFSLookup: 'local:$root',
             } as EaCDFSProcessor,
           },
           publicWebBlog: {
@@ -123,14 +119,21 @@ export default class FathymDemoPlugin implements EaCRuntimePlugin {
             },
             Processor: {
               Type: 'DFS',
-              DFS: {
-                Type: 'NPM',
-                DefaultFile: 'index.html',
-                Package: '@lowcodeunit/public-web-blog',
-                Version: 'latest',
-              } as EaCNPMDistributedFileSystem,
+              DFSLookup: 'npm:@lowcodeunit/public-web-blog',
             } as EaCDFSProcessor,
           },
+        },
+        DFS: {
+          'local:$root': {
+            Type: 'Local',
+            FileRoot: './',
+          } as EaCLocalDistributedFileSystem,
+          'npm:@lowcodeunit/public-web-blog': {
+            Type: 'NPM',
+            DefaultFile: 'index.html',
+            Package: '@lowcodeunit/public-web-blog',
+            Version: 'latest',
+          } as EaCNPMDistributedFileSystem,
         },
         Modifiers: {
           keepAlive: {

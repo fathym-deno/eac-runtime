@@ -1,14 +1,13 @@
 // deno-lint-ignore-file no-explicit-any
-import { ComponentType, EaCDistributedFileSystem, respond } from '../../src.deps.ts';
+import { ComponentType, EaCDistributedFileSystem, ESBuild, respond } from '../../src.deps.ts';
 import { DFSFileHandler } from '../dfs/DFSFileHandler.ts';
 import { EaCRuntimeHandler } from '../EaCRuntimeHandler.ts';
 import { EaCRuntimeHandlerResult } from '../EaCRuntimeHandlerResult.ts';
 import { PreactRenderHandler } from './preact/PreactRenderHandler.ts';
 import { loadPreactAppPageHandler } from './loadPreactAppPageHandler.ts';
-// import { EaCESBuilder } from '../../utils/EaCESBuilder.ts';
-// import { loadClientScript } from './islands/loadClientScript.ts';
 
 export async function loadPreactAppHandler(
+  esbuild: ESBuild,
   fileHandler: DFSFileHandler,
   filePath: string,
   dfs: EaCDistributedFileSystem,
@@ -16,6 +15,7 @@ export async function loadPreactAppHandler(
   renderHandler: PreactRenderHandler,
 ): Promise<EaCRuntimeHandlerResult> {
   let [pageHandlers, component, isIsland, contents] = await loadPreactAppPageHandler(
+    esbuild,
     fileHandler,
     filePath,
     dfs,

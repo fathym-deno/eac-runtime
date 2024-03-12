@@ -1,8 +1,9 @@
-import { esbuild } from '../../../src.deps.ts';
+import { ESBuild, ESBuildLoader } from '../../../src.deps.ts';
 
 export async function loadClientScript(
+  esbuild: ESBuild,
   clientPath: string,
-  loader: esbuild.Loader,
+  loader: ESBuildLoader,
   transform?: boolean,
 ): Promise<string> {
   const clientUrl = new URL(`.${clientPath}`, import.meta.url);

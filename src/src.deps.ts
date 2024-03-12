@@ -12,8 +12,30 @@ export * from 'https://deno.land/x/deno_dom@v0.1.45/deno-dom-wasm-noinit.ts';
 export * as gfm from 'https://deno.land/x/gfm@0.2.3/mod.ts';
 import 'https://esm.sh/prismjs@1.29.0/components/prism-typescript?no-check';
 
-export * as esbuild from 'https://deno.land/x/esbuild@v0.20.1/wasm.js';
-export * from 'https://deno.land/x/esbuild@v0.20.1/wasm.js';
+import * as esbuild from 'https://deno.land/x/esbuild@v0.20.1/wasm.js';
+export type {
+  BuildOptions as ESBuildOptions,
+  Loader as ESBuildLoader,
+  OnLoadArgs as ESBuildOnLoadArgs,
+  OnLoadResult as ESBuildOnLoadResult,
+  OnResolveArgs as ESBuildOnResolveArgs,
+  OnResolveResult as ESBuildOnResolveResult,
+  Plugin as ESBuildPlugin,
+} from 'https://deno.land/x/esbuild@v0.20.1/wasm.js';
+export type ESBuild = {
+  context: typeof esbuild.context;
+  build: typeof esbuild.build;
+  buildSync: typeof esbuild.buildSync;
+  transform: typeof esbuild.transform;
+  transformSync: typeof esbuild.transformSync;
+  formatMessages: typeof esbuild.formatMessages;
+  formatMessagesSync: typeof esbuild.formatMessagesSync;
+  analyzeMetafile: typeof esbuild.analyzeMetafile;
+  analyzeMetafileSync: typeof esbuild.analyzeMetafileSync;
+  initialize: typeof esbuild.initialize;
+  stop: typeof esbuild.stop;
+  version: typeof esbuild.version;
+};
 export { denoPlugins } from 'https://deno.land/x/esbuild_deno_loader@0.9.0/mod.ts';
 
 import Mime from 'npm:mime';
