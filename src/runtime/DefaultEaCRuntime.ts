@@ -98,6 +98,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
     } catch {
       console.log();
     }
+
     this.buildProjectGraph();
 
     await this.buildApplicationGraph();

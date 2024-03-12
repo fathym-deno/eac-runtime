@@ -8,9 +8,9 @@ export async function startServer(
 ): Promise<void> {
   const runtime = config.Runtime(config);
 
-  await runtime.Configure(configure);
-
   if (!IS_BUILDING) {
+    await runtime.Configure(configure);
+
     await Deno.serve(config.Server, (req, info) => runtime.Handle(req, info))
       .finished;
   }
