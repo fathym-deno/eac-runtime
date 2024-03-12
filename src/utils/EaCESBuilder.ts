@@ -10,7 +10,7 @@ import {
   jsonc,
   path,
 } from '../src.deps.ts';
-import { EAC_RUNTIME_DEV } from '../constants.ts';
+import { EAC_RUNTIME_DEV, IS_DENO_DEPLOY } from '../constants.ts';
 import { DenoConfig } from './DenoConfig.ts';
 
 export class EaCESBuilder {
@@ -66,7 +66,7 @@ export class EaCESBuilder {
 
     const bundle = await this.esbuild.build({
       entryPoints: this.entryPoints,
-      absWorkingDir: Deno.Command ? Deno.cwd() : '/',
+      absWorkingDir: IS_DENO_DEPLOY() ? Deno.cwd() : '/',
       platform: 'browser',
       format: 'esm',
       target: ['chrome99', 'firefox99', 'safari15'],
