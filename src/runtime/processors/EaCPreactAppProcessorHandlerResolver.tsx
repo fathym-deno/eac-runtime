@@ -6,6 +6,7 @@ import { loadLayout } from '../apps/loadLayout.ts';
 import { ProcessorHandlerResolver } from './ProcessorHandlerResolver.ts';
 import { DFSFileHandler } from '../dfs/DFSFileHandler.ts';
 import { filesReadyCheck } from '../../utils/dfs/filesReadyCheck.ts';
+import { loadMiddleware } from '../../utils/dfs/loadMiddleware.ts';
 import { loadRequestPathPatterns } from '../../utils/dfs/loadRequestPathPatterns.ts';
 import { loadPreactAppHandler } from '../apps/loadPreactAppHandler.ts';
 import { PreactRenderHandler } from '../apps/preact/PreactRenderHandler.ts';
@@ -37,7 +38,19 @@ export const EaCPreactAppProcessorHandlerResolver: ProcessorHandlerResolver = {
       const patterns = await loadRequestPathPatterns(
         fileHandler,
         appDFS,
-        async (allPaths, filePath) => {
+        async (allPaths) => {
+          const middlewareLoader = async () => {
+            const middlewarePaths = allPaths
+              .filter((p) => p.endsWith('_middleware.ts'))
+              .sort((a, b) => a.split('/').length - b.split('/').length);
+
+            const middlewareCalls = middlewarePaths.map((p) => {
+              return loadMiddleware(fileHandler, p, appDFS);
+            });
+
+            return await Promise.all(middlewareCalls);
+          };
+
           const layoutLoader = async () => {
             const layoutPaths = allPaths
               .filter((p) => p.endsWith('_layout.tsx'))
@@ -100,10 +113,16 @@ export const EaCPreactAppProcessorHandlerResolver: ProcessorHandlerResolver = {
             }
           };
 
-          const [layouts, compDFSs] = await Promise.all([
+          const [middleware, layouts, compDFSs] = await Promise.all([
+            middlewareLoader(),
             layoutLoader(),
             compLoader(),
           ]);
+
+          console.log('Middleware: ');
+          console.log(middleware.map((m) => m[0]));
+          console.log();
+
           layouts.forEach(([root, layout, isIsland, contents]) => {
             if (isIsland) {
               renderHandler.AddIsland(layout, `${root}/_layout.tsx`, contents);
@@ -123,15 +142,25 @@ export const EaCPreactAppProcessorHandlerResolver: ProcessorHandlerResolver = {
           console.log('Components Loaded');
           console.log();
 
-          const patterns = loadPreactAppHandler(
+          return { middleware, layouts, compDFSs };
+        },
+        async (filePath, { layouts }) => {
+          return await loadPreactAppHandler(
             fileHandler,
             filePath,
             appDFS,
             layouts,
             renderHandler,
           );
+        },
+        (filePath, pipeline, { middleware }) => {
+          const reqMiddleware = middleware
+            .filter(([root]) => {
+              return filePath.startsWith(root);
+            })
+            .flatMap(([_root, handler]) => Array.isArray(handler) ? handler : [handler]);
 
-          return patterns;
+          pipeline.Prepend(...reqMiddleware);
         },
         appProcCfg.Revision,
       );

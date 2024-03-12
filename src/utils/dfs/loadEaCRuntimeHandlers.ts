@@ -11,7 +11,7 @@ export async function loadEaCRuntimeHandlers(
 ): Promise<EaCRuntimeHandlerResult> {
   const apiModule = await importDFSTypescriptModule(fileHandler, filePath, dfs, 'ts');
 
-  const handlers = apiModule.default as EaCRuntimeHandlers;
+  const handlers = apiModule.module.default as EaCRuntimeHandlers;
 
   return handlers;
 }

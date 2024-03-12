@@ -9,7 +9,7 @@ import {
   mergeWithArrays,
   processCacheControlHeaders,
 } from '../src.deps.ts';
-import { EAC_RUNTIME_DEV, SUPPORTS_WORKERS } from '../constants.ts';
+import { EAC_RUNTIME_DEV, IS_BUILDING, SUPPORTS_WORKERS } from '../constants.ts';
 import { EaCRuntimeConfig } from './config/EaCRuntimeConfig.ts';
 import { ProcessorHandlerResolver } from './processors/ProcessorHandlerResolver.ts';
 import { ModifierHandlerResolver } from './modifiers/ModifierHandlerResolver.ts';
@@ -54,6 +54,10 @@ export class DefaultEaCRuntime implements EaCRuntime {
     this.IoC = new IoCContainer();
 
     this.Revision = Date.now();
+
+    if (IS_BUILDING) {
+      Deno.env.set('SUPPORTS_WORKERS', 'false');
+    }
   }
 
   public async Configure(
@@ -73,8 +77,14 @@ export class DefaultEaCRuntime implements EaCRuntime {
       await esbuild.initialize({
         worker: SUPPORTS_WORKERS(),
       });
-    } catch {
-      console.log();
+
+      this.IoC.Register<typeof esbuild>(() => esbuild, {
+        Type: this.IoC!.Symbol('esbuild'),
+      });
+    } catch (err) {
+      console.log('There was an error initializing esbuild');
+
+      throw err;
     }
 
     await this.configurePlugins(this.config.Plugins);

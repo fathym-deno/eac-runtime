@@ -3,15 +3,19 @@ import { EaCRuntimeHandlerPipeline } from '../../runtime/EaCRuntimeHandlerPipeli
 import { EaCRuntimeHandlerResult } from '../../runtime/EaCRuntimeHandlerResult.ts';
 import { PathMatch, pathToPatternRegexes } from './PathMatch.ts';
 
-export async function convertFilePathToPattern(
-  allPaths: string[],
+export async function convertFilePathToPattern<TSetup>(
   filePath: string,
   dfs: EaCDistributedFileSystem,
   loadHandlers: (
-    allPaths: string[],
     filePath: string,
+    details: TSetup,
   ) => Promise<EaCRuntimeHandlerResult>,
-  middleware: [string, EaCRuntimeHandlerResult][],
+  configurePipeline: (
+    filePath: string,
+    pipeline: EaCRuntimeHandlerPipeline,
+    details: TSetup,
+  ) => void,
+  details: TSetup,
 ): Promise<PathMatch> {
   let parts = filePath.split('/');
 
@@ -49,19 +53,13 @@ export async function convertFilePathToPattern(
 
   const patternText = parts.join('/').replace('/{/:', '{/:');
 
-  const reqMiddleware = middleware
-    .filter(([root]) => {
-      return filePath.startsWith(root);
-    })
-    .flatMap(([_root, handler]) => Array.isArray(handler) ? handler : [handler]);
+  const handler = await loadHandlers(filePath, details);
 
   const pipeline = new EaCRuntimeHandlerPipeline();
 
-  pipeline.Append(...reqMiddleware);
-
-  const handler = await loadHandlers(allPaths, filePath);
-
   pipeline.Append(...(Array.isArray(handler) ? handler : [handler]));
+
+  configurePipeline(filePath, pipeline, details);
 
   return {
     Handlers: pipeline,
