@@ -66,7 +66,7 @@ export class EaCESBuilder {
 
     const bundle = await this.esbuild.build({
       entryPoints: this.entryPoints,
-      absWorkingDir: IS_DENO_DEPLOY() ? Deno.cwd() : '/',
+      absWorkingDir: !IS_DENO_DEPLOY() ? Deno.cwd() : '/',
       platform: 'browser',
       format: 'esm',
       target: ['chrome99', 'firefox99', 'safari15'],
