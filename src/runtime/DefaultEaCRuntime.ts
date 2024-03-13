@@ -426,6 +426,12 @@ export class DefaultEaCRuntime implements EaCRuntime {
         pathname: ctx.Runtime.ApplicationProcessorConfig.ResolverConfig.PathPattern,
       });
 
+      console.log(
+        '******************************** Project Request ********************************',
+      );
+      console.log(req.url);
+      console.log(req.headers);
+
       const reqUrl = new URL(req.url);
 
       const patternResult = pattern.exec(reqUrl.href);
@@ -440,6 +446,9 @@ export class DefaultEaCRuntime implements EaCRuntime {
         Path: path,
         Search: reqUrl.search,
       };
+
+      console.log(ctx.Runtime.URLMatch);
+      console.log('****************************************************************');
 
       return ctx.Runtime.ApplicationProcessorConfig.Handlers.Execute(req, ctx);
     };
