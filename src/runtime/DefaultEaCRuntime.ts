@@ -440,7 +440,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
 
       const reqCheckUrl = new URL(
         reqUrl.href.replace(reqUrl.origin, ''),
-        `${forwardedProto}://${host}`,
+        `${forwardedProto}://${host}`.replace('::', ':'),
       );
 
       console.log(`Request check: ${reqCheckUrl.href}`);
