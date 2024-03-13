@@ -429,7 +429,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
       console.log(
         '******************************** Project Request ********************************',
       );
-      console.log(req.url);
+      console.log(`Incoming request: ${req.url}`);
       console.log(req.headers);
 
       const reqUrl = new URL(req.url);
@@ -438,7 +438,12 @@ export class DefaultEaCRuntime implements EaCRuntime {
 
       const host = req.headers.get('host') || reqUrl.host;
 
-      const reqCheckUrl = new URL(req.url, `${forwardedProto}://${host}`);
+      const reqCheckUrl = new URL(
+        reqUrl.href.replace(reqUrl.origin, ''),
+        `${forwardedProto}://${host}`,
+      );
+
+      console.log(`Request check: ${reqCheckUrl.href}`);
 
       const patternResult = pattern.exec(reqCheckUrl.href);
 
