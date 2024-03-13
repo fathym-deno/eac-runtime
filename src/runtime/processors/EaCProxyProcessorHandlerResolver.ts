@@ -12,11 +12,14 @@ export const EaCProxyProcessorHandlerResolver: ProcessorHandlerResolver = {
 
     const processor = appProcCfg.Application.Processor as EaCProxyProcessor;
 
-    return Promise.resolve((req, _ctx) => {
+    return Promise.resolve((req, ctx) => {
       return proxyRequest(
         req,
         processor.ProxyRoot,
-        appProcCfg.ResolverConfig.PathPattern,
+        ctx.Runtime.URLMatch.Base,
+        ctx.Runtime.URLMatch.Path,
+        ctx.Runtime.URLMatch.Search,
+        ctx.Runtime.URLMatch.Hash,
         processor.RedirectMode,
         !EAC_RUNTIME_DEV() ? processor.CacheControl : undefined,
         processor.ForceCache,
