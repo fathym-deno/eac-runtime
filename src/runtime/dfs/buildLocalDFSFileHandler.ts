@@ -36,7 +36,7 @@ export const buildLocalDFSFileHandler = (
             const resolvedPath = pathResolver ? pathResolver(fcp) : fcp;
 
             if (resolvedPath) {
-              const fullFilePath = path.join(root || '', resolvedPath);
+              const fullFilePath = path.join(Deno.cwd(), root || '', resolvedPath);
 
               if (existsSync(fullFilePath)) {
                 fileChecks.push(
