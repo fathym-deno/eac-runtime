@@ -4,7 +4,7 @@ import { filesReadyCheck } from '../../utils/dfs/filesReadyCheck.ts';
 import { establishTailwindHandlers } from '../../modules/tailwind/tailwindHandlers.ts';
 
 export const EaCTailwindProcessorHandlerResolver: ProcessorHandlerResolver = {
-  Resolve(ioc, appProcCfg, eac) {
+  async Resolve(ioc, appProcCfg, eac) {
     if (!isEaCTailwindProcessor(appProcCfg.Application.Processor)) {
       throw new Deno.errors.NotSupported(
         'The provided processor is not supported for the EaCTailwindProcessorHandlerResolver.',
@@ -15,7 +15,7 @@ export const EaCTailwindProcessorHandlerResolver: ProcessorHandlerResolver = {
 
     const dfss = processor.DFSLookups.map((dfsLookup) => eac.DFS![dfsLookup]);
 
-    const filesReady = Promise.all(
+    const handlers = await Promise.all(
       dfss.map((dfs) =>
         filesReadyCheck(ioc, dfs).then((fileHandler) => {
           return fileHandler
@@ -37,10 +37,8 @@ export const EaCTailwindProcessorHandlerResolver: ProcessorHandlerResolver = {
         return establishTailwindHandlers(processor, allFiles);
       });
 
-    return Promise.resolve(async (req, ctx) => {
-      const handlers = await filesReady;
-
+    return (req, ctx) => {
       return handlers(req, ctx);
-    });
+    };
   },
 };

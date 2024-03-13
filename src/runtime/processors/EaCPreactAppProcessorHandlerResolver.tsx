@@ -264,16 +264,12 @@ export const EaCPreactAppProcessorHandlerResolver: ProcessorHandlerResolver = {
       return pipeline;
     }
 
-    const patternsReady = filesReadyCheck(ioc, appDFS).then((fileHandler) => {
-      return setup(fileHandler);
-    });
+    const fileHandler = await filesReadyCheck(ioc, appDFS);
 
-    return async (req, ctx) => {
-      const pipeline = await patternsReady;
+    const pipeline = await setup(fileHandler);
 
-      const resp = await pipeline.Execute(req, ctx);
-
-      return resp;
+    return (req, ctx) => {
+      return pipeline.Execute(req, ctx);
     };
   },
 };

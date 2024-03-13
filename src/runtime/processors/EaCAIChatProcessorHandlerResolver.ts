@@ -8,7 +8,7 @@ import {
 import { ProcessorHandlerResolver } from './ProcessorHandlerResolver.ts';
 
 export const EaCAIChatProcessorHandlerResolver: ProcessorHandlerResolver = {
-  Resolve(_ioc, appProcCfg) {
+  async Resolve(ioc, appProcCfg) {
     if (!isEaCAIChatProcessor(appProcCfg.Application.Processor)) {
       throw new Deno.errors.NotSupported(
         'The provided processor is not supported for the EaCAIChatProcessorHandlerResolver.',
@@ -17,19 +17,19 @@ export const EaCAIChatProcessorHandlerResolver: ProcessorHandlerResolver = {
 
     const processor = appProcCfg.Application.Processor as EaCAIChatProcessor;
 
-    return Promise.resolve(async (req, ctx) => {
-      const llm = await ctx.Runtime.IoC.Resolve<BaseLanguageModel>(
-        ctx.Runtime.IoC.Symbol(BaseLanguageModel.name),
-        `${processor.AILookup}|${processor.LLMLookup}`,
-      );
+    const llm = await ioc.Resolve<BaseLanguageModel>(
+      ioc.Symbol(BaseLanguageModel.name),
+      `${processor.AILookup}|${processor.LLMLookup}`,
+    );
 
-      const vectorStore = processor.VectorStoreLookup
-        ? await ctx.Runtime.IoC.Resolve<VectorStore>(
-          ctx.Runtime.IoC.Symbol(VectorStore.name),
-          `${processor.AILookup}|${processor.VectorStoreLookup}`,
-        )
-        : undefined;
+    const vectorStore = processor.VectorStoreLookup
+      ? await ioc.Resolve<VectorStore>(
+        ioc.Symbol(VectorStore.name),
+        `${processor.AILookup}|${processor.VectorStoreLookup}`,
+      )
+      : undefined;
 
+    return (req, _ctx) => {
       return aiChatRequest(
         req,
         llm,
@@ -39,6 +39,6 @@ export const EaCAIChatProcessorHandlerResolver: ProcessorHandlerResolver = {
         vectorStore,
         processor.DefaultRAGInput,
       );
-    });
+    };
   },
 };

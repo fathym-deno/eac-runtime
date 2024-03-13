@@ -3,7 +3,7 @@ import { ProcessorHandlerResolver } from './ProcessorHandlerResolver.ts';
 import { filesReadyCheck } from '../../utils/dfs/filesReadyCheck.ts';
 
 export const EaCDFSProcessorHandlerResolver: ProcessorHandlerResolver = {
-  Resolve(ioc, appProcCfg, eac) {
+  async Resolve(ioc, appProcCfg, eac) {
     if (!isEaCDFSProcessor(appProcCfg.Application.Processor)) {
       throw new Deno.errors.NotSupported(
         'The provided processor is not supported for the EaCDFSProcessorHandlerResolver.',
@@ -14,17 +14,9 @@ export const EaCDFSProcessorHandlerResolver: ProcessorHandlerResolver = {
 
     const dfs = eac.DFS![processor.DFSLookup];
 
-    const filesReady = filesReadyCheck(ioc, dfs).then(
-      (fileHandler) => {
-        return fileHandler;
-      },
-    );
+    const fileHandler = await filesReadyCheck(ioc, dfs);
 
-    filesReady.then();
-
-    return Promise.resolve(async (_req, ctx) => {
-      const fileHandler = await filesReady;
-
+    return async (_req, ctx) => {
       const filePath = ctx.Runtime.URLMatch.Path;
 
       const file = await fileHandler.GetFileInfo(
@@ -63,6 +55,6 @@ export const EaCDFSProcessorHandlerResolver: ProcessorHandlerResolver = {
       });
 
       return resp;
-    });
+    };
   },
 };

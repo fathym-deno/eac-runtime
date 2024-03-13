@@ -20,71 +20,60 @@ export const EaCAPIProcessorHandlerResolver: ProcessorHandlerResolver = {
 
     const esbuild = await ioc.Resolve<ESBuild>(ioc.Symbol('ESBuild'));
 
-    const patternsReady = filesReadyCheck(ioc, dfs).then((fileHandler) => {
-      return loadRequestPathPatterns(
-        fileHandler,
-        dfs,
-        async (allPaths) => {
-          const middlewareLoader = async () => {
-            const middlewarePaths = allPaths
-              .filter((p) => p.endsWith('_middleware.ts'))
-              .sort((a, b) => a.split('/').length - b.split('/').length);
+    const fileHandler = await filesReadyCheck(ioc, dfs);
 
-            const middlewareCalls = middlewarePaths.map((p) => {
-              return loadMiddleware(esbuild, fileHandler, p, dfs);
-            });
+    const patterns = await loadRequestPathPatterns(
+      fileHandler,
+      dfs,
+      async (allPaths) => {
+        const middlewareLoader = async () => {
+          const middlewarePaths = allPaths
+            .filter((p) => p.endsWith('_middleware.ts'))
+            .sort((a, b) => a.split('/').length - b.split('/').length);
 
-            return await Promise.all(middlewareCalls);
-          };
+          const middlewareCalls = middlewarePaths.map((p) => {
+            return loadMiddleware(esbuild, fileHandler, p, dfs);
+          });
 
-          const [middleware] = await Promise.all([middlewareLoader()]);
+          return await Promise.all(middlewareCalls);
+        };
 
-          console.log('Middleware: ');
-          console.log(middleware.map((m) => m[0]));
-          console.log();
+        const [middleware] = await Promise.all([middlewareLoader()]);
 
-          return { middleware };
-        },
-        async (filePath) => {
-          return await loadEaCRuntimeHandlers(
-            esbuild,
-            fileHandler,
-            filePath,
-            dfs,
-          );
-        },
-        (filePath, pipeline, { middleware }) => {
-          const reqMiddleware = middleware
-            .filter(([root]) => {
-              return filePath.startsWith(root);
-            })
-            .flatMap(([_root, handler]) => Array.isArray(handler) ? handler : [handler]);
-
-          pipeline.Prepend(...reqMiddleware);
-        },
-        appProcCfg.Revision,
-      ).then((patterns) => {
-        console.log('APIs: ');
-        console.log(patterns.map((p) => p.PatternText));
+        console.log('Middleware: ');
+        console.log(middleware.map((m) => m[0]));
         console.log();
 
-        return patterns;
-      });
+        return { middleware };
+      },
+      async (filePath) => {
+        return await loadEaCRuntimeHandlers(
+          esbuild,
+          fileHandler,
+          filePath,
+          dfs,
+        );
+      },
+      (filePath, pipeline, { middleware }) => {
+        const reqMiddleware = middleware
+          .filter(([root]) => {
+            return filePath.startsWith(root);
+          })
+          .flatMap(([_root, handler]) => Array.isArray(handler) ? handler : [handler]);
+
+        pipeline.Prepend(...reqMiddleware);
+      },
+      appProcCfg.Revision,
+    ).then((patterns) => {
+      console.log('APIs: ');
+      console.log(patterns.map((p) => p.PatternText));
+      console.log();
+
+      return patterns;
     });
 
-    patternsReady.then();
-
-    return async (req, ctx) => {
-      const patterns = await patternsReady;
-
-      const resp = await executePathMatch(
-        patterns,
-        req,
-        ctx,
-        processor.DefaultContentType,
-      );
-
-      return resp;
+    return (req, ctx) => {
+      return executePathMatch(patterns, req, ctx, processor.DefaultContentType);
     };
   },
 };
