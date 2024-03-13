@@ -434,7 +434,13 @@ export class DefaultEaCRuntime implements EaCRuntime {
 
       const reqUrl = new URL(req.url);
 
-      const patternResult = pattern.exec(reqUrl.href);
+      const forwardedProto = req.headers.get('x-forwarded-proto') || reqUrl.protocol;
+
+      const host = req.headers.get('host') || reqUrl.host;
+
+      const reqCheckUrl = new URL(req.url, `${forwardedProto}://${host}`);
+
+      const patternResult = pattern.exec(reqCheckUrl.href);
 
       const base = patternResult!.inputs[0].toString();
 
@@ -448,7 +454,9 @@ export class DefaultEaCRuntime implements EaCRuntime {
       };
 
       console.log(ctx.Runtime.URLMatch);
-      console.log('****************************************************************');
+      console.log(
+        '****************************************************************',
+      );
 
       return ctx.Runtime.ApplicationProcessorConfig.Handlers.Execute(req, ctx);
     };
