@@ -19,11 +19,11 @@ export type EaCRuntimeInstallerFlags = {
 const flags: EaCRuntimeInstallerFlags = parseArgs(Deno.args, {
   boolean: ['docker', 'force', 'help', 'preact', 'tailwind', 'vscode'],
   default: {
-    docker: undefined,
+    docker: true,
     force: undefined,
-    preact: undefined,
-    tailwind: undefined,
-    vscode: undefined,
+    preact: true,
+    tailwind: true,
+    vscode: true,
   },
   alias: {
     force: 'f',
