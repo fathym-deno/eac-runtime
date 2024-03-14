@@ -5755,5 +5755,11 @@
     "https://raw.githubusercontent.com/fathym-deno/deno_kv_oauth/main/lib/sign_out.ts": "5dc0113a019b28395c9edfe8918f881defcd9cf0a23076afe236ce17b8d7f8f9",
     "https://raw.githubusercontent.com/fathym-deno/deno_kv_oauth/main/lib/types.ts": "71923b383f83e9a7509e67770bbf2daff68ab768eaf0424a71c99ae1a1484af9",
     "https://raw.githubusercontent.com/fathym-deno/deno_kv_oauth/main/mod.ts": "b807947f2701721453c3f0b2900ca9e9319139fcf5f91ea1f3046243e414fdae"
+  },
+  "workspace": {
+    "dependencies": [
+      "npm:tailwindcss-unimportant@2.1.1",
+      "npm:tailwindcss@3.4.1"
+    ]
   }
 }

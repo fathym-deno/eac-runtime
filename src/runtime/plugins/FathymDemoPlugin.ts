@@ -1,4 +1,6 @@
 import {
+  EaCAPIProcessor,
+  EaCBaseHREFModifierDetails,
   EaCDenoKVCacheModifierDetails,
   EaCDenoKVDatabaseDetails,
   EaCDFSProcessor,
@@ -6,8 +8,10 @@ import {
   EaCLocalDistributedFileSystem,
   EaCMarkdownToHTMLModifierDetails,
   EaCNPMDistributedFileSystem,
+  EaCPreactAppProcessor,
   EaCProxyProcessor,
   EaCRedirectProcessor,
+  EaCTailwindProcessor,
   EaCTracingModifierDetails,
 } from '../../src.deps.ts';
 import { EaCRuntimeConfig } from '../config/EaCRuntimeConfig.ts';
@@ -44,7 +48,11 @@ export default class FathymDemoPlugin implements EaCRuntimePlugin {
               },
             },
             ApplicationResolvers: {
-              apiProxy: {
+              apiLocalProxy: {
+                PathPattern: '/api-local*',
+                Priority: 500,
+              },
+              apiReqResProxy: {
                 PathPattern: '/api-reqres*',
                 Priority: 200,
               },
@@ -60,14 +68,30 @@ export default class FathymDemoPlugin implements EaCRuntimePlugin {
                 PathPattern: '/blog*',
                 Priority: 500,
               },
+              tailwind: {
+                PathPattern: '/tailwind*',
+                Priority: 500,
+              },
             },
           },
         },
         Applications: {
-          apiProxy: {
+          apiLocalProxy: {
             Details: {
-              Name: 'Simple API Proxy',
-              Description: 'A proxy',
+              Name: 'Simple Local API Proxy',
+              Description: 'A proxy for local API development.',
+            },
+            ModifierResolvers: {},
+            Processor: {
+              Type: 'API',
+              DFSLookup: 'local:apps/api',
+              DefaultContentType: 'application/json',
+            } as EaCAPIProcessor,
+          },
+          apiReqResProxy: {
+            Details: {
+              Name: 'Simple API Proxy for ReqRes',
+              Description: 'A proxy demonstrating how to connect to an API, via reqres.in',
             },
             ModifierResolvers: {
               tracing: {
@@ -94,18 +118,12 @@ export default class FathymDemoPlugin implements EaCRuntimePlugin {
               Name: 'Home Site',
               Description: 'The home site to be used for the marketing of the project',
             },
-            ModifierResolvers: {
-              denoKvCache: {
-                Priority: 500,
-              },
-              markdownToHtml: {
-                Priority: 10,
-              },
-            },
+            ModifierResolvers: {},
             Processor: {
-              Type: 'DFS',
-              DFSLookup: 'local:$root',
-            } as EaCDFSProcessor,
+              Type: 'PreactApp',
+              AppDFSLookup: 'local:apps/home',
+              ComponentDFSLookups: ['local:apps/components'],
+            } as EaCPreactAppProcessor,
           },
           publicWebBlog: {
             Details: {
@@ -113,14 +131,40 @@ export default class FathymDemoPlugin implements EaCRuntimePlugin {
               Description: 'The public web blog site to be used for the marketing of the project',
             },
             ModifierResolvers: {
-              denoKvCache: {
+              'static-cache': {
                 Priority: 500,
               },
             },
             Processor: {
               Type: 'DFS',
               DFSLookup: 'npm:@lowcodeunit/public-web-blog',
+              CacheControl: {
+                'text\\/html': `private, max-age=${60 * 5}`,
+                'image\\/': `public, max-age=${60 * 60 * 24 * 365}, immutable`,
+                'application\\/javascript': `public, max-age=${60 * 60 * 24 * 365}, immutable`,
+                'application\\/typescript': `public, max-age=${60 * 60 * 24 * 365}, immutable`,
+                'text\\/css': `public, max-age=${60 * 60 * 24 * 365}, immutable`,
+              },
             } as EaCDFSProcessor,
+          },
+          tailwind: {
+            Details: {
+              Name: 'Tailwind for the Site',
+              Description: 'A tailwind config for the site',
+            },
+            ModifierResolvers: {},
+            Processor: {
+              Type: 'Tailwind',
+              DFSLookups: [
+                'local:apps/home',
+                'local:apps/components',
+              ],
+              ConfigPath: '/apps/tailwind/tailwind.config.ts',
+              StylesTemplatePath: './apps/tailwind/styles.css',
+              CacheControl: {
+                'text\\/css': `public, max-age=${60 * 60 * 24 * 365}, immutable`,
+              },
+            } as EaCTailwindProcessor,
           },
         },
         DFS: {
@@ -134,8 +178,31 @@ export default class FathymDemoPlugin implements EaCRuntimePlugin {
             Package: '@lowcodeunit/public-web-blog',
             Version: 'latest',
           } as EaCNPMDistributedFileSystem,
+          'local:apps/api': {
+            Type: 'Local',
+            FileRoot: './apps/api/',
+            DefaultFile: 'index.ts',
+            Extensions: ['ts'],
+          } as EaCLocalDistributedFileSystem,
+          'local:apps/home': {
+            Type: 'Local',
+            FileRoot: './apps/home/',
+            DefaultFile: 'index.tsx',
+            Extensions: ['tsx'],
+          } as EaCLocalDistributedFileSystem,
+          'local:apps/components': {
+            Type: 'Local',
+            FileRoot: './apps/components/',
+          } as EaCLocalDistributedFileSystem,
         },
         Modifiers: {
+          baseHref: {
+            Details: {
+              Type: 'BaseHREF',
+              Name: 'Base HREF',
+              Description: 'Adjusts the base HREF of a response based on configureation.',
+            } as EaCBaseHREFModifierDetails,
+          },
           keepAlive: {
             Details: {
               Type: 'KeepAlive',
@@ -151,7 +218,7 @@ export default class FathymDemoPlugin implements EaCRuntimePlugin {
               Description: 'A modifier to convert markdown to HTML.',
             } as EaCMarkdownToHTMLModifierDetails,
           },
-          denoKvCache: {
+          'static-cache': {
             Details: {
               Type: 'DenoKVCache',
               Name: 'DenoKV Cache',

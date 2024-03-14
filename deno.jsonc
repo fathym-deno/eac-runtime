@@ -13,7 +13,11 @@
     "@fathym/eac/runtime": "./mod.ts",
     "@fathym/eac/runtime/": "./",
     "preact": "https://esm.sh/preact@10.19.6",
-    "preact/": "https://esm.sh/preact@10.19.6/"
+    "preact/": "https://esm.sh/preact@10.19.6/",
+    "tailwindcss": "npm:tailwindcss@3.4.1",
+    "tailwindcss/": "npm:/tailwindcss@3.4.1/",
+    "tailwindcss/plugin": "npm:/tailwindcss@3.4.1/plugin.js",
+    "tailwindcss/unimportant": "npm:tailwindcss-unimportant@2.1.1"
   },
   "lint": {
     "include": ["src/"],

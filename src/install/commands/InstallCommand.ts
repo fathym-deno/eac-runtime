@@ -17,6 +17,16 @@ export class InstallCommand implements Command {
       ['../files/.gitignore', './.gitignore'],
       ['../files/dev.ts', './dev.ts'],
       ['../files/main.ts', './main.ts'],
+      ['../files/apps/api/sub_middleware.ts', './apps/api/sub/_middleware.ts'],
+      ['../files/apps/api/sub/another.ts', './apps/api/sub/another.ts'],
+      ['../files/apps/api/_middleware.ts', './apps/api/_middleware.ts'],
+      ['../files/apps/api/index.ts', './apps/api/index.ts'],
+      ['../files/apps/components/Button.tsx', './apps/components/Button.tsx'],
+      ['../files/apps/components/Counter.tsx', './apps/components/Counter.tsx'],
+      ['../files/apps/home/_layout.tsx', './apps/home/_layout.tsx'],
+      ['../files/apps/home/index.tsx', './apps/home/index.tsx'],
+      ['../files/apps/tailwind/styles.css', './apps/tailwind/styles.css'],
+      ['../files/apps/tailwind/tailwind.config.ts', './apps/tailwind/tailwind.config.ts'],
       [
         '../files/configs/eac-runtime.config.ts',
         './configs/eac-runtime.config.ts',
@@ -99,6 +109,7 @@ export class InstallCommand implements Command {
         '@fathym/eac': loadEverythingAsCodeMetaUrl('../../mod.ts'),
         '@fathym/eac/runtime': import.meta.resolve('../../../mod.ts'),
         '@fathym/eac/runtime/': import.meta.resolve('../../../'),
+        '@fathym/eac/runtime/browser': import.meta.resolve('../../../browser.ts'),
       },
     });
 
@@ -112,6 +123,17 @@ export class InstallCommand implements Command {
         compilerOptions: {
           jsx: 'react-jsx',
           jsxImportSource: 'preact',
+        },
+      });
+    }
+
+    if (this.flags.tailwind) {
+      config = mergeWithArrays(config, {
+        imports: {
+          'tailwindcss': 'npm:tailwindcss@3.4.1',
+          'tailwindcss/': 'npm:/tailwindcss@3.4.1/',
+          'tailwindcss/plugin': 'npm:/tailwindcss@3.4.1/plugin.js',
+          'tailwindcss/unimportant': 'npm:tailwindcss-unimportant@2.1.1',
         },
       });
     }
