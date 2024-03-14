@@ -1,4 +1,3 @@
-import { EaCDistributedFileSystem } from '../../src.deps.ts';
 import { DFSFileHandler } from './DFSFileHandler.ts';
 import { DFSFileInfo } from './DFSFileInfo.ts';
 import { getFileCheckPathsToProcess } from './getFileCheckPathsToProcess.ts';
@@ -12,7 +11,9 @@ export const buildFetchDFSFileHandler = (
     async GetFileInfo(
       filePath: string,
       revision: number,
-      dfs?: EaCDistributedFileSystem,
+      defaultFileName?: string,
+      extensions?: string[],
+      useCascading?: boolean,
       cacheDb?: Deno.Kv,
       cacheSeconds?: number,
     ): Promise<DFSFileInfo> {
@@ -23,9 +24,9 @@ export const buildFetchDFSFileHandler = (
         async () => {
           const fileCheckPaths = getFileCheckPathsToProcess(
             filePath,
-            dfs?.DefaultFile,
-            dfs?.Extensions,
-            dfs?.UseCascading,
+            defaultFileName,
+            extensions,
+            useCascading,
           );
 
           const fileChecks: Promise<Response>[] = [];
