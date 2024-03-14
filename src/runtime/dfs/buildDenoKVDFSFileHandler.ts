@@ -141,6 +141,10 @@ export const buildDenoKVDFSFileHandler = (
       return paths;
     },
 
+    get Root(): string {
+      return root;
+    },
+
     async WriteFile(
       filePath: string,
       revision: number,

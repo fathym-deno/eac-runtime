@@ -430,7 +430,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
         '******************************** Project Request ********************************',
       );
       console.log(`Incoming request: ${req.url}`);
-      console.log(req.headers);
+      // console.log(req.headers);
 
       const reqUrl = new URL(req.url);
 

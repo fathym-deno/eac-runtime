@@ -187,7 +187,7 @@ export class PreactRenderHandler {
     const pageProps: PageProps = {
       Data: data,
       Params: ctx.Params,
-      // URL: new URL(ctx.Runtime.URLMatch.Path, ctx.Runtime.URLMatch.Base),
+      Revision: ctx.Runtime.Revision,
       Component: () => null,
     };
 

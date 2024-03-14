@@ -42,6 +42,8 @@ export const EaCPreactAppProcessorHandlerResolver: ProcessorHandlerResolver = {
     const esbuild = await ioc.Resolve<ESBuild>(ioc.Symbol('ESBuild'));
 
     async function setup(fileHandler: DFSFileHandler) {
+      const components: Record<string, string> = {};
+
       const patterns = await loadRequestPathPatterns(
         fileHandler,
         appDFS,
@@ -100,6 +102,11 @@ export const EaCPreactAppProcessorHandlerResolver: ProcessorHandlerResolver = {
                   if (comp) {
                     const isCompIsland = 'IsIsland' in compModule ? compModule.IsIsland : false;
 
+                    const compPathUrl = new URL(
+                      compPath,
+                      new URL(componentFileHandler.Root, 'http://notused.com'),
+                    );
+
                     return [compPath, comp, isCompIsland, contents];
                   }
 
@@ -144,6 +151,8 @@ export const EaCPreactAppProcessorHandlerResolver: ProcessorHandlerResolver = {
           compDFSs?.forEach(([compPath, comp, isIsland, contents]) => {
             if (isIsland) {
               renderHandler.AddIsland(comp, compPath, contents);
+            } else {
+              components[compPath] = contents;
             }
           });
 
@@ -218,11 +227,17 @@ export const EaCPreactAppProcessorHandlerResolver: ProcessorHandlerResolver = {
 
       const clientDepsScriptPath = `./client.deps.ts`;
 
-      const builder = new EaCESBuilder(esbuild, [clientScriptPath], {
-        [clientScriptPath]: clientScript,
-        [clientDepsScriptPath]: clientDepsScript,
-        ...islandContents,
-      });
+      const builder = new EaCESBuilder(
+        esbuild,
+        fileHandler.Root,
+        [clientScriptPath],
+        {
+          [clientScriptPath]: clientScript,
+          [clientDepsScriptPath]: clientDepsScript,
+          ...islandContents,
+          ...components,
+        },
+      );
 
       const bundle = await builder.Build({});
 

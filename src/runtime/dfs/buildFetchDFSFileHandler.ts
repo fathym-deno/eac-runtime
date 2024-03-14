@@ -1,3 +1,4 @@
+import { EaCDistributedFileSystem } from '../../src.deps.ts';
 import { DFSFileHandler } from './DFSFileHandler.ts';
 import { DFSFileInfo } from './DFSFileInfo.ts';
 import { getFileCheckPathsToProcess } from './getFileCheckPathsToProcess.ts';
@@ -11,9 +12,7 @@ export const buildFetchDFSFileHandler = (
     async GetFileInfo(
       filePath: string,
       revision: number,
-      defaultFileName?: string,
-      extensions?: string[],
-      useCascading?: boolean,
+      dfs?: EaCDistributedFileSystem,
       cacheDb?: Deno.Kv,
       cacheSeconds?: number,
     ): Promise<DFSFileInfo> {
@@ -24,9 +23,9 @@ export const buildFetchDFSFileHandler = (
         async () => {
           const fileCheckPaths = getFileCheckPathsToProcess(
             filePath,
-            defaultFileName,
-            extensions,
-            useCascading,
+            dfs?.DefaultFile,
+            dfs?.Extensions,
+            dfs?.UseCascading,
           );
 
           const fileChecks: Promise<Response>[] = [];
@@ -85,6 +84,10 @@ export const buildFetchDFSFileHandler = (
 
     LoadAllPaths(_revision: number): Promise<string[]> {
       throw new Deno.errors.NotSupported('Retrieval of fetch paths is not supported');
+    },
+
+    get Root(): string {
+      return root;
     },
 
     WriteFile(

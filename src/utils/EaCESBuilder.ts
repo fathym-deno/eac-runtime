@@ -22,6 +22,7 @@ export class EaCESBuilder {
 
   constructor(
     protected esbuild: ESBuild,
+    protected root: string,
     protected entryPoints: string[],
     protected files: Record<string, string>,
     protected options: { external?: string[] } = {},
@@ -64,9 +65,14 @@ export class EaCESBuilder {
       }
       : { minify: true };
 
+    const absWorkingDir = path.join(
+      !IS_DENO_DEPLOY() ? Deno.cwd() : '/',
+      this.root || '',
+    );
+
     const bundle = await this.esbuild.build({
       entryPoints: this.entryPoints,
-      absWorkingDir: !IS_DENO_DEPLOY() ? Deno.cwd() : '/',
+      absWorkingDir,
       platform: 'browser',
       format: 'esm',
       target: ['chrome99', 'firefox99', 'safari15'],
@@ -100,7 +106,7 @@ export class EaCESBuilder {
     return bundle;
   }
 
-  public LoadFile(args: ESBuildOnLoadArgs): ESBuildOnLoadResult {
+  public LoadFile(args: ESBuildOnLoadArgs): ESBuildOnLoadResult | null {
     if (args.namespace === '$') {
       const filePath = args.path;
 
@@ -126,10 +132,7 @@ export class EaCESBuilder {
       };
     }
 
-    return {
-      contents: JSON.stringify('Hello World'.split(/\s+/)),
-      loader: 'json',
-    };
+    return null;
   }
 
   public ResolveFile(args: ESBuildOnResolveArgs): ESBuildOnResolveResult {

@@ -1,17 +1,18 @@
+import { EaCDistributedFileSystem } from '../../src.deps.ts';
 import { DFSFileInfo } from './DFSFileInfo.ts';
 
 export type DFSFileHandler = {
   GetFileInfo: (
     filePath: string,
     revision: number,
-    defaultFileName?: string,
-    extensions?: string[],
-    useCascading?: boolean,
+    dfs?: EaCDistributedFileSystem,
     cacheDb?: Deno.Kv,
     cacheSeconds?: number,
   ) => Promise<DFSFileInfo>;
 
   LoadAllPaths(revision: number): Promise<string[]>;
+
+  readonly Root: string;
 
   WriteFile(
     filePath: string,

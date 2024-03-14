@@ -1,4 +1,4 @@
-import { existsSync, getFilesList, path } from '../../src.deps.ts';
+import { EaCDistributedFileSystem, existsSync, getFilesList, path } from '../../src.deps.ts';
 import { DFSFileHandler } from './DFSFileHandler.ts';
 import { DFSFileInfo } from './DFSFileInfo.ts';
 import { getFileCheckPathsToProcess } from './getFileCheckPathsToProcess.ts';
@@ -12,9 +12,7 @@ export const buildLocalDFSFileHandler = (
     async GetFileInfo(
       filePath: string,
       revision: number,
-      defaultFileName?: string,
-      extensions?: string[],
-      useCascading?: boolean,
+      dfs?: EaCDistributedFileSystem,
       cacheDb?: Deno.Kv,
       cacheSeconds?: number,
     ): Promise<DFSFileInfo> {
@@ -25,9 +23,9 @@ export const buildLocalDFSFileHandler = (
         async () => {
           const fileCheckPaths = getFileCheckPathsToProcess(
             filePath,
-            defaultFileName,
-            extensions,
-            useCascading,
+            dfs?.DefaultFile,
+            dfs?.Extensions,
+            dfs?.UseCascading,
           );
 
           const fileChecks: Promise<Deno.FsFile | undefined>[] = [];
@@ -95,6 +93,10 @@ export const buildLocalDFSFileHandler = (
       }
 
       return paths;
+    },
+
+    get Root(): string {
+      return root;
     },
 
     WriteFile(

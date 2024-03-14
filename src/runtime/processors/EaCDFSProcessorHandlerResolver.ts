@@ -22,9 +22,7 @@ export const EaCDFSProcessorHandlerResolver: ProcessorHandlerResolver = {
       const file = await fileHandler.GetFileInfo(
         filePath,
         ctx.Runtime.Revision,
-        dfs.DefaultFile,
-        dfs.Extensions,
-        dfs.UseCascading,
+        dfs,
       );
 
       if (

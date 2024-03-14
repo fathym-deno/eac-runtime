@@ -7,5 +7,6 @@ export type PageProps<TData = any> = {
   Data: TData;
 
   Params: Record<string, string | undefined>;
-  // URL: URL;
+
+  Revision: number;
 };
