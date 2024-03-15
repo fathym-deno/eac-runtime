@@ -18,7 +18,7 @@ export class InstallCommand implements Command {
       ['../files/.gitignore', './.gitignore'],
       ['../files/dev.ts', './dev.ts'],
       ['../files/main.ts', './main.ts'],
-      ['../files/apps/api/sub_middleware.ts', './apps/api/sub/_middleware.ts'],
+      ['../files/apps/api/sub/_middleware.ts', './apps/api/sub/_middleware.ts'],
       ['../files/apps/api/sub/another.ts', './apps/api/sub/another.ts'],
       ['../files/apps/api/_middleware.ts', './apps/api/_middleware.ts'],
       ['../files/apps/api/index.ts', './apps/api/index.ts'],
