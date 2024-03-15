@@ -35,7 +35,7 @@ Both configuration techniques can be used [together](./). Provide a default conf
 
 ## Recreating the Fathym Demo
 
-Let's get our hands dirty now, and look at re-creating the Fathym Demo solution that ships when you create a new EaC Runtime solution. This will allow us to work with Plugins, Projects, Applications, Processors, and Modifiers.
+Let's get our hands dirty now, and look at re-creating the Fathym Demo solution that ships when you create a new EaC Runtime project. This will allow us to work with Plugins, Projects, Applications, Processors, and Modifiers.
 
 ### The Plugin
 
@@ -145,7 +145,7 @@ const pluginConfig: EaCRuntimePluginConfig = {
 };
 ```
 
-We provide some basic details for the application, and then configure processor as a redirect processor to handle the redirect.
+We provide some basic details for the application, and then configure the processor as a redirect processor to handle the redirect.
 
 We're close here, but before our redirect will work, we need to assign the application to the project. This allows us to configure many aspects of the application to project relationship:
 
@@ -173,7 +173,7 @@ If you go ahead and start the runtime, then navigate to <a href="http://localhos
 
 #### Proxies
 
-Next we will configure a proxy application. This allows us to configure a URL to host our backend services on:
+Next we will configure a proxy application. This allows us to configure a URL to host our backend services on and to proxy entire other applications:
 
 ```typescript ./src/plugins/MyDemoPlugin.ts
 const pluginConfig: EaCRuntimePluginConfig = {
@@ -216,7 +216,7 @@ Start the runtime, then navigate to <a href="http://localhost:8000/api-reqres/us
 
 #### DFS (Distributed File System) Hosting
 
-Now we can look at using the DFS to host a static site we have packaged in NPM. This is a React Docusaurus site, showing how we can leverage multiple architectures together in our micro application project.
+Now we can look at using the DFS to host a static site we have packaged in NPM. This is a React Docusaurus site, showing how we can leverage multiple frameworks together in our micro application project.
 
 ```typescript ./src/plugins/MyDemoPlugin.ts
 const pluginConfig: EaCRuntimePluginConfig = {
@@ -239,27 +239,91 @@ const pluginConfig: EaCRuntimePluginConfig = {
           Description:
             'The public web blog site to be used for the marketing of the project',
         },
-        ModifierResolvers: { 'static-cache': { Priority: 500 } },
+        ModifierResolvers: {
+          'static-cache': {
+            Priority: 500,
+          },
+        },
         Processor: {
           Type: 'DFS',
-          DFS: {
-            Type: 'NPM',
-            DefaultFile: 'index.html',
-            Package: '@lowcodeunit/public-web-blog',
-            Version: 'latest',
-          } as EaCNPMDistributedFileSystem,
+          DFSLookup: 'npm:@lowcodeunit/public-web-blog',
+          CacheControl: {
+            'text\\/html': `private, max-age=${60 * 5}`,
+            'image\\/': `public, max-age=${60 * 60 * 24 * 365}, immutable`,
+            'application\\/javascript': `public, max-age=${
+              60 * 60 * 24 * 365
+            }, immutable`,
+            'application\\/typescript': `public, max-age=${
+              60 * 60 * 24 * 365
+            }, immutable`,
+            'text\\/css': `public, max-age=${60 * 60 * 24 * 365}, immutable`,
+          },
         } as EaCDFSProcessor,
       },
+    },
+    DFS: {
+      'npm:@lowcodeunit/public-web-blog': {
+        Type: 'NPM',
+        DefaultFile: 'index.html',
+        Package: '@lowcodeunit/public-web-blog',
+        Version: 'latest',
+      } as EaCNPMDistributedFileSystem,
     },
   },
 };
 ```
 
-Most of this should be starting to look familiar, we've configured the processor and added a `denoKvCache` modifier, then assigned it to the project. View the configured application at <a href="http://localhost:8000/blog" target="_blank">`/blog`</a>, you should see the Fathym blog, and be able to navigate between articles.
+Most of this should be starting to look familiar, we've configured the processor and added a `static-cache` modifier, then assigned it to the project. The new piece here is the introduction of a DFS (Distributed File System) configuration. This configuration tells the runtime how to retreive the files used to serve the application.
 
-#### Markdown Rendering
+View the configured application at <a href="http://localhost:8000/blog" target="_blank">`/blog`</a>, you should see the Fathym blog, and be able to navigate between articles.
 
-The final application that we'll add is for rendering a home page from a Markdown file. This is a very simple use case, without any additional styles or application code.
+#### Local API
+
+We already setup a proxy application to leverage other, existing APIs. Now let's configure an application to handle our own local APIs. We'll use the APIs that shipped with the install:
+
+```typescript ./src/plugins/MyDemoPlugin.ts
+const pluginConfig: EaCRuntimePluginConfig = {
+  Name: 'MyDemoPlugin',
+  EaC: {
+    Projects: {
+      demo: {
+        ApplicationResolvers: {
+          apiLocalProxy: {
+            PathPattern: '/api-local*',
+            Priority: 500,
+          },
+        },
+      },
+    },
+    Applications: {
+      apiLocalProxy: {
+        Details: {
+          Name: 'Simple Local API Proxy',
+          Description: 'A proxy for local API development.',
+        },
+        ModifierResolvers: {},
+        Processor: {
+          Type: 'API',
+          DFSLookup: 'local:apps/api',
+          DefaultContentType: 'application/json',
+        } as EaCAPIProcessor,
+      },
+    },
+    DFS: {
+      'local:apps/api': {
+        Type: 'Local',
+        FileRoot: './apps/api/',
+        DefaultFile: 'index.ts',
+        Extensions: ['ts'],
+      } as EaCLocalDistributedFileSystem,
+    },
+  },
+};
+```
+
+#### Preact App
+
+The final application that we'll add is for rendering a home page from a a set of Preact controls. This example leverages tailwind for styling, so we'll have to set that up as well.
 
 ```typescript ./src/plugins/MyDemoPlugin.ts
 const pluginConfig: EaCRuntimePluginConfig = {
@@ -272,6 +336,10 @@ const pluginConfig: EaCRuntimePluginConfig = {
             PathPattern: '/*',
             Priority: 100,
           },
+          tailwind: {
+            PathPattern: '/tailwind*',
+            Priority: 500,
+          },
         },
       },
     },
@@ -282,35 +350,53 @@ const pluginConfig: EaCRuntimePluginConfig = {
           Description:
             'The home site to be used for the marketing of the project',
         },
-        ModifierResolvers: {
-          denoKvCache: {
-            Priority: 500,
-          },
-          markdownToHtml: {
-            Priority: 10,
-          },
-        },
+        ModifierResolvers: {},
         Processor: {
-          Type: 'DFS',
-          DFS: {
-            Type: 'Local',
-            DefaultFile: 'README.md',
-            FileRoot: './',
-          } as EaCLocalDistributedFileSystem,
-        } as EaCDFSProcessor,
+          Type: 'PreactApp',
+          AppDFSLookup: 'local:apps/home',
+          ComponentDFSLookups: ['local:apps/components'],
+        } as EaCPreactAppProcessor,
       },
+      tailwind: {
+        Details: {
+          Name: 'Tailwind for the Site',
+          Description: 'A tailwind config for the site',
+        },
+        ModifierResolvers: {},
+        Processor: {
+          Type: 'Tailwind',
+          DFSLookups: ['local:apps/home', 'local:apps/components'],
+          ConfigPath: '/apps/tailwind/tailwind.config.ts',
+          StylesTemplatePath: './apps/tailwind/styles.css',
+          CacheControl: {
+            'text\\/css': `public, max-age=${60 * 60 * 24 * 365}, immutable`,
+          },
+        } as EaCTailwindProcessor,
+      },
+    },
+    DFS: {
+      'local:apps/components': {
+        Type: 'Local',
+        FileRoot: './apps/components/',
+      } as EaCLocalDistributedFileSystem,
+      'local:apps/home': {
+        Type: 'Local',
+        FileRoot: './apps/home/',
+        DefaultFile: 'index.tsx',
+        Extensions: ['tsx'],
+      } as EaCLocalDistributedFileSystem,
     },
   },
 };
 ```
 
-Navigate to <a href="http://localhost:8000/" target="_blank">`/`</a> and you should see the README file for the project.
+Navigate to <a href="http://localhost:8000/" target="_blank">`/`</a> and you should see the application running with tailwind styles.
 
-You'll notice that it is rendering raw markdown, next we'll look at bringing all of our modifiers in and will then see this as markdown rendered to html.
+Throughout the application setup and configuration we leveraged several modifiers. None of these are working yet, because we haven't configured them. Next, we'll setup the modifiers to complete our plugin configuration.
 
 #### Modifiers
 
-Modifiers allow us to easily manipulate the requests and responses of the system. In the above applications, we have used four different modifiers, and now we need to configure them:
+Modifiers allow us to easily manipulate the requests and responses of the system. In the above applications, we have used three different modifiers, and now we need to configure them:
 
 ```typescript ./src/plugins/MyDemoPlugin.ts
 const pluginConfig: EaCRuntimePluginConfig = {
@@ -324,13 +410,6 @@ const pluginConfig: EaCRuntimePluginConfig = {
           Description: 'Modifier to support a keep alive workflow.',
           KeepAlivePath: '/_eac/alive',
         } as EaCKeepAliveModifierDetails,
-      },
-      markdownToHtml: {
-        Details: {
-          Type: 'MarkdownToHTML',
-          Name: 'Markdown to HTML',
-          Description: 'A modifier to convert markdown to HTML.',
-        } as EaCMarkdownToHTMLModifierDetails,
       },
       'static-cache': {
         Details: {
@@ -356,7 +435,7 @@ const pluginConfig: EaCRuntimePluginConfig = {
 };
 ```
 
-These core modifiers support various aspects of your application. The keep alive runs only in dev mode and works to refresh your page anytime you make changes to the eac-runtime. The tracing modifier will log the request and response informatino for the system. Finally, the deno KV cache uses DenoKV to cache configured responses for the applications it is configured to. You'll notice with the cache that we have DenoKVDatabaseLookup configured to `cache`. For this to work, we need to add one more configuration for the database:
+These core modifiers support various aspects of your application. The keep alive runs only in dev mode and works to refresh your page anytime you make changes to the eac-runtime. The tracing modifier will log the request and response information for the system. Finally, the deno KV cache uses DenoKV to cache configured responses for the applications it is configured to. You'll notice with the cache that we have DenoKVDatabaseLookup configured to `cache`. For this to work, we need to add one more configuration for the database:
 
 ```typescript ./src/plugins/MyDemoPlugin.ts
 const pluginConfig: EaCRuntimePluginConfig = {
@@ -376,7 +455,7 @@ const pluginConfig: EaCRuntimePluginConfig = {
 };
 ```
 
-That's it, run your site and you'll be able to connect with the blog, api, redirects and READMe with ease. For complete information on configuring your eac, visit [here](../configuration/Overview.md).
+That's it, run your site and you'll be able to connect with the blog, api, redirects and home page with ease. For complete information on configuring your eac, visit [here](../configuration/Overview.md).
 
 Your final code will look something like this:
 
@@ -445,6 +524,10 @@ export default class MyDemoPlugin implements EaCRuntimePlugin {
                 PathPattern: '/blog*',
                 Priority: 500,
               },
+              tailwind: {
+                PathPattern: '/tailwind*',
+                Priority: 500,
+              },
             },
           },
         },
@@ -480,22 +563,12 @@ export default class MyDemoPlugin implements EaCRuntimePlugin {
               Description:
                 'The home site to be used for the marketing of the project',
             },
-            ModifierResolvers: {
-              denoKvCache: {
-                Priority: 500,
-              },
-              markdownTohtml: {
-                Priority: 10,
-              },
-            },
+            ModifierResolvers: {},
             Processor: {
-              Type: 'DFS',
-              DFS: {
-                Type: 'Local',
-                DefaultFile: 'README.md',
-                FileRoot: './',
-              } as EaCLocalDistributedFileSystem,
-            } as EaCDFSProcessor,
+              Type: 'PreactApp',
+              AppDFSLookup: 'local:apps/home',
+              ComponentDFSLookups: ['local:apps/components'],
+            } as EaCPreactAppProcessor,
           },
           publicWebBlog: {
             Details: {
@@ -503,17 +576,65 @@ export default class MyDemoPlugin implements EaCRuntimePlugin {
               Description:
                 'The public web blog site to be used for the marketing of the project',
             },
-            ModifierResolvers: { 'static-cache': { Priority: 500 } },
+            ModifierResolvers: {
+              'static-cache': {
+                Priority: 500,
+              },
+            },
             Processor: {
               Type: 'DFS',
-              DFS: {
-                Type: 'NPM',
-                DefaultFile: 'index.html',
-                Package: '@lowcodeunit/public-web-blog',
-                Version: 'latest',
-              } as EaCNPMDistributedFileSystem,
+              DFSLookup: 'npm:@lowcodeunit/public-web-blog',
+              CacheControl: {
+                'text\\/html': `private, max-age=${60 * 5}`,
+                'image\\/': `public, max-age=${60 * 60 * 24 * 365}, immutable`,
+                'application\\/javascript': `public, max-age=${
+                  60 * 60 * 24 * 365
+                }, immutable`,
+                'application\\/typescript': `public, max-age=${
+                  60 * 60 * 24 * 365
+                }, immutable`,
+                'text\\/css': `public, max-age=${
+                  60 * 60 * 24 * 365
+                }, immutable`,
+              },
             } as EaCDFSProcessor,
           },
+          tailwind: {
+            Details: {
+              Name: 'Tailwind for the Site',
+              Description: 'A tailwind config for the site',
+            },
+            ModifierResolvers: {},
+            Processor: {
+              Type: 'Tailwind',
+              DFSLookups: ['local:apps/home', 'local:apps/components'],
+              ConfigPath: '/apps/tailwind/tailwind.config.ts',
+              StylesTemplatePath: './apps/tailwind/styles.css',
+              CacheControl: {
+                'text\\/css': `public, max-age=${
+                  60 * 60 * 24 * 365
+                }, immutable`,
+              },
+            } as EaCTailwindProcessor,
+          },
+        },
+        DFS: {
+          'local:apps/components': {
+            Type: 'Local',
+            FileRoot: './apps/components/',
+          } as EaCLocalDistributedFileSystem,
+          'local:apps/home': {
+            Type: 'Local',
+            FileRoot: './apps/home/',
+            DefaultFile: 'index.tsx',
+            Extensions: ['tsx'],
+          } as EaCLocalDistributedFileSystem,
+          'npm:@lowcodeunit/public-web-blog': {
+            Type: 'NPM',
+            DefaultFile: 'index.html',
+            Package: '@lowcodeunit/public-web-blog',
+            Version: 'latest',
+          } as EaCNPMDistributedFileSystem,
         },
         Modifiers: {
           keepAlive: {
@@ -523,13 +644,6 @@ export default class MyDemoPlugin implements EaCRuntimePlugin {
               Description: 'Modifier to support a keep alive workflow.',
               KeepAlivePath: '/_eac/alive',
             } as EaCKeepAliveModifierDetails,
-          },
-          markdownToHtml: {
-            Details: {
-              Type: 'MarkdownToHTML',
-              Name: 'Markdown to HTML',
-              Description: 'A modifier to convert markdown to HTML.',
-            } as EaCMarkdownToHTMLModifierDetails,
           },
           'static-cache': {
             Details: {
