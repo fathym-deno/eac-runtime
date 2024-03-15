@@ -1,5 +1,6 @@
 import {
   exists,
+  existsSync,
   loadEverythingAsCodeMetaUrl,
   mergeWithArrays,
   path,
@@ -26,7 +27,10 @@ export class InstallCommand implements Command {
       ['../files/apps/home/_layout.tsx', './apps/home/_layout.tsx'],
       ['../files/apps/home/index.tsx', './apps/home/index.tsx'],
       ['../files/apps/tailwind/styles.css', './apps/tailwind/styles.css'],
-      ['../files/apps/tailwind/tailwind.config.ts', './apps/tailwind/tailwind.config.ts'],
+      [
+        '../files/apps/tailwind/tailwind.config.ts',
+        './apps/tailwind/tailwind.config.ts',
+      ],
       [
         '../files/configs/eac-runtime.config.ts',
         './configs/eac-runtime.config.ts',
@@ -53,11 +57,20 @@ export class InstallCommand implements Command {
     }
 
     if (this.flags.vscode) {
-      this.filesToCreate.push(['../files/.vscode/extensions.json', './.vscode/extensions.json']);
+      this.filesToCreate.push([
+        '../files/.vscode/extensions.json',
+        './.vscode/extensions.json',
+      ]);
 
-      this.filesToCreate.push(['../files/.vscode/launch.json', './.vscode/launch.json']);
+      this.filesToCreate.push([
+        '../files/.vscode/launch.json',
+        './.vscode/launch.json',
+      ]);
 
-      this.filesToCreate.push(['../files/.vscode/settings.json', './.vscode/settings.json']);
+      this.filesToCreate.push([
+        '../files/.vscode/settings.json',
+        './.vscode/settings.json',
+      ]);
     }
 
     await this.ensureFilesCreated(installDirectory);
@@ -74,9 +87,15 @@ export class InstallCommand implements Command {
     if (!(await exists(outputTo))) {
       const dir = await path.dirname(outputTo);
 
-      if (!(await exists(dir))) {
-        await Deno.mkdir(dir);
-      }
+      dir.split('\\').reduce((path, next) => {
+        path.push(next);
+
+        if (!existsSync(path.join('\\'))) {
+          Deno.mkdirSync(path.join('\\'));
+        }
+
+        return path;
+      }, new Array<string>());
 
       const file = await this.openTemplateFile(filePath);
 
@@ -109,7 +128,9 @@ export class InstallCommand implements Command {
         '@fathym/eac': loadEverythingAsCodeMetaUrl('../../mod.ts'),
         '@fathym/eac/runtime': import.meta.resolve('../../../mod.ts'),
         '@fathym/eac/runtime/': import.meta.resolve('../../../'),
-        '@fathym/eac/runtime/browser': import.meta.resolve('../../../browser.ts'),
+        '@fathym/eac/runtime/browser': import.meta.resolve(
+          '../../../browser.ts',
+        ),
       },
     });
 
@@ -130,7 +151,7 @@ export class InstallCommand implements Command {
     if (this.flags.tailwind) {
       config = mergeWithArrays(config, {
         imports: {
-          'tailwindcss': 'npm:tailwindcss@3.4.1',
+          tailwindcss: 'npm:tailwindcss@3.4.1',
           'tailwindcss/': 'npm:/tailwindcss@3.4.1/',
           'tailwindcss/plugin': 'npm:/tailwindcss@3.4.1/plugin.js',
           'tailwindcss/unimportant': 'npm:tailwindcss-unimportant@2.1.1',
