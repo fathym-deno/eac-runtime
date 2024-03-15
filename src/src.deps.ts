@@ -71,7 +71,7 @@ export { BaseChatModel } from 'npm:@langchain/core/language_models/chat_models';
 export { VectorStore } from 'npm:@langchain/core/vectorstores';
 
 // export * from '../../reference-architecture/mod.ts';
-export * from 'https://deno.land/x/fathym_common@v0.0.166/mod.ts';
+export * from 'https://deno.land/x/fathym_common@v0.0.167/mod.ts';
 // export * from '../../everything-as-code/mod.ts';
 export * from 'https://deno.land/x/fathym_everything_as_code@v0.0.384/mod.ts';
 // export * from '../../everything-as-code-api/mod.ts';

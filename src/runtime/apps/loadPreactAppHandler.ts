@@ -36,7 +36,7 @@ export async function loadPreactAppHandler(
   const renderStack: ComponentType<any>[] = [...pageLayouts, component];
 
   const renderSetupHandler: EaCRuntimeHandler = (_req, ctx) => {
-    ctx.Render = async (data) => {
+    ctx.Render = async (data = {}) => {
       const html = await renderHandler.RenderPage(renderStack, data, ctx);
 
       return respond(html);

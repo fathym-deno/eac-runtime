@@ -45,6 +45,7 @@ export const EaCOAuthProcessorHandlerResolver: ProcessorHandlerResolver = {
 
             payload?.toString();
           },
+          ctx.Runtime.URLMatch.Base,
           ctx.Runtime.URLMatch.Path,
         );
       } else if (isEaCOAuthProviderDetails(provider.Details)) {
@@ -68,6 +69,7 @@ export const EaCOAuthProcessorHandlerResolver: ProcessorHandlerResolver = {
 
             payload?.toString();
           },
+          ctx.Runtime.URLMatch.Base,
           ctx.Runtime.URLMatch.Path,
         );
       } else {
