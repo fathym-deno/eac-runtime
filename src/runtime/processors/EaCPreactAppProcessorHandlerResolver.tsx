@@ -243,9 +243,9 @@ export const EaCPreactAppProcessorHandlerResolver: ProcessorHandlerResolver = {
 
       bundle.outputFiles = bundle.outputFiles!.map((outFile) => {
         if (outFile.path.endsWith('eacIslandsClient.js')) {
-          outFile.path = `/eacIslandsClient.js`;
+          outFile.path = `eacIslandsClient.js`;
         } else if (outFile.path.endsWith('eacIslandsClient.js.map')) {
-          outFile.path = `/eacIslandsClient.js.map`;
+          outFile.path = `eacIslandsClient.js.map`;
         }
 
         return outFile;
@@ -253,7 +253,7 @@ export const EaCPreactAppProcessorHandlerResolver: ProcessorHandlerResolver = {
 
       const bundleHandler: EaCRuntimeHandler = (_req, ctx) => {
         const file = bundle.outputFiles!.find((outFile) => {
-          return outFile.path === ctx.Runtime.URLMatch.Path;
+          return ctx.Runtime.URLMatch.Path.endsWith(outFile.path);
         });
 
         if (file) {

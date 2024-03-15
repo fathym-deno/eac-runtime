@@ -20,6 +20,8 @@ The runtime provides a configuration model, the EaC (Everything as Code) Model, 
 
 - **Proxies**: Configure proxy settings to forward incoming requests to backend services or other external resources.
 - **Generative AI**: Enable generative AI capabilities to add interactive and intelligent conversation and agent capabilities to your applications without writing any code.
+- **Preact Apps**: Leverage an island architecture to deliver unique experiences for end users.
+- **APIs**: Develop APIs to serve as the backend for your applications. 
 - **User Authentication** for your applications, allowing users to securely sign in with their preferred identity providers.
 - **Content Caching**: Serving as an edge content cache for any configured request. Cut down on the traffic to existing infrastructure for HTML, JS, CSS, JSON/APIs and more.
 - **Hosting**: Define the hosting settings for your single-page applications (SPAs) and static sites, allowing you to serve them with ease and augment their features.

@@ -452,7 +452,10 @@ export class DefaultEaCRuntime implements EaCRuntime {
       const path = patternResult!.pathname.groups[0] || '';
 
       ctx.Runtime.URLMatch = {
-        Base: base.substring(0, base.length - path.length),
+        Base: base.substring(
+          0,
+          base.length - path.length - reqUrl.search.length - reqUrl.hash.length,
+        ),
         Hash: reqUrl.hash,
         Path: path,
         Search: reqUrl.search,
