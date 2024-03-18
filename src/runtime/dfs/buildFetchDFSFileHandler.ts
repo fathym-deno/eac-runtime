@@ -16,18 +16,28 @@ export const buildFetchDFSFileHandler = (
       useCascading?: boolean,
       cacheDb?: Deno.Kv,
       cacheSeconds?: number,
-    ): Promise<DFSFileInfo> {
+    ): Promise<DFSFileInfo | undefined> {
       let finalFilePath = filePath;
 
       return await withDFSCache(
         finalFilePath,
         async () => {
-          const fileCheckPaths = getFileCheckPathsToProcess(
-            filePath,
-            defaultFileName,
-            extensions,
-            useCascading,
-          );
+          let fileCheckPaths: string[];
+
+          const isDirect = filePath.startsWith('http://') ||
+            filePath.startsWith('https://') ||
+            filePath.startsWith('file:///');
+
+          if (isDirect) {
+            fileCheckPaths = [filePath];
+          } else {
+            fileCheckPaths = getFileCheckPathsToProcess(
+              filePath,
+              defaultFileName,
+              extensions,
+              useCascading,
+            );
+          }
 
           const fileChecks: Promise<Response>[] = [];
 
@@ -35,7 +45,9 @@ export const buildFetchDFSFileHandler = (
             const resolvedPath = pathResolver ? pathResolver(fcp) : fcp;
 
             if (resolvedPath) {
-              const fullFilePath = new URL(`.${resolvedPath}`, root);
+              const fullFilePath = isDirect
+                ? new URL(resolvedPath)
+                : new URL(`.${resolvedPath}`, root);
 
               fileChecks.push(fetch(fullFilePath));
             }
@@ -68,13 +80,15 @@ export const buildFetchDFSFileHandler = (
 
             return dfsFileInfo;
           } else if (defaultFileName) {
-            throw new Error(
-              `Unable to locate a fetch file at path ${filePath}, and no default file was found for ${defaultFileName}.`,
-            );
+            return undefined;
+            // throw new Error(
+            //   `Unable to locate a fetch file at path ${filePath}, and no default file was found for ${defaultFileName}.`
+            // );
           } else {
-            throw new Error(
-              `Unable to locate a fetch file at path ${filePath}.`,
-            );
+            return undefined;
+            // throw new Error(
+            //   `Unable to locate a fetch file at path ${filePath}.`
+            // );
           }
         },
         revision,
@@ -84,7 +98,9 @@ export const buildFetchDFSFileHandler = (
     },
 
     LoadAllPaths(_revision: number): Promise<string[]> {
-      throw new Deno.errors.NotSupported('Retrieval of fetch paths is not supported');
+      throw new Deno.errors.NotSupported(
+        'Retrieval of fetch paths is not supported',
+      );
     },
 
     get Root(): string {

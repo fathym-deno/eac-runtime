@@ -20,15 +20,15 @@ export async function loadPreactAppPageHandler(
 
   const component: ComponentType<any> | undefined = module.default;
 
-  if (!component) {
-    throw new Deno.errors.NotFound(
-      'The page does not have a component to render.',
-    );
-  }
-
   const isIsland = 'IsIsland' in module ? module.IsIsland : false;
 
   let handler: EaCRuntimeHandlerResult | undefined = module.handler;
+
+  if (!component && !handler) {
+    throw new Deno.errors.NotFound(
+      `The page '${filePath}' does not have a component to render or handler for processing.`,
+    );
+  }
 
   if (!handler) {
     handler = (_req, ctx) => {
@@ -36,5 +36,5 @@ export async function loadPreactAppPageHandler(
     };
   }
 
-  return [handler, component, isIsland, contents];
+  return [handler, component!, isIsland, contents];
 }

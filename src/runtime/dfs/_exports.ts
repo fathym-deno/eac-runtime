@@ -4,6 +4,8 @@ export * from './DefaultDFSFileHandlerResolver.ts';
 export * from './DFSFileHandler.ts';
 export * from './DFSFileHandlerResolver.ts';
 export * from './DFSFileInfo.ts';
+export * from './EaCDenoKVDistributedFileSystemHandlerResolver.ts';
+export * from './EaCESMDistributedFileSystemHandlerResolver.ts';
 export * from './EaCLocalDistributedFileSystemHandlerResolver.ts';
 export * from './EaCNPMDistributedFileSystemHandlerResolver.ts';
 export * from './getFileCheckPathsToProcess.ts';

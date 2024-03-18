@@ -12,7 +12,7 @@ export type EaCRuntimeContext<
 
   Params: Record<string, string | undefined>;
 
-  Render: (data: TData) => Response | Promise<Response>;
+  Render: (data?: TData) => Response | Promise<Response>;
 
   Runtime: {
     ApplicationProcessorConfig: EaCApplicationProcessorConfig;

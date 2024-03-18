@@ -1,11 +1,11 @@
 // deno-lint-ignore-file no-explicit-any
 import {
   ComponentType,
+  EaCDistributedFileSystem,
   EaCPreactAppProcessor,
   ESBuild,
   isEaCPreactAppProcessor,
 } from '../../src.deps.ts';
-import { EaCDistributedFileSystem } from '@fathym/eac';
 import { importDFSTypescriptModule } from '../../utils/dfs/importDFSTypescriptModule.ts';
 import { loadLayout } from '../apps/loadLayout.ts';
 import { ProcessorHandlerResolver } from './ProcessorHandlerResolver.ts';

@@ -2,6 +2,7 @@ import {
   EaCDistributedFileSystem,
   IoCContainer,
   isEaCDenoKVDistributedFileSystem,
+  isEaCESMDistributedFileSystem,
   isEaCLocalDistributedFileSystem,
   isEaCNPMDistributedFileSystem,
   isEaCRemoteDistributedFileSystem,
@@ -14,6 +15,8 @@ export class DefaultDFSFileHandlerResolver implements DFSFileHandlerResolver {
 
     if (isEaCDenoKVDistributedFileSystem(dfs)) {
       toResolveName = 'EaCDenoKVDistributedFileSystem';
+    } else if (isEaCESMDistributedFileSystem(dfs)) {
+      toResolveName = 'EaCESMDistributedFileSystem';
     } else if (isEaCLocalDistributedFileSystem(dfs)) {
       toResolveName = 'EaCLocalDistributedFileSystem';
     } else if (isEaCNPMDistributedFileSystem(dfs)) {

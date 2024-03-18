@@ -15,21 +15,21 @@ export const EaCTailwindProcessorHandlerResolver: ProcessorHandlerResolver = {
 
     const dfss = processor.DFSLookups.map((dfsLookup) => eac.DFS![dfsLookup]);
 
-    const handlers = await Promise.all(
-      dfss.map((dfs) =>
-        filesReadyCheck(ioc, dfs).then((fileHandler) => {
-          return fileHandler
-            .LoadAllPaths(appProcCfg.Revision)
-            .then((allPaths) => {
-              return Promise.all(
-                allPaths.map((path) => fileHandler.GetFileInfo(path, appProcCfg.Revision)),
-              ).then((files) => {
-                return Promise.all(files.map((file) => toText(file.Contents)));
-              });
-            });
-        })
-      ),
-    )
+    const dfsCalls = dfss.map(async (dfs) => {
+      const fileHandler = await filesReadyCheck(ioc, dfs);
+
+      const allPaths = await fileHandler.LoadAllPaths(appProcCfg.Revision);
+
+      const pathLoaderCalls = allPaths.map((path) => {
+        return fileHandler.GetFileInfo(path, appProcCfg.Revision);
+      });
+
+      const files = await Promise.all(pathLoaderCalls);
+
+      return await Promise.all(files.filter((f) => f).map((file) => toText(file!.Contents)));
+    });
+
+    const handlers = await Promise.all(dfsCalls)
       .then((fileContents) => {
         return fileContents.flatMap((fc) => fc);
       })

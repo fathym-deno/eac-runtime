@@ -9,7 +9,7 @@ export type DFSFileHandler = {
     useCascading?: boolean,
     cacheDb?: Deno.Kv,
     cacheSeconds?: number,
-  ) => Promise<DFSFileInfo>;
+  ) => Promise<DFSFileInfo | undefined>;
 
   LoadAllPaths(revision: number): Promise<string[]>;
 

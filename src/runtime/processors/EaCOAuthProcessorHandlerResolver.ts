@@ -1,17 +1,23 @@
 import {
   creatAzureADB2COAuthConfig,
+  createGitHubOAuthConfig,
   creatOAuthConfig,
+  DenoKVOAuth,
   djwt,
   EaCOAuthProcessor,
+  EaCSourceConnectionDetails,
   isEaCAzureADB2CProviderDetails,
+  isEaCGitHubAppProviderDetails,
   isEaCOAuthProcessor,
   isEaCOAuthProviderDetails,
+  loadMainOctokit,
   oAuthRequest,
+  UserOAuthConnection,
 } from '../../src.deps.ts';
 import { ProcessorHandlerResolver } from './ProcessorHandlerResolver.ts';
 
 export const EaCOAuthProcessorHandlerResolver: ProcessorHandlerResolver = {
-  Resolve(_ioc, appProcCfg) {
+  async Resolve(ioc, appProcCfg, eac) {
     if (!isEaCOAuthProcessor(appProcCfg.Application.Processor)) {
       throw new Deno.errors.NotSupported(
         'The provided processor is not supported for the EaCOAuthProcessorHandlerResolver.',
@@ -20,9 +26,91 @@ export const EaCOAuthProcessorHandlerResolver: ProcessorHandlerResolver = {
 
     const processor = appProcCfg.Application.Processor as EaCOAuthProcessor;
 
-    return Promise.resolve((req, ctx) => {
-      const provider = ctx.Runtime.EaC.Providers![processor.ProviderLookup];
+    const provider = eac.Providers![processor.ProviderLookup];
 
+    const denoKv = await ioc.Resolve(Deno.Kv, provider.DatabaseLookup);
+
+    const handleCompleteCallback = async (
+      loadPrimaryEmail: (
+        payload: unknown,
+        accessToken: string,
+      ) => Promise<string>,
+      tokens: DenoKVOAuth.Tokens,
+      newSessionId: string,
+      oldSessionId?: string,
+      isPrimary?: boolean,
+    ) => {
+      const now = Date.now();
+
+      const { accessToken, refreshToken, expiresIn } = tokens;
+
+      const [_header, payload, _signature] = await djwt.decode(accessToken);
+
+      const primaryEmail = await loadPrimaryEmail(payload, accessToken);
+
+      const expiresAt = now + expiresIn! * 1000;
+
+      if (isPrimary) {
+        await denoKv.set(
+          ['OAuth', 'User', newSessionId, 'Current'],
+          {
+            Username: primaryEmail!,
+            ExpiresAt: expiresAt,
+            Token: accessToken,
+            RefreshToken: refreshToken,
+          } as UserOAuthConnection,
+          {
+            expireIn: expiresIn! * 1000,
+          },
+        );
+      } else {
+        const curUser = await denoKv.get([
+          'OAuth',
+          'User',
+          oldSessionId!,
+          'Current',
+        ]);
+
+        if (curUser.value) {
+          await denoKv.set(
+            ['OAuth', 'User', newSessionId, 'Current'],
+            {
+              ...curUser.value,
+              ExpiresAt: expiresAt,
+            } as UserOAuthConnection,
+            {
+              expireIn: expiresIn! * 1000,
+            },
+          );
+        }
+      }
+
+      await denoKv.set(
+        ['OAuth', 'User', newSessionId, processor.ProviderLookup],
+        {
+          Username: primaryEmail!,
+          ExpiresAt: expiresAt,
+          Token: accessToken,
+          RefreshToken: refreshToken,
+        } as UserOAuthConnection,
+        {
+          expireIn: expiresIn! * 1000,
+        },
+      );
+
+      if (oldSessionId) {
+        await denoKv.delete(['OAuth', 'User', oldSessionId, 'Current']);
+
+        await denoKv.delete([
+          'OAuth',
+          'User',
+          oldSessionId,
+          processor.ProviderLookup,
+        ]);
+      }
+    };
+
+    return (req, ctx) => {
       if (isEaCAzureADB2CProviderDetails(provider.Details)) {
         const oAuthConfig = creatAzureADB2COAuthConfig(
           provider.Details.ClientID,
@@ -36,14 +124,50 @@ export const EaCOAuthProcessorHandlerResolver: ProcessorHandlerResolver = {
         return oAuthRequest(
           req,
           oAuthConfig,
-          async (tokens, _newSessionId, _oldSessionId) => {
-            const { accessToken } = tokens;
-
-            const [_header, payload, _signature] = await djwt.decode(
-              accessToken,
+          async (tokens, newSessionId, oldSessionId) => {
+            await handleCompleteCallback(
+              (payload) => {
+                return Promise.resolve(
+                  (payload as Record<string, string>).emails[0],
+                );
+              },
+              tokens,
+              newSessionId,
+              oldSessionId,
+              provider.Details?.IsPrimary,
             );
+          },
+          ctx.Runtime.URLMatch.Base,
+          ctx.Runtime.URLMatch.Path,
+        );
+      } else if (isEaCGitHubAppProviderDetails(provider.Details)) {
+        const oAuthConfig = createGitHubOAuthConfig(
+          provider.Details.ClientID,
+          provider.Details.ClientSecret,
+          provider.Details.Scopes,
+        );
 
-            payload?.toString();
+        return oAuthRequest(
+          req,
+          oAuthConfig,
+          async (tokens, newSessionId, oldSessionId) => {
+            await handleCompleteCallback(
+              async (_payload, accessToken) => {
+                const octokit = await loadMainOctokit({
+                  Token: accessToken,
+                } as EaCSourceConnectionDetails);
+
+                const {
+                  data: { login },
+                } = await octokit.rest.users.getAuthenticated();
+
+                return login;
+              },
+              tokens,
+              newSessionId,
+              oldSessionId,
+              provider.Details?.IsPrimary,
+            );
           },
           ctx.Runtime.URLMatch.Base,
           ctx.Runtime.URLMatch.Path,
@@ -77,6 +201,6 @@ export const EaCOAuthProcessorHandlerResolver: ProcessorHandlerResolver = {
           `The provider '${processor.ProviderLookup}' type cannot be handled.`,
         );
       }
-    });
+    };
   },
 };

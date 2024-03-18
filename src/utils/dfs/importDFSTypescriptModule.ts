@@ -24,7 +24,7 @@ export async function importDFSTypescriptModule(
     dfs.UseCascading,
   );
 
-  let fileContents = await toText(file.Contents);
+  let fileContents = await toText(file!.Contents);
 
   if (loader === 'tsx') {
     fileContents = `import { Fragment, h } from "preact";\n${fileContents}`;

@@ -23,7 +23,7 @@ export const buildDenoKVDFSFileHandler = (
       useCascading?: boolean,
       cacheDb?: Deno.Kv,
       cacheSeconds?: number,
-    ): Promise<DFSFileInfo> {
+    ): Promise<DFSFileInfo | undefined> {
       let finalFilePath = filePath;
 
       return await withDFSCache(

@@ -1,7 +1,7 @@
-import { loadJwtConfig } from '@fathym/eac';
 import {
   EaCJWTValidationModifierDetails,
   isEaCJWTValidationModifierDetails,
+  loadJwtConfig,
 } from '../../src.deps.ts';
 import { IS_BUILDING } from '../../constants.ts';
 import { ModifierHandlerResolver } from './ModifierHandlerResolver.ts';

@@ -5,11 +5,11 @@ import { DFSFileInfo } from './DFSFileInfo.ts';
 
 export async function withDFSCache(
   filePath: string,
-  loadFile: () => Promise<DFSFileInfo>,
+  loadFile: () => Promise<DFSFileInfo | undefined>,
   revision: number,
   cacheDb?: Deno.Kv,
   cacheSeconds?: number,
-): Promise<DFSFileInfo> {
+): Promise<DFSFileInfo | undefined> {
   const dfsCacheKey = ['DFS', 'Revision', revision, 'Path', filePath];
 
   const fileStream = cacheDb ? new DenoKVFileStream(cacheDb) : undefined;
@@ -24,7 +24,7 @@ export async function withDFSCache(
 
   const dfsFile = await loadFile();
 
-  if (fileStream && cacheSeconds) {
+  if (dfsFile && fileStream && cacheSeconds) {
     denoKvCacheReadableStream(
       fileStream,
       dfsCacheKey,

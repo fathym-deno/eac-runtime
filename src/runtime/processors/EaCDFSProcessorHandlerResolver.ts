@@ -1,4 +1,4 @@
-import { EaCDFSProcessor, isEaCDFSProcessor, mime } from '../../src.deps.ts';
+import { EaCDFSProcessor, isEaCDFSProcessor, mime, STATUS_CODE } from '../../src.deps.ts';
 import { ProcessorHandlerResolver } from './ProcessorHandlerResolver.ts';
 import { filesReadyCheck } from '../../utils/dfs/filesReadyCheck.ts';
 
@@ -28,9 +28,10 @@ export const EaCDFSProcessorHandlerResolver: ProcessorHandlerResolver = {
       );
 
       if (
-        !file.Headers ||
-        !('content-type' in file.Headers) ||
-        !('Content-Type' in file.Headers)
+        file &&
+        (!file.Headers ||
+          !('content-type' in file.Headers) ||
+          !('Content-Type' in file.Headers))
       ) {
         const mimeType = file.Path.endsWith('.ts')
           ? 'application/typescript'
@@ -50,11 +51,17 @@ export const EaCDFSProcessorHandlerResolver: ProcessorHandlerResolver = {
         }
       }
 
-      const resp = new Response(file.Contents, {
-        headers: file.Headers,
-      });
+      if (file) {
+        const resp = new Response(file.Contents, {
+          headers: file.Headers,
+        });
 
-      return resp;
+        return resp;
+      } else {
+        return new Response(null, {
+          status: STATUS_CODE.NotFound,
+        });
+      }
     };
   },
 };

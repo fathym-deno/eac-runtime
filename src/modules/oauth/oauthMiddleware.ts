@@ -1,4 +1,3 @@
-import { EaCRuntimeHandler } from '../../runtime/EaCRuntimeHandler.ts';
 import {
   creatAzureADB2COAuthConfig,
   createOAuthHelpers,
@@ -7,14 +6,23 @@ import {
   isEaCAzureADB2CProviderDetails,
   isEaCOAuthProviderDetails,
   redirectRequest,
+  UserOAuthConnection,
+  userOAuthConnExpired,
 } from '../../src.deps.ts';
+import { EaCRuntimeContext } from '../../runtime/EaCRuntimeContext.ts';
+import { EaCRuntimeHandler } from '../../runtime/EaCRuntimeHandler.ts';
 
 export function establishOAuthMiddleware(
   providerLookup: string,
   signInPath: string,
 ): EaCRuntimeHandler {
-  return async (req, ctx) => {
+  return async (req, ctx: EaCRuntimeContext<{ Username?: string }>) => {
     const provider = ctx.Runtime.EaC.Providers![providerLookup];
+
+    const denoKv = await ctx.Runtime.IoC.Resolve(
+      Deno.Kv,
+      provider.DatabaseLookup,
+    );
 
     let oAuthConfig: DenoKVOAuth.OAuth2ClientConfig;
 
@@ -50,16 +58,33 @@ export function establishOAuthMiddleware(
 
       const sessionId = await helpers.getSessionId(req);
 
+      const url = new URL(req.url);
+
+      const { pathname, search } = url;
+
+      const successUrl = encodeURI(pathname + search);
+
+      const notSignedInRedirect = `${signInPath}?success_url=${successUrl}`;
+
       if (sessionId) {
-        resp = ctx.Next();
-      } else if (ctx.Runtime.ApplicationProcessorConfig.ResolverConfig.IsTriggerSignIn) {
-        const url = new URL(req.url);
+        const currentUsername = await denoKv.get<UserOAuthConnection>([
+          'OAuth',
+          'User',
+          sessionId,
+          'Current',
+        ]);
 
-        const { pathname, search } = url;
+        if (!userOAuthConnExpired(currentUsername.value)) {
+          ctx.State.Username = currentUsername.value!.Username;
 
-        const successUrl = encodeURI(pathname + search);
-
-        resp = redirectRequest(`${signInPath}?success_url=${successUrl}`, false, false);
+          resp = ctx.Next();
+        } else {
+          resp = redirectRequest(notSignedInRedirect, false, false);
+        }
+      } else if (
+        ctx.Runtime.ApplicationProcessorConfig.ResolverConfig.IsTriggerSignIn
+      ) {
+        resp = redirectRequest(notSignedInRedirect, false, false);
       } else {
         throw new Error('You are not authorized to access this endpoint.');
       }

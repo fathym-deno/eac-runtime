@@ -170,7 +170,7 @@ export class PreactRenderHandler {
     data: Record<string, unknown>,
     ctx: EaCRuntimeContext,
   ): Promise<string> {
-    const start = Date.now();
+    // const start = Date.now();
 
     const base = ctx.Runtime.URLMatch.Base.endsWith('/')
       ? ctx.Runtime.URLMatch.Base
@@ -301,7 +301,7 @@ export class PreactRenderHandler {
 
     this.ClearTemplate();
 
-    console.log(Date.now() - start);
+    // console.log(Date.now() - start);
 
     return `<!DOCTYPE html>${pageHtml}`;
   }

@@ -426,10 +426,10 @@ export class DefaultEaCRuntime implements EaCRuntime {
         pathname: ctx.Runtime.ApplicationProcessorConfig.ResolverConfig.PathPattern,
       });
 
-      console.log(
-        '******************************** Project Request ********************************',
-      );
-      console.log(`Incoming request: ${req.url}`);
+      // console.log(
+      //   '******************************** Project Request ********************************',
+      // );
+      // console.log(`Incoming request: ${req.url}`);
       // console.log(req.headers);
 
       const reqUrl = new URL(req.url);
@@ -443,7 +443,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
         `${forwardedProto}://${host}`.replace('::', ':'),
       );
 
-      console.log(`Request check: ${reqCheckUrl.href}`);
+      // console.log(`Request check: ${reqCheckUrl.href}`);
 
       const patternResult = pattern.exec(reqCheckUrl.href);
 
@@ -461,10 +461,10 @@ export class DefaultEaCRuntime implements EaCRuntime {
         Search: reqUrl.search,
       };
 
-      console.log(ctx.Runtime.URLMatch);
-      console.log(
-        '****************************************************************',
-      );
+      // console.log(ctx.Runtime.URLMatch);
+      // console.log(
+      //   '****************************************************************',
+      // );
 
       return ctx.Runtime.ApplicationProcessorConfig.Handlers.Execute(req, ctx);
     };
