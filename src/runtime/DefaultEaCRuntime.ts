@@ -364,6 +364,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
     );
 
     if (
+      handler &&
       appProcessorConfig.Application.Processor.CacheControl &&
       !EAC_RUNTIME_DEV()
     ) {
@@ -382,7 +383,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
       };
     }
 
-    return handler;
+    return handler!;
   }
 
   protected establishProjectHandler(

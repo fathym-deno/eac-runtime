@@ -8,5 +8,5 @@ export type ProcessorHandlerResolver = {
     ioc: IoCContainer,
     appProcCfg: EaCApplicationProcessorConfig,
     eac: EaCRuntimeEaC,
-  ) => Promise<EaCRuntimeHandler>;
+  ) => Promise<EaCRuntimeHandler | undefined>;
 };
