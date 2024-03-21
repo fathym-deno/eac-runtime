@@ -9,7 +9,7 @@ export async function convertFilePathToPattern<TSetup>(
   loadHandlers: (
     filePath: string,
     details: TSetup,
-  ) => Promise<EaCRuntimeHandlerResult>,
+  ) => Promise<EaCRuntimeHandlerResult | undefined>,
   configurePipeline: (
     filePath: string,
     pipeline: EaCRuntimeHandlerPipeline,
@@ -57,7 +57,9 @@ export async function convertFilePathToPattern<TSetup>(
 
   const pipeline = new EaCRuntimeHandlerPipeline();
 
-  pipeline.Append(...(Array.isArray(handler) ? handler : [handler]));
+  if (handler) {
+    pipeline.Append(...(Array.isArray(handler) ? handler : [handler]));
+  }
 
   configurePipeline(filePath, pipeline, details);
 

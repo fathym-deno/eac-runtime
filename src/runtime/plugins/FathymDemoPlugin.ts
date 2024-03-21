@@ -122,7 +122,7 @@ export default class FathymDemoPlugin implements EaCRuntimePlugin {
             Processor: {
               Type: 'PreactApp',
               AppDFSLookup: 'local:apps/home',
-              ComponentDFSLookups: ['local:apps/components'],
+              ComponentDFSLookups: [['local:apps/components', ['tsx']]],
             } as EaCPreactAppProcessor,
           },
           publicWebBlog: {

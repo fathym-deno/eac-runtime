@@ -15,7 +15,32 @@ export const EaCESMDistributedFileSystemHandlerResolver: DFSFileHandlerResolver 
     esmDFSResolver.LoadAllPaths = async (_revision: number) => {
       const roots = dfs.EntryPoints.map((ep) => new URL(ep, dfs.Root).href);
 
-      const graph = await denoGraph.createGraph(roots, {});
+      const graph = await denoGraph.createGraph(roots, {
+        // resolve(specifier, referrer) {
+        //   // if (specifier.startsWith('./') || specifier.startsWith('../')) {
+        //     console.log({
+        //       specifier,
+        //       referrer,
+        //     });
+        //   // }
+
+        //   return specifier;
+        // },
+        // async load(specifier, isDynamic, cacheSetting, checksum) {
+        //   console.log({
+        //     specifier,
+        //     isDynamic,
+        //     cacheSetting,
+        //     checksum,
+        //   });
+        //   // const resp = await fetch(specifier);
+
+        //   return {
+        //     kind: 'external',
+        //     specifier,
+        //   } as denoGraph.LoadResponse;
+        // },
+      });
 
       const modules: { specifier: string }[] = graph.modules;
 

@@ -12,6 +12,11 @@ export interface DenoConfig {
   exclude?: string[];
   compilerOptions?: {
     jsx?: string;
+
+    jsxFactory?: string;
+
+    jsxFragmentFactory?: string;
+
     jsxImportSource?: string;
   };
 }

@@ -1,5 +1,5 @@
 export * from './client/client.deps.ts';
-export * from './client/eacIslandsClient.tsx';
+export * from './client/eacIslandsClient.ts';
 export * from './Island.ts';
 export * from './IslandData.tsx';
 export * from './IslandDataStore.tsx';

@@ -13,7 +13,7 @@ export async function loadRequestPathPatterns<TSetup>(
   loadHandlers: (
     filePath: string,
     details: TSetup,
-  ) => Promise<EaCRuntimeHandlerResult>,
+  ) => Promise<EaCRuntimeHandlerResult | undefined>,
   configurePipeline: (
     filePath: string,
     pipeline: EaCRuntimeHandlerPipeline,

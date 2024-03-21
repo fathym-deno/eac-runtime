@@ -1,10 +1,8 @@
 export * from '../deps.ts';
-export * from 'https://esm.sh/preact@10.19.6';
 export * as DenoKVOAuth from 'https://raw.githubusercontent.com/fathym-deno/deno_kv_oauth/main/mod.ts';
 export * as colors from 'https://deno.land/std@0.216.0/fmt/colors.ts';
 export * as frontMatter from 'https://deno.land/std@0.216.0/front_matter/yaml.ts';
 export * from 'https://deno.land/std@0.216.0/http/mod.ts';
-export * as jsonc from 'https://deno.land/std@0.216.0/jsonc/mod.ts';
 export * from 'https://deno.land/std@0.216.0/streams/mod.ts';
 export * as djwt from 'https://deno.land/x/djwt@v3.0.0/mod.ts';
 export { transpile } from 'https://deno.land/x/emit@0.37.0/mod.ts';
@@ -12,7 +10,6 @@ export * from 'https://deno.land/x/deno_dom@v0.1.45/deno-dom-wasm-noinit.ts';
 export * as gfm from 'https://deno.land/x/gfm@0.2.3/mod.ts';
 import 'https://esm.sh/prismjs@1.29.0/components/prism-typescript?no-check';
 
-import * as esbuild from 'https://deno.land/x/esbuild@v0.20.1/wasm.js';
 export type {
   BuildOptions as ESBuildOptions,
   Loader as ESBuildLoader,
@@ -21,22 +18,7 @@ export type {
   OnResolveArgs as ESBuildOnResolveArgs,
   OnResolveResult as ESBuildOnResolveResult,
   Plugin as ESBuildPlugin,
-} from 'https://deno.land/x/esbuild@v0.20.1/wasm.js';
-export type ESBuild = {
-  context: typeof esbuild.context;
-  build: typeof esbuild.build;
-  buildSync: typeof esbuild.buildSync;
-  transform: typeof esbuild.transform;
-  transformSync: typeof esbuild.transformSync;
-  formatMessages: typeof esbuild.formatMessages;
-  formatMessagesSync: typeof esbuild.formatMessagesSync;
-  analyzeMetafile: typeof esbuild.analyzeMetafile;
-  analyzeMetafileSync: typeof esbuild.analyzeMetafileSync;
-  initialize: typeof esbuild.initialize;
-  stop: typeof esbuild.stop;
-  version: typeof esbuild.version;
-};
-export { denoPlugins } from 'https://deno.land/x/esbuild_deno_loader@0.9.0/mod.ts';
+} from 'https://deno.land/x/esbuild@v0.20.1/mod.js';
 
 import Mime from 'npm:mime';
 export const mime = Mime;
@@ -69,12 +51,3 @@ export {
 } from 'npm:@langchain/core/language_models/base';
 export { BaseChatModel } from 'npm:@langchain/core/language_models/chat_models';
 export { VectorStore } from 'npm:@langchain/core/vectorstores';
-
-// export * from '../../reference-architecture/mod.ts';
-export * from 'https://deno.land/x/fathym_common@v0.0.171/mod.ts';
-// export * from '../../everything-as-code/mod.ts';
-export * from 'https://deno.land/x/fathym_everything_as_code@v0.0.389/mod.ts';
-// export * from '../../everything-as-code-api/mod.ts';
-export * from 'https://deno.land/x/fathym_everything_as_code_api@v0.0.19/mod.ts';
-
-import 'https://deno.land/std@0.216.0/dotenv/load.ts';

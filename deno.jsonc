@@ -9,6 +9,10 @@
     "test": "deno test -A tests/tests.ts --parallel --coverage=cov"
   },
   "imports": {
+    "@fathym/atomic": "../fathym-atomic/mod.ts",
+    "@fathym/atomic/": "../fathym-atomic/",
+    // "@fathym/atomic": "https://deno.land/x/fathym_atomic_design_kit@v0.0.91/mod.ts",
+    // "@fathym/atomic/": "https://deno.land/x/fathym_atomic_design_kit@v0.0.91/",
     "@fathym/eac": "https://deno.land/x/fathym_everything_as_code@v0.0.383/mod.ts",
     "@fathym/eac/runtime": "./mod.ts",
     "@fathym/eac/runtime/": "./",
@@ -44,6 +48,8 @@
     "experimentalDecorators": true,
     "jsx": "react-jsx",
     "jsxImportSource": "preact",
+    // "jsxFactory": "h",
+    // "jsxFragmentFactory": "Fragment",
     "lib": [
       "dom",
       "dom.iterable",

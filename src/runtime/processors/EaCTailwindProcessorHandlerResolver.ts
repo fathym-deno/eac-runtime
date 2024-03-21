@@ -1,6 +1,6 @@
 import { EaCTailwindProcessor, isEaCTailwindProcessor, toText } from '../../src.deps.ts';
 import { ProcessorHandlerResolver } from './ProcessorHandlerResolver.ts';
-import { filesReadyCheck } from '../../utils/dfs/filesReadyCheck.ts';
+import { loadFileHandler } from '../../utils/dfs/loadFileHandler.ts';
 import { establishTailwindHandlers } from '../../modules/tailwind/tailwindHandlers.ts';
 
 export const EaCTailwindProcessorHandlerResolver: ProcessorHandlerResolver = {
@@ -16,12 +16,12 @@ export const EaCTailwindProcessorHandlerResolver: ProcessorHandlerResolver = {
     const dfss = processor.DFSLookups.map((dfsLookup) => eac.DFS![dfsLookup]);
 
     const dfsCalls = dfss.map(async (dfs) => {
-      const fileHandler = await filesReadyCheck(ioc, dfs);
+      const fileHandler = await loadFileHandler(ioc, dfs);
 
-      const allPaths = await fileHandler.LoadAllPaths(appProcCfg.Revision);
+      const allPaths = await fileHandler!.LoadAllPaths(appProcCfg.Revision);
 
       const pathLoaderCalls = allPaths.map((path) => {
-        return fileHandler.GetFileInfo(path, appProcCfg.Revision);
+        return fileHandler!.GetFileInfo(path, appProcCfg.Revision);
       });
 
       const files = await Promise.all(pathLoaderCalls);

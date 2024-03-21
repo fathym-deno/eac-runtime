@@ -107,6 +107,7 @@ export class EaCESBuilder {
   }
 
   public LoadFile(args: ESBuildOnLoadArgs): ESBuildOnLoadResult | null {
+    console.log('Loading file');
     if (args.namespace === '$') {
       const filePath = args.path;
 
@@ -135,13 +136,30 @@ export class EaCESBuilder {
     return null;
   }
 
-  public ResolveFile(args: ESBuildOnResolveArgs): ESBuildOnResolveResult {
+  public ResolveEntryPoint(
+    args: ESBuildOnResolveArgs,
+  ): ESBuildOnResolveResult | null {
+    console.log('Resolving entry point');
+    const [path, namespace] = args.path.split('|');
+
+    return {
+      path: path,
+      namespace: namespace ?? '$',
+    };
+  }
+
+  public ResolveFile(
+    args: ESBuildOnResolveArgs,
+  ): ESBuildOnResolveResult | null {
+    console.log('Resolving file');
     let [path, namespace] = args.path.split('|');
 
     const importKeys = Object.keys(this.denoJson.imports || {});
 
     if (importKeys.includes(path)) {
       path = this.denoJson.imports![path];
+
+      return { path: path };
     } else if (
       importKeys.some((imp) => imp.endsWith('/') && path.startsWith(imp))
     ) {
@@ -150,14 +168,17 @@ export class EaCESBuilder {
       )!;
 
       path = this.denoJson.imports![importPath] + path.replace(importPath, '');
+
+      return { path: path };
     }
 
     if (
+      // !(path in this.files) &&
       path.startsWith('https://') ||
       path.startsWith('http://') ||
       this.options.external?.some((ext) => ext === path)
     ) {
-      return { path: args.path, external: true };
+      return null; //{ path: args.path,  };
     }
 
     return {

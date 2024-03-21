@@ -1,6 +1,6 @@
 import { EaCDFSProcessor, isEaCDFSProcessor, mime, STATUS_CODE } from '../../src.deps.ts';
 import { ProcessorHandlerResolver } from './ProcessorHandlerResolver.ts';
-import { filesReadyCheck } from '../../utils/dfs/filesReadyCheck.ts';
+import { loadFileHandler } from '../../utils/dfs/loadFileHandler.ts';
 
 export const EaCDFSProcessorHandlerResolver: ProcessorHandlerResolver = {
   async Resolve(ioc, appProcCfg, eac) {
@@ -14,12 +14,12 @@ export const EaCDFSProcessorHandlerResolver: ProcessorHandlerResolver = {
 
     const dfs = eac.DFS![processor.DFSLookup];
 
-    const fileHandler = await filesReadyCheck(ioc, dfs);
+    const fileHandler = await loadFileHandler(ioc, dfs);
 
     return async (_req, ctx) => {
       const filePath = ctx.Runtime.URLMatch.Path;
 
-      const file = await fileHandler.GetFileInfo(
+      const file = await fileHandler!.GetFileInfo(
         filePath,
         ctx.Runtime.Revision,
         dfs.DefaultFile,

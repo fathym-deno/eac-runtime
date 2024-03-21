@@ -81,13 +81,13 @@ function isCommentNode(node: Node): node is Comment {
   return node.nodeType === Node.COMMENT_NODE;
 }
 
-function isTextNode(node: Node): node is Text {
-  return node.nodeType === Node.TEXT_NODE;
-}
+// function isTextNode(node: Node): node is Text {
+//   return node.nodeType === Node.TEXT_NODE;
+// }
 
-function isElementNode(node: Node): node is HTMLElement {
-  return node.nodeType === Node.ELEMENT_NODE && !('_eacRootFrag' in node);
-}
+// function isElementNode(node: Node): node is HTMLElement {
+//   return node.nodeType === Node.ELEMENT_NODE && !('_eacRootFrag' in node);
+// }
 
 function processIslandMarkers(data: ClientIslandsData): [VNode, HTMLElement][] {
   const islandRoots: [VNode, HTMLElement][] = [];
@@ -124,7 +124,7 @@ function walkNodeTree(
   markerStack: Marker[],
   vnodeStack: VNode[],
   islandRoots: [VNode, HTMLElement][],
-): [VNode, HTMLElement][] {
+): void {
   let sib: Node | null = node;
 
   while (sib !== null) {
@@ -203,7 +203,7 @@ function walkNodeTree(
       }
     } else {
       if (sib.firstChild && sib.nodeName !== 'SCRIPT') {
-        const newRoots = walkNodeTree(
+        walkNodeTree(
           data,
           sib.firstChild,
           markerStack,
@@ -217,6 +217,4 @@ function walkNodeTree(
       sib = sib.nextSibling;
     }
   }
-
-  return islandRoots;
 }

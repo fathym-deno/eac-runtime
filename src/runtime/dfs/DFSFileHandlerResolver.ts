@@ -5,5 +5,5 @@ export type DFSFileHandlerResolver = {
   Resolve: (
     ioc: IoCContainer,
     modifier: EaCDistributedFileSystem,
-  ) => Promise<DFSFileHandler>;
+  ) => Promise<DFSFileHandler | undefined>;
 };

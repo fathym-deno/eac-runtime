@@ -9,13 +9,13 @@ export async function loadLayout(
   filePath: string,
   dfs: EaCDistributedFileSystem,
 ): Promise<[string, ComponentType<any>, boolean, string]> {
-  const { module: layoutModule, contents } = await importDFSTypescriptModule(
+  const { module: layoutModule, contents } = (await importDFSTypescriptModule(
     esbuild,
     fileHandler,
     filePath,
     dfs,
     'tsx',
-  );
+  ))!;
 
   const layout: ComponentType<any> | undefined = layoutModule.default;
 

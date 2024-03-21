@@ -9,10 +9,20 @@ export async function loadEaCRuntimeHandlers(
   fileHandler: DFSFileHandler,
   filePath: string,
   dfs: EaCDistributedFileSystem,
-): Promise<EaCRuntimeHandlerResult> {
-  const apiModule = await importDFSTypescriptModule(esbuild, fileHandler, filePath, dfs, 'ts');
+): Promise<EaCRuntimeHandlerResult | undefined> {
+  const apiModule = await importDFSTypescriptModule(
+    esbuild,
+    fileHandler,
+    filePath,
+    dfs,
+    'ts',
+  );
 
-  const handlers = apiModule.module.default as EaCRuntimeHandlers;
+  if (apiModule) {
+    const handlers = apiModule.module.default as EaCRuntimeHandlers;
 
-  return handlers;
+    return handlers;
+  } else {
+    return undefined;
+  }
 }

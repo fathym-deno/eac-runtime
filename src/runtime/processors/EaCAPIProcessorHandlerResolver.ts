@@ -1,6 +1,6 @@
 import { EaCAPIProcessor, ESBuild, isEaCAPIProcessor } from '../../src.deps.ts';
 import { ProcessorHandlerResolver } from './ProcessorHandlerResolver.ts';
-import { filesReadyCheck } from '../../utils/dfs/filesReadyCheck.ts';
+import { loadFileHandler } from '../../utils/dfs/loadFileHandler.ts';
 import { loadMiddleware } from '../../utils/dfs/loadMiddleware.ts';
 import { loadRequestPathPatterns } from '../../utils/dfs/loadRequestPathPatterns.ts';
 import { loadEaCRuntimeHandlers } from '../../utils/dfs/loadEaCRuntimeHandlers.ts';
@@ -20,10 +20,10 @@ export const EaCAPIProcessorHandlerResolver: ProcessorHandlerResolver = {
 
     const esbuild = await ioc.Resolve<ESBuild>(ioc.Symbol('ESBuild'));
 
-    const fileHandler = await filesReadyCheck(ioc, dfs);
+    const fileHandler = await loadFileHandler(ioc, dfs);
 
     const patterns = await loadRequestPathPatterns(
-      fileHandler,
+      fileHandler!,
       dfs,
       async (allPaths) => {
         const middlewareLoader = async () => {
@@ -32,16 +32,18 @@ export const EaCAPIProcessorHandlerResolver: ProcessorHandlerResolver = {
             .sort((a, b) => a.split('/').length - b.split('/').length);
 
           const middlewareCalls = middlewarePaths.map((p) => {
-            return loadMiddleware(esbuild, fileHandler, p, dfs);
+            return loadMiddleware(esbuild, fileHandler!, p, dfs);
           });
 
-          return await Promise.all(middlewareCalls);
+          return (await Promise.all(middlewareCalls))
+            .filter((m) => m)
+            .map((m) => m!);
         };
 
         const [middleware] = await Promise.all([middlewareLoader()]);
 
         console.log('Middleware: ');
-        console.log(middleware.map((m) => m[0]));
+        console.log(middleware.map((m) => m));
         console.log();
 
         return { middleware };
@@ -49,7 +51,7 @@ export const EaCAPIProcessorHandlerResolver: ProcessorHandlerResolver = {
       async (filePath) => {
         return await loadEaCRuntimeHandlers(
           esbuild,
-          fileHandler,
+          fileHandler!,
           filePath,
           dfs,
         );
