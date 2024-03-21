@@ -836,6 +836,10 @@ export class EaCPreactAppHandler {
       filePath = this.denoJson.imports![importPath] + args.path.replace(importPath, '');
     }
 
+    if (filePath === 'node:buffer') {
+      throw new Error('node:buffer');
+    }
+
     if (filePath) {
       console.debug(`Resolving import map file: ${args.path}`);
 
@@ -845,6 +849,11 @@ export class EaCPreactAppHandler {
         // filePath = new URL(`${pckg}/`, 'https://cdn.skypack.dev/').href;
         filePath = '';
       } else if (filePath.startsWith('jsr:')) {
+        // const pckg = filePath.split(':')[1];
+
+        // filePath = new URL(`${pckg}/`, 'https://cdn.skypack.dev/').href;
+        filePath = '';
+      } else if (filePath.startsWith('node:')) {
         // const pckg = filePath.split(':')[1];
 
         // filePath = new URL(`${pckg}/`, 'https://cdn.skypack.dev/').href;
@@ -899,8 +908,6 @@ export class EaCPreactAppHandler {
         args.importer.startsWith('https://')
       ) {
         const fileURL = new URL(args.path, args.importer);
-
-        console.debug(fileURL);
 
         const [type, pkg] = fileURL.href.split(':');
 

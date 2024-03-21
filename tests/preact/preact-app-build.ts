@@ -92,9 +92,9 @@ Deno.test('Preact App Build Tests', async (t) => {
     } as EaCLocalDistributedFileSystem,
     'esm:fathym_atomic_design_kit': {
       Type: 'ESM',
-      Root: 'https://deno.land/x/fathym_atomic_design_kit@v0.0.90/',
+      Root: 'https://deno.land/x/fathym_atomic_design_kit@v0.0.92/',
       EntryPoints: ['mod.ts'],
-      IncludeDependencies: false,
+      IncludeDependencies: true,
     } as EaCESMDistributedFileSystem,
   };
 
