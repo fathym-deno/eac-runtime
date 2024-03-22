@@ -1,4 +1,6 @@
 export * from '../deps.ts';
+import * as _parse from 'npm:pdf-parse';
+import * as _azureSearch from 'npm:@azure/search-documents';
 export * as DenoKVOAuth from 'https://raw.githubusercontent.com/fathym-deno/deno_kv_oauth/main/mod.ts';
 export * as colors from 'https://deno.land/std@0.216.0/fmt/colors.ts';
 export * as frontMatter from 'https://deno.land/std@0.216.0/front_matter/yaml.ts';
