@@ -8,10 +8,10 @@ export * from 'https://deno.land/x/fathym_ioc@v0.0.7/mod.ts';
 export * as denoGraph from 'jsr:@deno/graph@^0.69.7';
 
 // export * from '../reference-architecture/mod.ts';
-export * from 'https://deno.land/x/fathym_common@v0.0.176/ai.ts';
-export * from 'https://deno.land/x/fathym_common@v0.0.176/deno.ts';
-export * from 'https://deno.land/x/fathym_common@v0.0.176/mod.ts';
-export * from 'https://deno.land/x/fathym_common@v0.0.176/oauth.ts';
+export * from 'https://deno.land/x/fathym_common@v0.0.177/ai.ts';
+export * from 'https://deno.land/x/fathym_common@v0.0.177/deno.ts';
+export * from 'https://deno.land/x/fathym_common@v0.0.177/mod.ts';
+export * from 'https://deno.land/x/fathym_common@v0.0.177/oauth.ts';
 // export * from '../everything-as-code/mod.ts';
 export * from 'https://deno.land/x/fathym_everything_as_code@v0.0.396/deno.ts';
 export * from 'https://deno.land/x/fathym_everything_as_code@v0.0.396/mod.ts';

@@ -54,6 +54,7 @@ export class EaCPreactAppHandler {
   //#region Constructors
   constructor(
     protected ioc: IoCContainer,
+    protected renderHandler: PreactRenderHandler,
     protected eacIslandsClientPath: string,
     protected eacIslandsClientDepsPath: string,
     protected importMap?: Record<string, string>,
@@ -374,8 +375,6 @@ export class EaCPreactAppHandler {
     appDFS: EaCDistributedFileSystem,
     appDFSHandler: DFSFileHandler,
   ) {
-    const renderHandler = await this.ioc.Resolve(PreactRenderHandler);
-
     const layoutPaths = allPaths
       .filter((p) => p.endsWith('_layout.tsx'))
       .sort((a, b) => a.split('/').length - b.split('/').length);
@@ -388,7 +387,7 @@ export class EaCPreactAppHandler {
 
     layouts.forEach(([root, layout, isIsland, contents]) => {
       if (isIsland) {
-        renderHandler.AddIsland(layout, `${root}/_layout.tsx`, contents);
+        this.renderHandler.AddIsland(layout, `${root}/_layout.tsx`, contents);
       }
     });
 
@@ -571,8 +570,6 @@ export class EaCPreactAppHandler {
   ): Promise<PathMatch[]> {
     const esbuild = await this.ioc.Resolve<ESBuild>(this.ioc.Symbol('ESBuild'));
 
-    const renderHandler = await this.ioc.Resolve(PreactRenderHandler);
-
     const [{ DFS: appDFS, Handler: appDFSHandler }, compDFSHandlers] = await Promise.all([
       this.loadAppDFSHandler(processor, dfss),
       this.loadComponentDFSHandlers(processor, dfss),
@@ -597,7 +594,7 @@ export class EaCPreactAppHandler {
           filePath,
           appDFS,
           layouts,
-          renderHandler,
+          this.renderHandler,
         );
       },
       (filePath, pipeline, { middleware }) => {
@@ -643,15 +640,13 @@ export class EaCPreactAppHandler {
     return middleware;
   }
 
-  protected async setupCompIslandsLibrarySource(
+  protected setupCompIslandsLibrarySource(
     dfsLookup: string,
     comps: [string, ComponentType, boolean, string][],
   ): Promise<void> {
-    const renderHandler = await this.ioc.Resolve(PreactRenderHandler);
-
     comps.forEach(([compPath, comp, isIsland, contents]) => {
       if (isIsland) {
-        renderHandler.AddIsland(comp, compPath, contents);
+        this.renderHandler.AddIsland(comp, compPath, contents);
       }
     });
 
@@ -669,13 +664,13 @@ export class EaCPreactAppHandler {
     });
 
     this.configured.set(dfsLookup, true);
+
+    return Promise.resolve();
   }
 
   protected async setupIslandsClientSources(
     processor: EaCPreactAppProcessor,
   ): Promise<void> {
-    const renderHandler = await this.ioc.Resolve(PreactRenderHandler);
-
     // TODO(mcgear): Move client.deps.ts resolution to per request with revision cache so
     //    that only the islands used per request are shipped to the client
     let [clientScript, clientDepsScript] = await Promise.all([
@@ -689,7 +684,7 @@ export class EaCPreactAppHandler {
       .split('/')
       .pop()!}`;
 
-    const islands = renderHandler.LoadIslands();
+    const islands = this.renderHandler.LoadIslands();
 
     const islandNamePaths = Object.keys(islands).map((islandPath) => [
       islands[islandPath][0],

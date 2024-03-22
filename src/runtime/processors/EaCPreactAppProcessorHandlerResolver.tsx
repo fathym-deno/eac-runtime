@@ -4,6 +4,7 @@ import {
   EaCPreactAppProcessor,
   ESBuild,
   isEaCPreactAppProcessor,
+  options as preactOptions,
 } from '../../src.deps.ts';
 import { importDFSTypescriptModule } from '../../utils/dfs/importDFSTypescriptModule.ts';
 import { loadLayout } from '../apps/loadLayout.ts';
@@ -301,6 +302,7 @@ export const EaCPreactAppProcessorHandlerResolver: ProcessorHandlerResolver = {
 
     const handler = new EaCPreactAppHandler(
       ioc,
+      new PreactRenderHandler(preactOptions),
       `./islands/client/eacIslandsClient.ts`,
       `./islands/client/client.deps.ts`,
       undefined,

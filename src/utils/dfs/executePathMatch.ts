@@ -20,7 +20,9 @@ export async function executePathMatch(
   });
 
   if (!match) {
-    throw new Deno.errors.NotFound('The API call could not be found.');
+    throw new Deno.errors.NotFound(
+      `The requested path '${ctx.Runtime.URLMatch.Path}' could not be found.`,
+    );
   }
 
   const patternResult = match!.Pattern.exec(apiTestUrl);
