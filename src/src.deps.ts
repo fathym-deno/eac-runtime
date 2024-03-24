@@ -2,10 +2,10 @@ export * from '../deps.ts';
 import * as _parse from 'npm:pdf-parse';
 import * as _azureSearch from 'npm:@azure/search-documents';
 export * as DenoKVOAuth from 'https://raw.githubusercontent.com/fathym-deno/deno_kv_oauth/main/mod.ts';
-export * as colors from 'https://deno.land/std@0.216.0/fmt/colors.ts';
-export * as frontMatter from 'https://deno.land/std@0.216.0/front_matter/yaml.ts';
-export * from 'https://deno.land/std@0.216.0/http/mod.ts';
-export * from 'https://deno.land/std@0.216.0/streams/mod.ts';
+export * as colors from 'https://deno.land/std@0.220.1/fmt/colors.ts';
+export * as frontMatter from 'https://deno.land/std@0.220.1/front_matter/yaml.ts';
+export * from 'https://deno.land/std@0.220.1/http/mod.ts';
+export * from 'https://deno.land/std@0.220.1/streams/mod.ts';
 export * as djwt from 'https://deno.land/x/djwt@v3.0.0/mod.ts';
 export { transpile } from 'https://deno.land/x/emit@0.37.0/mod.ts';
 export * from 'https://deno.land/x/deno_dom@v0.1.45/deno-dom-wasm-noinit.ts';
@@ -38,7 +38,7 @@ export { cssnano };
 import autoprefixer from 'npm:autoprefixer@10.4.17';
 export { autoprefixer };
 
-export * as PreactRenderToString from 'https://esm.sh/*preact-render-to-string@6.4.0/';
+export * as PreactRenderToString from 'https://esm.sh/*preact-render-to-string@6.4.1/';
 
 export { AzureChatOpenAI, AzureOpenAIEmbeddings } from 'npm:@langchain/azure-openai';
 export { WatsonxAI } from 'npm:@langchain/community/llms/watsonx_ai';

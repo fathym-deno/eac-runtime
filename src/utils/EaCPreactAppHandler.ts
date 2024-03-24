@@ -100,12 +100,14 @@ export class EaCPreactAppHandler {
       );
     }
 
-    const islandLFiles = await this.buildCompIslandsLibrary({}, importMap);
+    // const islandFiles = await this.buildCompIslandsLibrary({}, importMap);
+
+    // Object.keys(islandFiles).forEach(key => console.log(islandFiles[key]))
 
     const bundle = await this.buildIslandsClient(
       processor,
       options,
-      islandLFiles,
+      {}, //islandFiles,
       importMap,
     );
 
@@ -646,6 +648,10 @@ export class EaCPreactAppHandler {
   ): Promise<void> {
     comps.forEach(([compPath, comp, isIsland, contents]) => {
       if (isIsland) {
+        console.log(
+          '*******************************CompIsland*******************************',
+        );
+        console.log(compPath);
         this.renderHandler.AddIsland(comp, compPath, contents);
       }
     });
@@ -691,8 +697,10 @@ export class EaCPreactAppHandler {
       islandPath,
     ]);
 
+    console.log(islandNamePaths);
+
     const clientDepsImports = islandNamePaths.map(
-      ([islandName]) => `import ${islandName} from '/${islandName}.js';`,
+      ([islandName, islandPath]) => `import ${islandName} from '${islandPath}';`,
     );
 
     clientDepsScript = clientDepsImports
@@ -773,7 +781,7 @@ export class EaCPreactAppHandler {
       args.namespace === 'https' ||
       args.namespace === 'file'
     ) {
-      console.debug(`Loading fetch file: ${args.path}`);
+      // console.debug(`Loading fetch file: ${args.path}`);
 
       const resp = await fetch(args.path, {
         redirect: 'follow',
@@ -794,7 +802,7 @@ export class EaCPreactAppHandler {
     files: Record<string, string>,
   ): esbuild.OnLoadResult | null {
     if (args.namespace === '$' && args.path in files) {
-      console.debug(`Loading virtual file: ${args.path}`);
+      // console.debug(`Loading virtual file: ${args.path}`);
 
       const filePath = args.path;
 
@@ -836,7 +844,7 @@ export class EaCPreactAppHandler {
     }
 
     if (filePath) {
-      console.debug(`Resolving import map file: ${args.path}`);
+      // console.debug(`Resolving import map file: ${args.path}`);
 
       if (filePath.startsWith('npm:')) {
         // const pckg = filePath.split(':')[1];
@@ -871,7 +879,7 @@ export class EaCPreactAppHandler {
         }
       } finally {
         if (filePath) {
-          console.debug(`\t${filePath}`);
+          // console.debug(`\t${filePath}`);
         }
       }
     }
@@ -885,7 +893,7 @@ export class EaCPreactAppHandler {
     relativeRoot?: string,
   ): esbuild.OnResolveResult | null {
     if (args.path.startsWith('./') || args.path.startsWith('../')) {
-      console.debug(`Resolving relative file: ${args.path}`);
+      // console.debug(`Resolving relative file: ${args.path}`);
 
       if (args.importer.startsWith('//')) {
         args.importer = `https:${args.importer}`;
@@ -922,7 +930,7 @@ export class EaCPreactAppHandler {
     preserveRemotes: boolean,
   ): esbuild.OnResolveResult | null {
     if (args.path.startsWith('http://') || args.path.startsWith('https://')) {
-      console.debug(`Resolving remote file: ${args.path}`);
+      // console.debug(`Resolving remote file: ${args.path}`);
 
       const [type, pkg] = args.path.split(':');
 
@@ -941,7 +949,7 @@ export class EaCPreactAppHandler {
     files: Record<string, string>,
   ): esbuild.OnResolveResult | null {
     if (args.path in files) {
-      console.debug(`Resolving virtual file: ${args.path}`);
+      // console.debug(`Resolving virtual file: ${args.path}`);
 
       return {
         path: args.path,

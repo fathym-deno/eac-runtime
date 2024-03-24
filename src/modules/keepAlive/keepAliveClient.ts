@@ -9,7 +9,7 @@ export function configureKeepAlive(keepAlivePath: string) {
   connect();
 
   function connect() {
-    const url = new URL(keepAlivePath, location.origin.replace('http', 'ws'));
+    const url = new URL(keepAlivePath.replace('http', 'ws'));
     ws = new WebSocket(url);
 
     ws.addEventListener('open', onOpenWs);

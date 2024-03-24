@@ -10,12 +10,14 @@ export async function loadPreactAppPageHandler(
   filePath: string,
   dfs: EaCDistributedFileSystem,
 ): Promise<[EaCRuntimeHandlerResult, ComponentType<any>, boolean, string]> {
+  const loader = filePath.endsWith('.ts') ? 'ts' : 'tsx';
+
   const { module, contents } = (await importDFSTypescriptModule(
     esbuild,
     fileHandler,
     filePath,
     dfs,
-    'tsx',
+    loader,
   ))!;
 
   const component: ComponentType<any> | undefined = module.default;

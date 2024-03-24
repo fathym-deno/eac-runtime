@@ -137,8 +137,8 @@ export class InstallCommand implements Command {
     if (this.flags.preact) {
       config = mergeWithArrays(config, {
         imports: {
-          preact: 'https://esm.sh/preact@10.19.6',
-          'preact/': 'https://esm.sh/preact@10.19.6/',
+          preact: 'https://esm.sh/preact@10.20.1',
+          'preact/': 'https://esm.sh/preact@10.20.1/',
           'preact-render-to-string': 'https://esm.sh/*preact-render-to-string@6.4.0',
         },
         compilerOptions: {

@@ -31,10 +31,6 @@ async function createEaCPreactAppHandler() {
     Type: ioc.Symbol('ESBuild'),
   });
 
-  ioc.Register(PreactRenderHandler, () => {
-    return new PreactRenderHandler({});
-  });
-
   ioc.Register(DefaultDFSFileHandlerResolver, {
     Type: ioc.Symbol('DFSFileHandler'),
   });
@@ -51,6 +47,7 @@ async function createEaCPreactAppHandler() {
 
   return new EaCPreactAppHandler(
     ioc,
+    new PreactRenderHandler({}),
     `./islands/client/eacIslandsClient.ts`,
     `./islands/client/client.deps.ts`,
     undefined,
@@ -92,7 +89,7 @@ Deno.test('Preact App Build Tests', async (t) => {
     } as EaCLocalDistributedFileSystem,
     'esm:fathym_atomic_design_kit': {
       Type: 'ESM',
-      Root: 'https://deno.land/x/fathym_atomic_design_kit@v0.0.92/',
+      Root: 'https://deno.land/x/fathym_atomic_design_kit@v0.0.108/',
       EntryPoints: ['mod.ts'],
       IncludeDependencies: true,
     } as EaCESMDistributedFileSystem,

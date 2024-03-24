@@ -21,9 +21,9 @@ export function establishKeepAliveMiddleware(
     if (EAC_RUNTIME_DEV()) {
       await initCheck;
 
-      const keepAliveCheckPattern = new URLPattern({ pathname: keepAlivePath });
+      const keepAliveCheckPattern = new URLPattern({ pathname: `*${keepAlivePath}` });
 
-      const keepAliveClientPath = `${keepAlivePath}/keepAliveClient.ts`;
+      const keepAliveClientPath = `*${keepAlivePath}/keepAliveClient.ts`;
 
       const keepAliveCheckClientPattern = new URLPattern({
         pathname: keepAliveClientPath,
@@ -76,9 +76,9 @@ export function establishKeepAliveMiddleware(
             const keepAliveClientScriptNode = doc.createElement('script');
             keepAliveClientScriptNode.setAttribute('type', 'module');
             keepAliveClientScriptNode.innerHTML =
-              `import { configureKeepAlive } from '${keepAliveClientPath}?${ctx.Runtime.Revision}';
+              `import { configureKeepAlive } from '${ctx.Runtime.URLMatch.Base}${keepAliveClientPath}?${ctx.Runtime.Revision}';
 
-configureKeepAlive('${keepAlivePath}');`;
+configureKeepAlive('${ctx.Runtime.URLMatch.Base}${keepAlivePath}');`;
             // keepAliveClientScriptNode.setAttribute('src', keepAliveClientPath);
 
             doc.head.appendChild(keepAliveClientScriptNode);
