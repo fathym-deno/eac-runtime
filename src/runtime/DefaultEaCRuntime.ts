@@ -73,9 +73,17 @@ export class DefaultEaCRuntime implements EaCRuntime {
 
     this.ModifierResolvers = this.config.ModifierResolvers || {};
 
-    const esbuild: ESBuild = IS_DENO_DEPLOY()
-      ? await import('https://deno.land/x/esbuild@v0.20.1/wasm.js')
-      : await import('https://deno.land/x/esbuild@v0.20.1/mod.js');
+    let esbuild: ESBuild;
+
+    if (IS_DENO_DEPLOY()) {
+      esbuild = await import('https://deno.land/x/esbuild@v0.20.1/wasm.js');
+
+      console.log('Initialized esbuild with portable WASM.');
+    } else {
+      esbuild = await import('https://deno.land/x/esbuild@v0.20.1/mod.js');
+
+      console.log('Initialized esbuild with standard build.');
+    }
 
     try {
       const worker = IS_DENO_DEPLOY() ? false : undefined;

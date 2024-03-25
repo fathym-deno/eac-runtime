@@ -15,7 +15,6 @@ import { loadMiddleware } from '../../utils/dfs/loadMiddleware.ts';
 import { loadRequestPathPatterns } from '../../utils/dfs/loadRequestPathPatterns.ts';
 import { loadPreactAppHandler } from '../apps/loadPreactAppHandler.ts';
 import { PreactRenderHandler } from '../apps/preact/PreactRenderHandler.ts';
-import { EaCESBuilder } from '../../utils/EaCESBuilder.ts';
 import { loadClientScript } from '../apps/islands/loadClientScript.ts';
 import { executePathMatch } from '../../utils/dfs/executePathMatch.ts';
 import { EaCRuntimeHandler } from '../EaCRuntimeHandler.ts';

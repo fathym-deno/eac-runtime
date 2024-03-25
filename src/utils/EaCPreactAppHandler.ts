@@ -135,77 +135,77 @@ export class EaCPreactAppHandler {
   }
   //#endregion
   //#region Helpers
-  protected async buildCompIslandsLibrary(
-    options: Partial<esbuild.BuildOptions>,
-    importMap?: Record<string, string>,
-  ): Promise<Record<string, string>> {
-    const esbuild = await this.ioc.Resolve<ESBuild>(this.ioc.Symbol('ESBuild'));
+  // protected async buildCompIslandsLibrary(
+  //   options: Partial<esbuild.BuildOptions>,
+  //   importMap?: Record<string, string>,
+  // ): Promise<Record<string, string>> {
+  //   const esbuild = await this.ioc.Resolve<ESBuild>(this.ioc.Symbol('ESBuild'));
 
-    const buildCalls = Array.from(this.dfsIslands.entries()).map(
-      async ([compDFSLookup, compDFSs]) => {
-        const entryPoints = compDFSs
-          .map(([compPath, _comp, isIsland, _contents]) => isIsland ? compPath : undefined)
-          .filter((ep) => ep)
-          .map((ep) => ep!);
+  //   const buildCalls = Array.from(this.dfsIslands.entries()).map(
+  //     async ([compDFSLookup, compDFSs]) => {
+  //       const entryPoints = compDFSs
+  //         .map(([compPath, _comp, isIsland, _contents]) => isIsland ? compPath : undefined)
+  //         .filter((ep) => ep)
+  //         .map((ep) => ep!);
 
-        const compDFSHandler = this.dfsHandlers.get(compDFSLookup)!;
+  //       const compDFSHandler = this.dfsHandlers.get(compDFSLookup)!;
 
-        const absWorkingDir = path.join(
-          !IS_DENO_DEPLOY() ? Deno.cwd() : '/',
-          compDFSHandler.Root || '',
-        );
+  //       const absWorkingDir = path.join(
+  //         !IS_DENO_DEPLOY() ? Deno.cwd() : '/',
+  //         compDFSHandler.Root || '',
+  //       );
 
-        const buildOptions: esbuild.BuildOptions = {
-          ...this.loadDefaultBuildOptions(
-            compDFSLookup,
-            true,
-            {},
-            compDFSHandler.Root,
-            importMap,
-          ),
-          entryPoints: entryPoints,
-          absWorkingDir,
-          ...options,
-          sourcemap: false,
-        };
+  //       const buildOptions: esbuild.BuildOptions = {
+  //         ...this.loadDefaultBuildOptions(
+  //           compDFSLookup,
+  //           true,
+  //           {},
+  //           compDFSHandler.Root,
+  //           importMap,
+  //         ),
+  //         entryPoints: entryPoints,
+  //         absWorkingDir,
+  //         ...options,
+  //         sourcemap: false,
+  //       };
 
-        const context = !this.contexts.has(compDFSLookup) ||
-            this.hasChanges.get(compDFSLookup)
-          ? await esbuild.context(buildOptions)
-          : this.contexts.get(compDFSLookup)!;
+  //       const context = !this.contexts.has(compDFSLookup) ||
+  //           this.hasChanges.get(compDFSLookup)
+  //         ? await esbuild.context(buildOptions)
+  //         : this.contexts.get(compDFSLookup)!;
 
-        const bundle = await context.rebuild();
+  //       const bundle = await context.rebuild();
 
-        bundle.outputFiles = bundle.outputFiles!.map((outFile) => {
-          if (outFile.path.startsWith(Deno.cwd())) {
-            const pathUrl = new URL(
-              outFile.path.substring(Deno.cwd().length),
-              'http://not-used.com',
-            );
+  //       bundle.outputFiles = bundle.outputFiles!.map((outFile) => {
+  //         if (outFile.path.startsWith(Deno.cwd())) {
+  //           const pathUrl = new URL(
+  //             outFile.path.substring(Deno.cwd().length),
+  //             'http://not-used.com',
+  //           );
 
-            outFile.path = pathUrl.pathname;
-          }
+  //           outFile.path = pathUrl.pathname;
+  //         }
 
-          return outFile;
-        });
+  //         return outFile;
+  //       });
 
-        return bundle.outputFiles.reduce((fs, outFile) => {
-          fs[outFile.path] = outFile.text;
+  //       return bundle.outputFiles.reduce((fs, outFile) => {
+  //         fs[outFile.path] = outFile.text;
 
-          return fs;
-        }, {} as Record<string, string>);
-      },
-    );
+  //         return fs;
+  //       }, {} as Record<string, string>);
+  //     },
+  //   );
 
-    const builtIslands = await Promise.all(buildCalls);
+  //   const builtIslands = await Promise.all(buildCalls);
 
-    return builtIslands.reduce((fs, dfsIslands) => {
-      return {
-        ...fs,
-        ...dfsIslands,
-      };
-    }, {} as Record<string, string>);
-  }
+  //   return builtIslands.reduce((fs, dfsIslands) => {
+  //     return {
+  //       ...fs,
+  //       ...dfsIslands,
+  //     };
+  //   }, {} as Record<string, string>);
+  // }
 
   protected async buildIslandsClient(
     processor: EaCPreactAppProcessor,
@@ -221,6 +221,8 @@ export class EaCPreactAppHandler {
       !IS_DENO_DEPLOY() ? Deno.cwd() : '/',
       appDFSHandler.Root || '',
     );
+
+    console.log(`ESBuild working directory: ${absWorkingDir}`);
 
     const clientSrcPath = `./${this.eacIslandsClientPath.split('/').pop()!}`;
 
