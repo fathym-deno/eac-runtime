@@ -239,6 +239,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
               return new URLPattern({
                 hostname: resolverCfg.Hostname,
                 port: resolverCfg.Port?.toString(),
+                pathname: resolverCfg.Path,
               });
             }),
           } as EaCProjectProcessorConfig;

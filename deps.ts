@@ -13,10 +13,10 @@ export * from 'https://deno.land/x/fathym_common@v0.0.177/deno.ts';
 export * from 'https://deno.land/x/fathym_common@v0.0.177/mod.ts';
 export * from 'https://deno.land/x/fathym_common@v0.0.177/oauth.ts';
 // export * from '../everything-as-code/mod.ts';
-export * from 'https://deno.land/x/fathym_everything_as_code@v0.0.398/deno.ts';
-export * from 'https://deno.land/x/fathym_everything_as_code@v0.0.398/mod.ts';
-export * from 'https://deno.land/x/fathym_everything_as_code@v0.0.398/oauth.ts';
-export * from 'https://deno.land/x/fathym_everything_as_code@v0.0.398/octokit.ts';
+export * from 'https://deno.land/x/fathym_everything_as_code@v0.0.400/deno.ts';
+export * from 'https://deno.land/x/fathym_everything_as_code@v0.0.400/mod.ts';
+export * from 'https://deno.land/x/fathym_everything_as_code@v0.0.400/oauth.ts';
+export * from 'https://deno.land/x/fathym_everything_as_code@v0.0.400/octokit.ts';
 // export * from '../everything-as-code-api/mod.ts';
 export * from 'https://deno.land/x/fathym_everything_as_code_api@v0.0.30/mod.ts';
 
