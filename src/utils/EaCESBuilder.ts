@@ -7,11 +7,11 @@ import {
   ESBuildOnResolveResult,
   ESBuildOptions,
   ESBuildPlugin,
-  jsonc,
   path,
 } from '../src.deps.ts';
 import { EAC_RUNTIME_DEV, IS_DENO_DEPLOY } from '../constants.ts';
 import { DenoConfig } from './DenoConfig.ts';
+import { loadDenoConfigSync } from '../utils/loadDenoConfig.ts';
 
 export class EaCESBuilder {
   protected denoJson: DenoConfig;
@@ -31,9 +31,7 @@ export class EaCESBuilder {
 
     this.denoJsonPath = path.join(absWorkingDir, './deno.jsonc');
 
-    const denoJsonsStr = Deno.readTextFileSync(this.denoJsonPath);
-
-    this.denoJson = jsonc.parse(denoJsonsStr) as DenoConfig;
+    this.denoJson = loadDenoConfigSync();
 
     this.isDev = EAC_RUNTIME_DEV();
   }

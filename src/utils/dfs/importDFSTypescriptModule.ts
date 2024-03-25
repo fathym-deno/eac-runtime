@@ -15,7 +15,7 @@ export async function importDFSTypescriptModule(
   filePath: string,
   dfs: EaCDistributedFileSystem,
   loader: 'ts' | 'tsx',
-): Promise<{ module: any; contents: string } | undefined> {
+): Promise<{ filePath: string; module: any; contents: string } | undefined> {
   const file = await fileHandler.GetFileInfo(
     filePath,
     Date.now(),
@@ -55,9 +55,9 @@ export async function importDFSTypescriptModule(
     ) {
       apiUrl = new URL(filePath, fileHandler.Root).href;
 
-      if (!apiUrl.includes('?')) {
-        apiUrl += `?Rev=${Date.now()}`;
-      }
+      // if (!apiUrl.includes('?')) {
+      //   apiUrl += `?Rev=${Date.now()}`;
+      // }
     } else {
       apiUrl = `file:///${
         path.join(
@@ -71,7 +71,7 @@ export async function importDFSTypescriptModule(
 
     const module = await import(apiUrl);
 
-    return { module, contents: fileContents };
+    return { filePath: apiUrl, module, contents: fileContents };
   } else {
     return undefined;
   }

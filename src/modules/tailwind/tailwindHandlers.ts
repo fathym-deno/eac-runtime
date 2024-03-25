@@ -36,11 +36,9 @@ export async function establishTailwindHandlers(
     });
   });
 
-  tailwindReady.then();
+  const { content, map } = await tailwindReady;
 
-  return async (_req, ctx) => {
-    const { content, map } = await tailwindReady;
-
+  return (_req, ctx) => {
     let resp: Response | Promise<Response>;
 
     if (ctx.Runtime.URLMatch.Path.endsWith('styles.css')) {

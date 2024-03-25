@@ -15,7 +15,6 @@ import {
   ESBuild,
   esbuild,
   IoCContainer,
-  jsonc,
   path,
 } from '../src.deps.ts';
 import { DenoConfig } from './DenoConfig.ts';
@@ -26,6 +25,7 @@ import { importDFSTypescriptModule } from './dfs/importDFSTypescriptModule.ts';
 import { loadFileHandler } from './dfs/loadFileHandler.ts';
 import { loadMiddleware } from './dfs/loadMiddleware.ts';
 import { loadRequestPathPatterns } from './dfs/loadRequestPathPatterns.ts';
+import { loadDenoConfigSync } from '../utils/loadDenoConfig.ts';
 
 export class EaCPreactAppHandler {
   //#region Fields
@@ -33,7 +33,7 @@ export class EaCPreactAppHandler {
 
   protected contexts: Map<string, esbuild.BuildContext<esbuild.BuildOptions>>;
 
-  protected denoJson: DenoConfig;
+  protected denoCfg: DenoConfig;
 
   protected denoJsonPath: string;
 
@@ -76,9 +76,7 @@ export class EaCPreactAppHandler {
 
     this.denoJsonPath = path.join(Deno.cwd(), './deno.jsonc');
 
-    const denoJsonsStr = Deno.readTextFileSync(this.denoJsonPath);
-
-    this.denoJson = jsonc.parse(denoJsonsStr) as DenoConfig;
+    this.denoCfg = loadDenoConfigSync();
 
     this.isDev = EAC_RUNTIME_DEV();
   }
@@ -124,8 +122,6 @@ export class EaCPreactAppHandler {
     const matches = await this.loadPathMatches(processor, dfss, revision);
 
     this.establishPipeline(processor, matches);
-
-    await this.setupIslandsClientSources(processor);
   }
 
   public Execute(
@@ -317,6 +313,7 @@ export class EaCPreactAppHandler {
       if (file) {
         return new Response(file.text, {
           headers: {
+            'cache-control': `public, max-age=${60 * 60 * 24 * 365}, immutable`,
             'Content-Type': 'application/javascript',
             ETag: file.hash,
           },
@@ -358,14 +355,14 @@ export class EaCPreactAppHandler {
     );
 
     if (compModule) {
-      const { module, contents } = compModule;
+      const { filePath, module, contents } = compModule;
 
       const comp: ComponentType | undefined = module.default;
 
       if (comp) {
         const isCompIsland = 'IsIsland' in module ? module.IsIsland : false;
 
-        return [compPath, comp, isCompIsland, contents];
+        return [filePath, comp, isCompIsland, contents];
       }
     }
 
@@ -497,13 +494,13 @@ export class EaCPreactAppHandler {
     relativeRoot?: string,
     importMap?: Record<string, string>,
   ): esbuild.BuildOptions {
-    const jsx = this.denoJson.compilerOptions?.jsx;
+    const jsx = this.denoCfg.compilerOptions?.jsx;
 
-    const jsxFactory = this.denoJson.compilerOptions?.jsxFactory;
+    const jsxFactory = this.denoCfg.compilerOptions?.jsxFactory;
 
-    const jsxFragmentFactory = this.denoJson.compilerOptions?.jsxFragmentFactory;
+    const jsxFragmentFactory = this.denoCfg.compilerOptions?.jsxFragmentFactory;
 
-    const jsxImportSrc = this.denoJson.compilerOptions?.jsxImportSource;
+    const jsxImportSrc = this.denoCfg.compilerOptions?.jsxImportSource;
 
     const minifyOptions: Partial<esbuild.BuildOptions> = this.isDev
       ? {
@@ -528,8 +525,8 @@ export class EaCPreactAppHandler {
       write: false,
       metafile: true,
       bundle: true,
-      splitting: false, //true,
-      treeShaking: false, //true,
+      splitting: !this.isDev,
+      treeShaking: true,
       jsx: jsx === 'react'
         ? 'transform'
         : jsx === 'react-native' || jsx === 'preserve'
@@ -559,7 +556,7 @@ export class EaCPreactAppHandler {
     importMap?: Record<string, string>,
   ): Record<string, string> {
     return {
-      ...this.denoJson.imports,
+      ...this.denoCfg.imports,
       ...(this.importMap || {}),
       ...(importMap || {}),
     };
@@ -615,6 +612,8 @@ export class EaCPreactAppHandler {
     console.log(matches.map((m) => m.PatternText));
     console.log();
 
+    await this.setupIslandsClientSources(processor, appDFSHandler.Root);
+
     return matches;
   }
 
@@ -648,10 +647,6 @@ export class EaCPreactAppHandler {
   ): Promise<void> {
     comps.forEach(([compPath, comp, isIsland, contents]) => {
       if (isIsland) {
-        console.log(
-          '*******************************CompIsland*******************************',
-        );
-        console.log(compPath);
         this.renderHandler.AddIsland(comp, compPath, contents);
       }
     });
@@ -676,6 +671,7 @@ export class EaCPreactAppHandler {
 
   protected async setupIslandsClientSources(
     processor: EaCPreactAppProcessor,
+    appDFSRoot: string,
   ): Promise<void> {
     // TODO(mcgear): Move client.deps.ts resolution to per request with revision cache so
     //    that only the islands used per request are shipped to the client
@@ -694,10 +690,15 @@ export class EaCPreactAppHandler {
 
     const islandNamePaths = Object.keys(islands).map((islandPath) => [
       islands[islandPath][0],
-      islandPath,
+      islandPath.startsWith('file:///')
+        ? path
+          .relative(
+            path.join(Deno.cwd(), appDFSRoot),
+            islandPath.replace('file:///', ''),
+          )
+          .replace(/\\/g, '/')
+        : islandPath,
     ]);
-
-    console.log(islandNamePaths);
 
     const clientDepsImports = islandNamePaths.map(
       ([islandName, islandPath]) => `import ${islandName} from '${islandPath}';`,
@@ -713,12 +714,6 @@ export class EaCPreactAppHandler {
 
     clientDepsScript += '\n' + islandCompMaps.join('\n');
 
-    console.log(clientDepsScript);
-
-    // const islandContents = Object.keys(islands).reduce((ic, islandPath) => {
-    //   ic[islandPath] = islands[islandPath][1];
-    //   return ic;
-    // }, {} as Record<string, string>);
     this.files.set(processor.AppDFSLookup, {
       ...{
         [clientSrcPath]: clientScript,
@@ -779,7 +774,7 @@ export class EaCPreactAppHandler {
     if (
       args.namespace === 'http' ||
       args.namespace === 'https' ||
-      args.namespace === 'file'
+      args.namespace === 'remote'
     ) {
       // console.debug(`Loading fetch file: ${args.path}`);
 
@@ -828,7 +823,7 @@ export class EaCPreactAppHandler {
     const importKeys = Object.keys(fullImportMap || {});
 
     if (importKeys.includes(args.path)) {
-      filePath = this.denoJson.imports![args.path];
+      filePath = this.denoCfg.imports![args.path];
     } else if (
       importKeys.some((imp) => imp.endsWith('/') && args.path.startsWith(imp))
     ) {
@@ -836,7 +831,7 @@ export class EaCPreactAppHandler {
         (imp) => imp.endsWith('/') && args.path.startsWith(imp),
       )!;
 
-      filePath = this.denoJson.imports![importPath] + args.path.replace(importPath, '');
+      filePath = this.denoCfg.imports![importPath] + args.path.replace(importPath, '');
     }
 
     if (filePath === 'node:buffer') {
@@ -901,6 +896,10 @@ export class EaCPreactAppHandler {
         relativeRoot &&
         (args.importer.startsWith('./') || args.importer.startsWith('../'))
       ) {
+        if (relativeRoot.startsWith('./') || relativeRoot.startsWith('../')) {
+          relativeRoot = new URL(relativeRoot, new URL(`file:///${Deno.cwd()}/`)).href;
+        }
+
         const importerURL = new URL(args.importer, relativeRoot);
 
         args.importer = importerURL.href;
@@ -917,6 +916,16 @@ export class EaCPreactAppHandler {
         return {
           path: preserveRemotes ? fileURL.href : pkg,
           namespace: type,
+          external: preserveRemotes,
+        };
+      } else if (
+        args.importer.startsWith('file:///')
+      ) {
+        const fileURL = new URL(args.path, args.importer);
+
+        return {
+          path: fileURL.href,
+          namespace: 'remote',
           external: preserveRemotes,
         };
       }

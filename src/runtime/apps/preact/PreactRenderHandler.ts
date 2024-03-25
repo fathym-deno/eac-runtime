@@ -5,13 +5,12 @@ import {
   ComponentType,
   Fragment,
   h,
-  jsonc,
-  path,
   PreactRenderToString,
   type VNode,
 } from '../../../src.deps.ts';
 import { AdvancedPreactOptions } from './AdvancedPreactOptions.ts';
 import { DenoConfig } from '../../../utils/DenoConfig.ts';
+import { loadDenoConfigSync } from '../../../utils/loadDenoConfig.ts';
 import { Island } from '../islands/Island.ts';
 import { IslandDataStore } from '../islands/IslandDataStore.tsx';
 import { PageProps } from '../PageProps.ts';
@@ -22,7 +21,7 @@ export class PreactRenderHandler {
   //#region Fields
   protected clientImports: string[];
 
-  protected denoJson: DenoConfig;
+  protected denoCfg: DenoConfig;
 
   public islandsData: IslandDataStore;
 
@@ -91,11 +90,7 @@ export class PreactRenderHandler {
 
     this.tracking = this.refreshTracking();
 
-    const denoJsonPath = path.join(Deno.cwd(), './deno.jsonc');
-
-    const denoJsonsStr = Deno.readTextFileSync(denoJsonPath);
-
-    this.denoJson = jsonc.parse(denoJsonsStr) as DenoConfig;
+    this.denoCfg = loadDenoConfigSync();
 
     this.origBeforeDiff = options.__b;
 
@@ -251,7 +246,7 @@ export class PreactRenderHandler {
           type: 'importmap',
           dangerouslySetInnerHTML: {
             __html: JSON.stringify({
-              imports: this.denoJson.imports || {},
+              imports: this.denoCfg.imports || {},
             }),
           },
         }),

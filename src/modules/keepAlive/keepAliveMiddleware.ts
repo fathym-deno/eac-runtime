@@ -21,12 +21,14 @@ export function establishKeepAliveMiddleware(
     if (EAC_RUNTIME_DEV()) {
       await initCheck;
 
-      const keepAliveCheckPattern = new URLPattern({ pathname: `*${keepAlivePath}` });
+      const keepAliveCheckPattern = new URLPattern({
+        pathname: `*${keepAlivePath}`,
+      });
 
-      const keepAliveClientPath = `*${keepAlivePath}/keepAliveClient.ts`;
+      const keepAliveClientPath = `${keepAlivePath}/keepAliveClient.ts`;
 
       const keepAliveCheckClientPattern = new URLPattern({
-        pathname: keepAliveClientPath,
+        pathname: `*${keepAliveClientPath}`,
       });
 
       if (
