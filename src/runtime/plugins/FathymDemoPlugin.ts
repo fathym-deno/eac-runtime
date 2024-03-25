@@ -61,7 +61,7 @@ export default class FathymDemoPlugin implements EaCRuntimePlugin {
                 Priority: 200,
               },
               home: {
-                PathPattern: '/*',
+                PathPattern: '*',
                 Priority: 100,
               },
               publicWebBlog: {
