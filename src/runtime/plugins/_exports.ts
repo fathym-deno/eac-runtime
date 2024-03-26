@@ -1,3 +1,4 @@
+export * from './azure/_exports.ts';
 export * from './EaCRuntimePlugin.ts';
 import FtmCrPlgn from './FathymCorePlugin.ts';
 export const FathymCorePlugin = FtmCrPlgn;
