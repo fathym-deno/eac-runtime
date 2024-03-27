@@ -1,1 +1,2 @@
-export * from './FathymAzureContainerCheckPlugin.ts';
+import FtmAzCtChckPlgn from './FathymAzureContainerCheckPlugin.ts';
+export const FathymAzureContainerCheckPlugin = FtmAzCtChckPlgn;
