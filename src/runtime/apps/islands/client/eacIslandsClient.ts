@@ -1,3 +1,4 @@
+// deno-lint-ignore-file no-explicit-any
 import { ComponentChildren, componentMap, Fragment, h, render, VNode } from './client.deps.ts';
 
 type ClientIslandsData = Map<
@@ -17,6 +18,43 @@ type Marker = {
   endNode: Text | Comment | null;
 };
 
+function addChildrenFromTemplate(
+  data: ClientIslandsData,
+  containerId: string,
+  markerStack: Marker[],
+  vnodeStack: VNode[],
+  islandRoots: [VNode, HTMLElement][],
+  // islands: Record<string, Record<string, ComponentType>>,
+  // props: any[],
+  // markerStack: Marker[],
+  // vnodeStack: VNode[],
+  // comment: string,
+  // result: RenderRequest[],
+) {
+  const [id, target] = containerId.split(':');
+
+  const sel = `#eac-container-${id}-${target}`;
+
+  const template = document.querySelector(sel) as HTMLTemplateElement | null;
+
+  if (template !== null) {
+    markerStack.push({
+      kind: MarkerKind.Container,
+      endNode: null,
+      startNode: null,
+      id: containerId,
+    });
+
+    const node = template.content.cloneNode(true);
+
+    console.log(node);
+
+    walkNodeTree(data, node, markerStack, vnodeStack, islandRoots);
+
+    markerStack.pop();
+  }
+}
+
 function addPropsChild(parent: VNode, vnode: ComponentChildren) {
   const props = parent.props;
   if (props.children == null) {
@@ -29,6 +67,14 @@ function addPropsChild(parent: VNode, vnode: ComponentChildren) {
     }
   }
 }
+
+function ServerComponent(props: {
+  children: ComponentChildren;
+  id: string;
+}): ComponentChildren {
+  return props.children;
+}
+ServerComponent.displayName = 'PreactServerComponent';
 
 function createRootFragment(
   parent: Element,
@@ -81,13 +127,13 @@ function isCommentNode(node: Node): node is Comment {
   return node.nodeType === Node.COMMENT_NODE;
 }
 
-// function isTextNode(node: Node): node is Text {
-//   return node.nodeType === Node.TEXT_NODE;
-// }
+function isTextNode(node: Node): node is Text {
+  return node.nodeType === Node.TEXT_NODE;
+}
 
-// function isElementNode(node: Node): node is HTMLElement {
-//   return node.nodeType === Node.ELEMENT_NODE && !('_eacRootFrag' in node);
-// }
+function isElementNode(node: Node): node is HTMLElement {
+  return node.nodeType === Node.ELEMENT_NODE && !('_eacRootFrag' in node);
+}
 
 function processIslandMarkers(data: ClientIslandsData): [VNode, HTMLElement][] {
   const islandRoots: [VNode, HTMLElement][] = [];
@@ -137,7 +183,19 @@ function walkNodeTree(
         comment = comment.slice(3, -2);
       }
 
-      if (comment.startsWith('eac|island')) {
+      if (comment.startsWith('eac|container')) {
+        const [_eac, kind, containerId] = comment.split('|');
+
+        markerStack.push({
+          startNode: sib,
+          endNode: null,
+          id: containerId,
+          kind: kind as MarkerKind,
+        });
+
+        // @ts-ignore TS gets confused
+        vnodeStack.push(h(ServerComponent, { id: comment }));
+      } else if (comment.startsWith('eac|island')) {
         const [_tool, markerKind, id] = comment.split('|');
 
         const { Name: islandTypeName, Props: islandProps } = data.get(id)!;
@@ -156,52 +214,135 @@ function walkNodeTree(
         // if (key) vnode.key = key;
 
         vnodeStack.push(vnode);
-      } else if (marker !== null && comment.startsWith('/eac|island')) {
+      } else if (marker !== null && comment.startsWith('/eac')) {
         marker.endNode = sib;
 
         markerStack.pop();
 
-        if (markerStack.length === 0) {
-          const vnode = vnodeStack[vnodeStack.length - 1];
+        if (marker.kind === MarkerKind.Container) {
+          // If we're closing a slot than it's assumed that we're
+          // inside an island
+          const vnode = vnodeStack.pop();
 
-          vnodeStack.pop();
+          // For now only `props.children` is supported.
+          const islandParent = vnodeStack[vnodeStack.length - 1]!;
 
-          const parentNode = sib.parentNode! as HTMLElement;
+          const [_id, target] = marker.id.split(':');
 
-          // hideMarker(marker);
-
-          const rootFragment = createRootFragment(
-            parentNode,
-            marker.startNode!,
-            marker.endNode,
-            // deno-lint-ignore no-explicit-any
-          ) as any as HTMLElement;
-
-          islandRoots.push([vnode, rootFragment]);
-
-          sib = marker.endNode.nextSibling;
-
-          continue;
-        } else {
-          // Treat as a standard component
-          const vnode = vnodeStack[vnodeStack.length - 1];
-
-          vnodeStack.pop();
-
-          marker.endNode = sib;
+          (islandParent.props as any)[target] = vnode;
 
           // hideMarker(marker);
 
-          const parent = vnodeStack[vnodeStack.length - 1]!;
-
-          addPropsChild(parent, vnode);
-
           sib = marker.endNode.nextSibling;
+        } else if (marker.kind === MarkerKind.Island) {
+          if (markerStack.length === 0) {
+            const vnode = vnodeStack[vnodeStack.length - 1];
 
-          continue;
+            if (vnode.props.children == null) {
+              addChildrenFromTemplate(
+                data,
+                `${marker.id}:children`,
+                markerStack,
+                vnodeStack,
+                islandRoots,
+              );
+            }
+
+            vnodeStack.pop();
+
+            const parentNode = sib.parentNode! as HTMLElement;
+
+            // hideMarker(marker);
+
+            const rootFragment = createRootFragment(
+              parentNode,
+              marker.startNode!,
+              marker.endNode,
+            ) as any as HTMLElement;
+
+            islandRoots.push([vnode, rootFragment]);
+
+            sib = marker.endNode.nextSibling;
+
+            continue;
+          } else {
+            // Treat as a standard component
+            const vnode = vnodeStack[vnodeStack.length - 1];
+
+            vnodeStack.pop();
+
+            marker.endNode = sib;
+
+            // hideMarker(marker);
+
+            const parent = vnodeStack[vnodeStack.length - 1]!;
+
+            addPropsChild(parent, vnode);
+
+            sib = marker.endNode.nextSibling;
+
+            continue;
+          }
         }
       }
+    } else if (isTextNode(sib)) {
+      const parentVNode = vnodeStack[vnodeStack.length - 1]!;
+      if (marker !== null && marker.kind === MarkerKind.Container) {
+        addPropsChild(parentVNode, sib.data);
+      }
     } else {
+      if (isElementNode(sib)) {
+        const parentVNode = vnodeStack[vnodeStack.length - 1];
+
+        if (marker !== null && marker.kind === MarkerKind.Container) {
+          // Parse the server rendered DOM into vnodes that we can
+          // attach to the virtual-dom tree. In the future, once
+          // Preact supports a way to skip over subtrees, this
+          // can be dropped.
+          const childLen = sib.childNodes.length;
+          const newProps: Record<string, unknown> = {
+            children: childLen <= 1 ? null : [],
+          };
+
+          for (let i = 0; i < sib.attributes.length; i++) {
+            const attr = sib.attributes[i];
+
+            // if (attr.nodeName === DATA_KEY_ATTR) {
+            //   hasKey = true;
+            //   newProps.key = attr.nodeValue;
+            //   continue;
+            // } else if (attr.nodeName === LOADING_ATTR) {
+            //   const idx = attr.nodeValue;
+            //   const sig = props[Number(idx)][LOADING_ATTR].value;
+            //   // deno-lint-ignore no-explicit-any
+            //   (sib as any)._freshIndicator = sig;
+            // }
+
+            // Boolean attributes are always `true` when present.
+            // See: https://developer.mozilla.org/en-US/docs/Glossary/Boolean/HTML
+            newProps[attr.nodeName] = typeof (sib as any)[attr.nodeName] === 'boolean'
+              ? true
+              : attr.nodeValue;
+          }
+
+          // Remove internal fresh key
+          // if (hasKey) sib.removeAttribute(DATA_KEY_ATTR);
+
+          const vnode = h(sib.localName, newProps) as VNode;
+          addPropsChild(parentVNode, vnode);
+          vnodeStack.push(vnode);
+        }
+        // else {
+        //   // Outside of any partial or island
+        //   const idx = sib.getAttribute(LOADING_ATTR);
+        //   if (idx !== null) {
+        //     const sig = props[Number(idx)][LOADING_ATTR].value;
+        //     // deno-lint-ignore no-explicit-any
+        //     (sib as any)._freshIndicator = sig;
+        //   }
+        // }
+      }
+
       if (sib.firstChild && sib.nodeName !== 'SCRIPT') {
         walkNodeTree(
           data,
@@ -210,6 +351,12 @@ function walkNodeTree(
           vnodeStack,
           islandRoots,
         );
+      }
+
+      // Pop vnode if current marker is not the a top rendering
+      // component
+      if (marker !== null && marker.kind !== MarkerKind.Island) {
+        vnodeStack.pop();
       }
     }
 

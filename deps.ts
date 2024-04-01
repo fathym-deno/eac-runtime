@@ -8,15 +8,15 @@ export * from 'https://deno.land/x/fathym_ioc@v0.0.7/mod.ts';
 export * as denoGraph from 'jsr:@deno/graph@^0.69.7';
 
 // export * from '../reference-architecture/mod.ts';
-export * from 'https://deno.land/x/fathym_common@v0.0.177/ai.ts';
-export * from 'https://deno.land/x/fathym_common@v0.0.177/deno.ts';
-export * from 'https://deno.land/x/fathym_common@v0.0.177/mod.ts';
-export * from 'https://deno.land/x/fathym_common@v0.0.177/oauth.ts';
+export * from 'https://deno.land/x/fathym_common@v0.0.179/ai.ts';
+export * from 'https://deno.land/x/fathym_common@v0.0.179/deno.ts';
+export * from 'https://deno.land/x/fathym_common@v0.0.179/mod.ts';
+export * from 'https://deno.land/x/fathym_common@v0.0.179/oauth.ts';
 // export * from '../everything-as-code/mod.ts';
-export * from 'https://deno.land/x/fathym_everything_as_code@v0.0.400/deno.ts';
-export * from 'https://deno.land/x/fathym_everything_as_code@v0.0.400/mod.ts';
-export * from 'https://deno.land/x/fathym_everything_as_code@v0.0.400/oauth.ts';
-export * from 'https://deno.land/x/fathym_everything_as_code@v0.0.400/octokit.ts';
+export * from 'https://deno.land/x/fathym_everything_as_code@v0.0.402/deno.ts';
+export * from 'https://deno.land/x/fathym_everything_as_code@v0.0.402/mod.ts';
+export * from 'https://deno.land/x/fathym_everything_as_code@v0.0.402/oauth.ts';
+export * from 'https://deno.land/x/fathym_everything_as_code@v0.0.402/octokit.ts';
 // export * from '../everything-as-code-api/mod.ts';
 export * from 'https://deno.land/x/fathym_everything_as_code_api@v0.0.30/mod.ts';
 

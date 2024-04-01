@@ -4,13 +4,14 @@ import {
   creatOAuthConfig,
   DenoKVOAuth,
   djwt,
+  EaCGitHubAppProviderDetails,
   EaCOAuthProcessor,
   EaCSourceConnectionDetails,
   isEaCAzureADB2CProviderDetails,
   isEaCGitHubAppProviderDetails,
   isEaCOAuthProcessor,
   isEaCOAuthProviderDetails,
-  loadMainOctokit,
+  loadOctokit,
   oAuthRequest,
   UserOAuthConnection,
 } from '../../src.deps.ts';
@@ -31,10 +32,7 @@ export const EaCOAuthProcessorHandlerResolver: ProcessorHandlerResolver = {
     const denoKv = await ioc.Resolve(Deno.Kv, provider.DatabaseLookup);
 
     const handleCompleteCallback = async (
-      loadPrimaryEmail: (
-        payload: unknown,
-        accessToken: string,
-      ) => Promise<string>,
+      loadPrimaryEmail: (accessToken: string) => Promise<string>,
       tokens: DenoKVOAuth.Tokens,
       newSessionId: string,
       oldSessionId?: string,
@@ -44,9 +42,7 @@ export const EaCOAuthProcessorHandlerResolver: ProcessorHandlerResolver = {
 
       const { accessToken, refreshToken, expiresIn } = tokens;
 
-      const [_header, payload, _signature] = await djwt.decode(accessToken);
-
-      const primaryEmail = await loadPrimaryEmail(payload, accessToken);
+      const primaryEmail = await loadPrimaryEmail(accessToken);
 
       const expiresAt = now + expiresIn! * 1000;
 
@@ -99,14 +95,11 @@ export const EaCOAuthProcessorHandlerResolver: ProcessorHandlerResolver = {
       );
 
       if (oldSessionId) {
-        await denoKv.delete(['OAuth', 'User', oldSessionId, 'Current']);
-
-        await denoKv.delete([
-          'OAuth',
-          'User',
-          oldSessionId,
-          processor.ProviderLookup,
-        ]);
+        await denoKv
+          .atomic()
+          .delete(['OAuth', 'User', oldSessionId, 'Current'])
+          .delete(['OAuth', 'User', oldSessionId, processor.ProviderLookup])
+          .commit();
       }
     };
 
@@ -126,10 +119,12 @@ export const EaCOAuthProcessorHandlerResolver: ProcessorHandlerResolver = {
           oAuthConfig,
           async (tokens, newSessionId, oldSessionId) => {
             await handleCompleteCallback(
-              (payload) => {
-                return Promise.resolve(
-                  (payload as Record<string, string>).emails[0],
+              async (accessToken) => {
+                const [_header, payload, _signature] = await djwt.decode(
+                  accessToken,
                 );
+
+                return (payload as Record<string, string>).emails[0];
               },
               tokens,
               newSessionId,
@@ -152,8 +147,8 @@ export const EaCOAuthProcessorHandlerResolver: ProcessorHandlerResolver = {
           oAuthConfig,
           async (tokens, newSessionId, oldSessionId) => {
             await handleCompleteCallback(
-              async (_payload, accessToken) => {
-                const octokit = await loadMainOctokit({
+              async (accessToken) => {
+                const octokit = await loadOctokit(provider.Details as EaCGitHubAppProviderDetails, {
                   Token: accessToken,
                 } as EaCSourceConnectionDetails);
 

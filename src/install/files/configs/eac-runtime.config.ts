@@ -6,7 +6,7 @@ import {
 } from '@fathym/eac/runtime';
 
 export const config = defineEaCConfig({
-  Plugins: [new FathymDemoPlugin(), ...(DefaultEaCConfig.Plugins || [])],
+  Plugins: [...(DefaultEaCConfig.Plugins || []), new FathymDemoPlugin()],
 });
 
 export function configure(_rt: EaCRuntime): Promise<void> {

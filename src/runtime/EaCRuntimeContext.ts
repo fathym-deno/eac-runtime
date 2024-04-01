@@ -8,6 +8,8 @@ export type EaCRuntimeContext<
   TState = Record<string, unknown>,
   TData = Record<string, unknown>,
 > = {
+  Data: TData;
+
   Next: (req?: Request) => Response | Promise<Response>;
 
   Params: Record<string, string | undefined>;

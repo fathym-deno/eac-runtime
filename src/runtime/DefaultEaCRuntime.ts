@@ -143,6 +143,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
     }
 
     const resp = projProcessorConfig.Handler(request, {
+      Data: {},
       Runtime: {
         Config: this.config,
         EaC: this.EaC,
@@ -172,12 +173,12 @@ export class DefaultEaCRuntime implements EaCRuntime {
         EaCApplicationProcessorConfig[]
       >;
 
-      for (const projProcCfg of this.projectGraph!) {
+      const projProcCfgCalls = this.projectGraph!.map(async (projProcCfg) => {
         const appLookups = Object.keys(
           projProcCfg.Project.ApplicationResolvers || {},
         );
 
-        this.applicationGraph[projProcCfg.ProjectLookup] = appLookups
+        this.applicationGraph![projProcCfg.ProjectLookup] = appLookups
           .map((appLookup) => {
             const app = this.EaC!.Applications![appLookup];
 
@@ -201,11 +202,9 @@ export class DefaultEaCRuntime implements EaCRuntime {
             return b.ResolverConfig.Priority - a.ResolverConfig.Priority;
           });
 
-        for (
-          const appProcCfg of this.applicationGraph[
-            projProcCfg.ProjectLookup
-          ]
-        ) {
+        const appProcCfgCalls = this.applicationGraph![
+          projProcCfg.ProjectLookup
+        ].map(async (appProcCfg) => {
           const pipeline = await this.constructPipeline(
             projProcCfg.Project,
             appProcCfg.Application,
@@ -215,8 +214,12 @@ export class DefaultEaCRuntime implements EaCRuntime {
           pipeline.Append(await this.establishApplicationHandler(appProcCfg));
 
           appProcCfg.Handlers = pipeline;
-        }
-      }
+        });
+
+        await Promise.all(appProcCfgCalls);
+      });
+
+      await Promise.all(projProcCfgCalls);
     }
   }
 
@@ -453,13 +456,19 @@ export class DefaultEaCRuntime implements EaCRuntime {
         `${forwardedProto}://${host}`.replace('::', ':'),
       );
 
+      // console.log(`Pattern: ${pattern.pathname}`);
+
       // console.log(`Request check: ${reqCheckUrl.href}`);
 
       const patternResult = pattern.exec(reqCheckUrl.href);
 
       const base = patternResult!.inputs[0].toString();
 
+      // console.log(`Request base: ${base}`);
+
       const path = patternResult!.pathname.groups[0] || '';
+
+      // console.log(patternResult!.pathname);
 
       ctx.Runtime.URLMatch = {
         Base: base.substring(

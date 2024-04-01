@@ -1,4 +1,4 @@
-import { denoGraph, isEaCESMDistributedFileSystem } from '../../src.deps.ts';
+import { denoGraph, isEaCESMDistributedFileSystem, path } from '../../src.deps.ts';
 import { loadDenoConfig } from '../../utils/loadDenoConfig.ts';
 import { DFSFileHandlerResolver } from './DFSFileHandlerResolver.ts';
 import { buildFetchDFSFileHandler } from './buildFetchDFSFileHandler.ts';
@@ -28,7 +28,13 @@ export const EaCESMDistributedFileSystemHandlerResolver: DFSFileHandlerResolver 
     const esmDFSResolver = buildFetchDFSFileHandler(root);
 
     esmDFSResolver.LoadAllPaths = async (_revision: number) => {
-      const roots = dfs.EntryPoints.map((ep) => new URL(ep, root).href);
+      let epRoot = root;
+
+      if (epRoot.startsWith('./') || epRoot.startsWith('../')) {
+        epRoot = `file:///${path.resolve(Deno.cwd(), epRoot)}\\`;
+      }
+
+      const roots = dfs.EntryPoints.map((ep) => new URL(ep, epRoot).href);
 
       const graph = await denoGraph.createGraph(roots, {});
 
@@ -36,13 +42,13 @@ export const EaCESMDistributedFileSystemHandlerResolver: DFSFileHandlerResolver 
 
       return modules
         .filter(
-          (m) => dfs.IncludeDependencies || m.specifier.startsWith(root),
+          (m) => dfs.IncludeDependencies || m.specifier.startsWith(epRoot),
         )
         .map((m) => {
           let filePath = m.specifier;
 
           if (!dfs.IncludeDependencies) {
-            filePath = filePath.replace(root, '');
+            filePath = filePath.replace(epRoot, '');
 
             if (filePath.startsWith('/')) {
               filePath = filePath.substring(1);

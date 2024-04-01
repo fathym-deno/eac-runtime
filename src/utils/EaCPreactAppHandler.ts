@@ -863,14 +863,14 @@ export class EaCPreactAppHandler {
       try {
         if (filePath) {
           if (!filePath.includes(':')) {
-            filePath = new URL(path.join(Deno.cwd(), filePath)).href;
+            filePath = `file:///${new URL(path.join(Deno.cwd(), filePath)).href}`;
           }
 
           const [type, pkg] = filePath.split(':');
 
           return {
-            path: preserveRemotes ? filePath : pkg,
-            namespace: type,
+            path: preserveRemotes || type === 'file' ? filePath : pkg,
+            namespace: type === 'file' ? 'remote' : type,
             external: preserveRemotes,
           };
         }
@@ -899,7 +899,10 @@ export class EaCPreactAppHandler {
         (args.importer.startsWith('./') || args.importer.startsWith('../'))
       ) {
         if (relativeRoot.startsWith('./') || relativeRoot.startsWith('../')) {
-          relativeRoot = new URL(relativeRoot, new URL(`file:///${Deno.cwd()}/`)).href;
+          relativeRoot = new URL(
+            relativeRoot,
+            new URL(`file:///${Deno.cwd()}/`),
+          ).href;
         }
 
         const importerURL = new URL(args.importer, relativeRoot);
@@ -920,9 +923,7 @@ export class EaCPreactAppHandler {
           namespace: type,
           external: preserveRemotes,
         };
-      } else if (
-        args.importer.startsWith('file:///')
-      ) {
+      } else if (args.importer.startsWith('file:///')) {
         const fileURL = new URL(args.path, args.importer);
 
         return {

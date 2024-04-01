@@ -5,6 +5,7 @@ import {
   ComponentType,
   Fragment,
   h,
+  isValidElement,
   PreactRenderToString,
   type VNode,
 } from '../../../src.deps.ts';
@@ -138,8 +139,11 @@ export class PreactRenderHandler {
 
   public ClearRendering() {
     this.tracking = {
-      ...this.refreshTracking(),
-      template: this.tracking.template,
+      ...this.tracking,
+      renderingUserTemplate: false,
+      // ...this.refreshTracking(),
+      // template: this.tracking.template,
+      // containers: this.tracking.containers,
     };
 
     this.islandsData.ClearData();
@@ -188,30 +192,32 @@ export class PreactRenderHandler {
 
     this.SetRendering();
 
-    // const componentStack = new Array(renderStack.length).fill(null);
+    const componentStack: ComponentType<any>[] = new Array(
+      renderStack.length,
+    ).fill(null);
 
-    // for (let i = 0; i < renderStack.length; i++) {
-    //   const fn = renderStack[i];
-    //   if (!fn) continue;
+    for (let i = 0; i < renderStack.length; i++) {
+      const fn = renderStack[i];
+      if (!fn) continue;
 
-    //   componentStack[i] = () => {
-    //     return h(fn, {
-    //       ...pageProps,
-    //       Component() {
-    //         return h(componentStack[i + 1], null);
-    //       },
-    //     } as any);
-    //   };
-    // }
+      componentStack[i] = () => {
+        return h(fn, {
+          ...pageProps,
+          Component() {
+            return h(componentStack[i + 1], null);
+          },
+        });
+      };
+    }
 
-    const routeComponent = renderStack[renderStack.length - 1];
+    const routeComponent = componentStack[componentStack.length - 1];
 
     let finalComp = h(routeComponent, pageProps) as VNode;
 
-    let i = renderStack.length - 1;
+    let i = componentStack.length - 1;
 
     while (i--) {
-      const component = renderStack[i];
+      const component = componentStack[i];
 
       const curComp = finalComp;
 
@@ -234,6 +240,7 @@ export class PreactRenderHandler {
     } else {
       this.ClearRendering();
     }
+    // this.ClearRendering();
 
     const page = h(
       'html',
@@ -285,12 +292,19 @@ export class PreactRenderHandler {
     let pageHtml = await PreactRenderToString.renderToStringAsync(page);
 
     if (Array.from(this.tracking.containers.keys()).length > 0) {
-      for (const [id, children] of this.tracking.containers.entries()) {
+      for (
+        const [
+          containerId,
+          children,
+        ] of this.tracking.containers.entries()
+      ) {
         const containerHtml = await PreactRenderToString.renderToStringAsync(
           h(Fragment, null, children),
         );
 
-        pageHtml += `<template id="${id}>${containerHtml}</template>`;
+        const [id, target] = containerId.split(':');
+
+        pageHtml += `<template id="eac-container-${id}-${target}">${containerHtml}</template>`;
       }
     }
 
@@ -428,44 +442,55 @@ export class PreactRenderHandler {
           this.tracking.patched.add(vnode);
 
           vnode.type = (props) => {
-            // for (const propKey of Object.keys(props)) {
-            // const prop = props[propKey];
-            // if ('children' in props) {
-            //   if (
-            //     typeof props.children === 'function' ||
-            //     (props.children !== null &&
-            //       typeof props.children === 'object' &&
-            //       !Array.isArray(props.children) &&
-            //       !isValidElement(props.children))
-            //   ) {
-            //     const name =
-            //       originalType.displayName || originalType.name || 'Anonymous';
+            for (const propKey of Object.keys(props)) {
+              let prop = props[propKey] as ComponentChildren;
+              // if ('children' in props) {
+              //   let prop: ComponentChildren = props.children;
 
-            //     throw new Error(
-            //       `Invalid JSX child passed to island <${name} />. To resolve this error, pass the data as a standard prop instead.`
-            //     );
-            //   }
+              // if (
+              //   typeof prop === 'function' ||
+              //   (prop !== null &&
+              //     typeof prop === 'object' &&
+              //     !Array.isArray(prop) &&
+              //     !isValidElement(prop))
+              // ) {
+              //   const name =
+              //     originalType.displayName || originalType.name || 'Anonymous';
 
-            //   const children: ComponentChildren = props.children;
+              //   throw new Error(
+              //     `Invalid JSX ${propKey} passed to island <${name} />. To resolve this error, pass the data as a standard prop instead.`
+              //   );
+              // }
 
-            //   const containerId = Array.from(
-            //     this.tracking.containers.keys()
-            //   ).length.toString();
-            //   // @ts-ignore nonono
-            //   props.children = this.addMarker(
-            //     children,
-            //     containerId,
-            //     'container'
-            //   );
+              if (
+                prop !== null &&
+                (isValidElement(prop) ||
+                  (Array.isArray(prop) && isValidElement(prop[0])))
+              ) {
+                const containerId = `${
+                  Array.from(
+                    this.tracking.containers.keys(),
+                  ).length.toString()
+                }:${propKey}`;
 
-            //   this.tracking.containers.set(containerId, children);
+                // @ts-ignore nonono
+                props.children = this.addMarker(
+                  prop,
+                  containerId, //`${island.Path}:${containerId}`,
+                  'container',
+                );
 
-            //   (props as any).children = h(
-            //     this.ContainerTracker,
-            //     { id: containerId },
-            //     children
-            //   );
-            // }
+                this.tracking.containers.set(containerId, prop);
+
+                prop = props.children;
+
+                (props as any).children = h(
+                  this.ContainerTracker,
+                  { id: containerId },
+                  prop,
+                );
+              }
+            }
 
             const islandNode = h(originalType, props) as VNode;
 

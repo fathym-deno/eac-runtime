@@ -44,12 +44,18 @@ export const buildFetchDFSFileHandler = (
           fileCheckPaths.forEach((fcp) => {
             const resolvedPath = pathResolver ? pathResolver(fcp) : fcp;
 
-            if (resolvedPath) {
-              const fullFilePath = isDirect
-                ? new URL(resolvedPath)
-                : new URL(`.${resolvedPath}`, root);
+            if (resolvedPath && !resolvedPath.startsWith('@')) {
+              try {
+                const fullFilePath = isDirect
+                  ? new URL(resolvedPath)
+                  : new URL(`.${resolvedPath}`, root);
 
-              fileChecks.push(fetch(fullFilePath));
+                fileChecks.push(fetch(fullFilePath));
+              } catch (err) {
+                if (!(err instanceof TypeError)) {
+                  throw err;
+                }
+              }
             }
           });
 

@@ -1,20 +1,25 @@
 import { EaCRuntimeContext } from './EaCRuntimeContext.ts';
 import { EaCRuntimeHandler } from './EaCRuntimeHandler.ts';
+import { EaCRuntimeHandlerResult } from './EaCRuntimeHandlerResult.ts';
 import { EaCRuntimeHandlers } from './EaCRuntimeHandlers.ts';
 import { KnownMethod } from './KnownMethod.ts';
 
 export class EaCRuntimeHandlerPipeline {
-  protected pipeline: (EaCRuntimeHandler | EaCRuntimeHandlers)[];
+  public pipeline: (EaCRuntimeHandler | EaCRuntimeHandlers)[];
 
   constructor() {
     this.pipeline = [];
   }
 
-  public Append(
-    ...handlers: (EaCRuntimeHandler | EaCRuntimeHandlers | undefined)[]
-  ): void {
+  public Append(...handlers: (EaCRuntimeHandlerResult | undefined)[]): void {
     if (handlers) {
-      this.pipeline.push(...handlers.filter((h) => h).map((h) => h!));
+      this.pipeline.push(
+        ...handlers
+          .filter((h) => h)
+          .flatMap((h) => {
+            return Array.isArray(h) ? h! : [h!];
+          }),
+      );
     }
   }
 
@@ -31,7 +36,7 @@ export class EaCRuntimeHandlerPipeline {
       if (this.pipeline.length > index) {
         let handler: EaCRuntimeHandler | EaCRuntimeHandlers | undefined = this.pipeline[index];
 
-        if (typeof handler !== 'function') {
+        if (handler && typeof handler !== 'function') {
           handler = handler[req.method.toUpperCase() as KnownMethod];
 
           if (!handler) {
@@ -41,7 +46,7 @@ export class EaCRuntimeHandlerPipeline {
           }
         }
 
-        const response = await handler(req, ctx);
+        const response = await handler?.(req, ctx);
 
         if (response) {
           return response;
@@ -56,11 +61,15 @@ export class EaCRuntimeHandlerPipeline {
     return ctx.Next(request);
   }
 
-  public Prepend(
-    ...handlers: (EaCRuntimeHandler | EaCRuntimeHandlers | undefined)[]
-  ): void {
+  public Prepend(...handlers: (EaCRuntimeHandlerResult | undefined)[]): void {
     if (handlers) {
-      this.pipeline.unshift(...handlers.filter((h) => h).map((h) => h!));
+      this.pipeline.unshift(
+        ...handlers
+          .filter((h) => h)
+          .flatMap((h) => {
+            return Array.isArray(h) ? h! : [h!];
+          }),
+      );
     }
   }
 }
