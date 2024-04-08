@@ -24,12 +24,16 @@ export async function loadPreactAppHandler(
     ComponentType<any>,
     boolean,
     string,
-    EaCRuntimeHandlerResult
+    EaCRuntimeHandlerResult,
   ][],
-  renderHandler: PreactRenderHandler
+  renderHandler: PreactRenderHandler,
 ): Promise<EaCRuntimeHandlerResult> {
-  let [pageHandlers, component, isIsland, contents] =
-    await loadPreactAppPageHandler(esbuild, fileHandler, filePath, dfs);
+  let [pageHandlers, component, isIsland, contents] = await loadPreactAppPageHandler(
+    esbuild,
+    fileHandler,
+    filePath,
+    dfs,
+  );
 
   if (isIsland) {
     renderHandler.AddIsland(component, filePath, contents);
@@ -46,12 +50,12 @@ export async function loadPreactAppHandler(
   let pageLayoutHandlers:
     | EaCRuntimeHandlerResult[]
     | (EaCRuntimeHandler | EaCRuntimeHandlers)[] = layouts
-    .filter(([root]) => {
-      return filePath.startsWith(root);
-    })
-    .map(([_root, _layout, _isIsland, _contents, layoutHandler]) => {
-      return layoutHandler;
-    });
+      .filter(([root]) => {
+        return filePath.startsWith(root);
+      })
+      .map(([_root, _layout, _isIsland, _contents, layoutHandler]) => {
+        return layoutHandler;
+      });
 
   const renderStack: ComponentType<any>[] = [...pageLayouts, component];
 
@@ -82,7 +86,7 @@ export async function loadPreactAppHandler(
   }
 
   pipeline.Append(
-    ...(pageLayoutHandlers as (EaCRuntimeHandler | EaCRuntimeHandlers)[])
+    ...(pageLayoutHandlers as (EaCRuntimeHandler | EaCRuntimeHandlers)[]),
   );
 
   pipeline.Append(...pageHandlers);

@@ -15,7 +15,7 @@ export function buildIslandData(islandsData: Map<string, IslandDataStoreType>) {
 
     return (
       <script
-        type="module"
+        type='module'
         dangerouslySetInnerHTML={{
           __html: `import { renderIslands } from '${props.clientModulePath}';
   
@@ -47,7 +47,7 @@ export function buildIslandData(islandsData: Map<string, IslandDataStoreType>) {
 // }
 function getCircularReplacer() {
   const cache = new Set();
-  return (key:  string, value: any): any => {
+  return (key: string, value: any): any => {
     if (typeof value === 'object' && value !== null) {
       if (cache.has(value)) {
         // Circular reference found

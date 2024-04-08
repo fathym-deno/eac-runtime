@@ -111,8 +111,7 @@ export class PreactRenderHandler {
 
     options.diffed = (vnode) => this.diffedHook(vnode);
 
-    options.__h = (component, index, type) =>
-      this.beforeHookStateHook(component, index, type);
+    options.__h = (component, index, type) => this.beforeHookStateHook(component, index, type);
 
     options.__r = (vnode) => this.beforeRenderHook(vnode);
 
@@ -123,7 +122,7 @@ export class PreactRenderHandler {
   public AddIsland(
     island: ComponentType,
     path: string,
-    contents: string
+    contents: string,
   ): void {
     this.islandsTypeMap.set(island.displayName || island.name, island);
 
@@ -172,7 +171,7 @@ export class PreactRenderHandler {
   public async RenderPage(
     renderStack: ComponentType<any>[],
     data: Record<string, unknown>,
-    ctx: EaCRuntimeContext
+    ctx: EaCRuntimeContext,
   ): Promise<string> {
     // const start = Date.now();
 
@@ -198,7 +197,7 @@ export class PreactRenderHandler {
     this.SetRendering();
 
     const componentStack: ComponentType<any>[] = new Array(
-      renderStack.length
+      renderStack.length,
     ).fill(null);
 
     for (let i = 0; i < renderStack.length; i++) {
@@ -264,20 +263,18 @@ export class PreactRenderHandler {
         }),
         !this.tracking.template.userTemplate
           ? h(
-              Fragment,
-              null,
-              h('meta', { charset: 'utf-8' }),
-              h('meta', {
-                name: 'viewport',
-                content: 'width=device-width, initial-scale=1.0',
-              })
-            )
+            Fragment,
+            null,
+            h('meta', { charset: 'utf-8' }),
+            h('meta', {
+              name: 'viewport',
+              content: 'width=device-width, initial-scale=1.0',
+            }),
+          )
           : undefined,
         this.tracking.template.titleNode ??
           h('title', null, 'Fathym EaC Runtime'),
-        this.tracking.template.headChildNodes.map((node) =>
-          h(node.type, node.props)
-        ),
+        this.tracking.template.headChildNodes.map((node) => h(node.type, node.props)),
         // opts.preloads.map((src) =>
         //   h("link", { rel: "modulepreload", href: withBase(src, state.basePath) })
         // ),
@@ -287,25 +284,27 @@ export class PreactRenderHandler {
             // nonce,
             type: 'module',
           })
-        )
+        ),
         // filteredHeadNodes,
       ),
       h('body', {
         ...this.tracking.template.bodyProps,
         dangerouslySetInnerHTML: { __html: bodyHtml },
-      })
+      }),
     ) as VNode;
 
     let pageHtml = await PreactRenderToString.renderToStringAsync(page);
 
     if (Array.from(this.tracking.containers.keys()).length > 0) {
-      for (const [
-        containerId,
-        children,
-      ] of this.tracking.containers.entries()) {
+      for (
+        const [
+          containerId,
+          children,
+        ] of this.tracking.containers.entries()
+      ) {
         if (children) {
           const containerHtml = await PreactRenderToString.renderToStringAsync(
-            h(Fragment, null, children)
+            h(Fragment, null, children),
           );
 
           const [id, target] = containerId.split(':');
@@ -336,7 +335,7 @@ export class PreactRenderHandler {
     vnode: ComponentChildren,
     id: string,
     markerType: 'island' | 'container' | 'key' = 'island',
-    key?: string
+    key?: string,
   ) {
     // return h(
     //   Fragment,
@@ -360,7 +359,7 @@ export class PreactRenderHandler {
       h(Fragment, {
         // @ts-ignore unstable property is not typed
         UNSTABLE_comment: `/eac|${markerType}|${id}|${key ?? ''}`,
-      })
+      }),
     );
   }
 
@@ -368,7 +367,7 @@ export class PreactRenderHandler {
     // if (this.tracking.renderingUserTemplate) {
     this.tracking.owners.set(
       vnode,
-      this.tracking.ownerStack[this.tracking.ownerStack.length - 1]
+      this.tracking.ownerStack[this.tracking.ownerStack.length - 1],
     );
     // }
   }
@@ -385,7 +384,7 @@ export class PreactRenderHandler {
   }
 
   protected excludeChildren(
-    props: Record<string, unknown>
+    props: Record<string, unknown>,
   ): Record<string, unknown> {
     const out: Record<string, unknown> = {};
     for (const k in props) {
@@ -417,14 +416,14 @@ export class PreactRenderHandler {
   }
 
   protected loadEaCType(
-    vnodeType: string | ComponentType
+    vnodeType: string | ComponentType,
   ): string | ComponentType {
     if (typeof vnodeType !== 'string') {
       // Islands are loaded virtually, so when a new vnode is found
       //  to be of an island type, we must override the vnode type
       //  with the virtual island type.
       const islandType = this.islandsTypeMap.get(
-        vnodeType.displayName || vnodeType.name
+        vnodeType.displayName || vnodeType.name,
       );
 
       if (islandType) {
@@ -436,7 +435,7 @@ export class PreactRenderHandler {
   }
 
   protected processComponentMarkup(
-    vnode: VNode<Record<string, unknown>>
+    vnode: VNode<Record<string, unknown>>,
   ): void {
     if (typeof vnode.type === 'function') {
       const island = this.islandsMap.get(vnode.type as ComponentType);
@@ -458,6 +457,7 @@ export class PreactRenderHandler {
 
             this.tracking.template.encounteredIslands.add(island);
 
+            let containerId = '';
             // for (const propKey of Object.keys(props)) {
             //   let prop = props[propKey] as ComponentChildren;
             const propKey = 'children';
@@ -471,11 +471,10 @@ export class PreactRenderHandler {
                   !Array.isArray(prop) &&
                   !isValidElement(prop))
               ) {
-                const name =
-                  originalType.displayName || originalType.name || 'Anonymous';
+                const name = originalType.displayName || originalType.name || 'Anonymous';
 
                 throw new Error(
-                  `Invalid JSX ${propKey} passed to island <${name} />. To resolve this error, pass the data as a standard prop instead.`
+                  `Invalid JSX ${propKey} passed to island <${name} />. To resolve this error, pass the data as a standard prop instead.`,
                 );
               }
 
@@ -484,16 +483,18 @@ export class PreactRenderHandler {
               //   (isValidElement(prop) ||
               //     (Array.isArray(prop) && isValidElement(prop[0])))
               // ) {
-              const containerId = `${Array.from(
-                this.tracking.containers.keys()
-              ).length.toString()}:${propKey}`;
+              containerId = `${
+                Array.from(
+                  this.tracking.containers.keys(),
+                ).length.toString()
+              }:${propKey}`;
 
               // @ts-ignore nonono
-              props[propKey] = this.addMarker(
-                prop,
-                containerId, //`${island.Path}:${containerId}`,
-                'container'
-              );
+              // props[propKey] = this.addMarker(
+              //   prop,
+              //   containerId, //`${island.Path}:${containerId}`,
+              //   'container'
+              // );
 
               this.tracking.containers.set(containerId, prop);
 
@@ -503,7 +504,7 @@ export class PreactRenderHandler {
               props[propKey] = h(
                 this.ContainerTracker,
                 { id: containerId },
-                prop
+                prop,
               );
               // }
             }
@@ -514,7 +515,18 @@ export class PreactRenderHandler {
 
             const islandId = this.islandsData.Store(originalType, props);
 
-            return this.addMarker(islandNode, islandId);
+            if (containerId) {
+              return this.addMarker(
+                this.addMarker(
+                  islandNode,
+                  containerId, //`${island.Path}:${containerId}`,
+                  'container',
+                ),
+                islandId,
+              );
+            } else {
+              return this.addMarker(islandNode, islandId);
+            }
           };
         }
       } else if (vnode.key && this.tracking.template.islandDepth > 0) {
@@ -572,7 +584,7 @@ export class PreactRenderHandler {
   }
 
   protected processEaCBypassNodes(
-    vnode: { type: string } & VNode<Record<string, unknown>>
+    vnode: { type: string } & VNode<Record<string, unknown>>,
   ) {
     if (!vnode.props['data-eac-bypass-base']) {
       if (
@@ -666,7 +678,7 @@ export class PreactRenderHandler {
   protected beforeHookStateHook(
     component: Component,
     index: number,
-    type: PreactHookTypes
+    type: PreactHookTypes,
   ) {
     this.origHook?.(component, index, type);
   }

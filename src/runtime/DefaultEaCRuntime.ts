@@ -61,7 +61,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
   }
 
   public async Configure(
-    configure?: (rt: EaCRuntime) => Promise<void>
+    configure?: (rt: EaCRuntime) => Promise<void>,
   ): Promise<void> {
     this.pluginConfigs = new Map();
 
@@ -105,13 +105,13 @@ export class DefaultEaCRuntime implements EaCRuntime {
 
     if (!this.EaC) {
       throw new Error(
-        'An EaC must be provided in the config or via a connection to an EaC Service with the EAC_API_KEY environment variable.'
+        'An EaC must be provided in the config or via a connection to an EaC Service with the EAC_API_KEY environment variable.',
       );
     }
 
     if (!this.EaC!.Projects) {
       throw new Error(
-        'The EaC must provide a set of projects to use in the runtime.'
+        'The EaC must provide a set of projects to use in the runtime.',
       );
     }
 
@@ -132,7 +132,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
 
   public Handle(
     request: Request,
-    info: Deno.ServeHandlerInfo
+    info: Deno.ServeHandlerInfo,
   ): Response | Promise<Response> {
     const projProcessorConfig = this.projectGraph!.find((node) => {
       return node.Patterns.some((pattern) => pattern.test(request.url));
@@ -175,7 +175,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
 
       const projProcCfgCalls = this.projectGraph!.map(async (projProcCfg) => {
         const appLookups = Object.keys(
-          projProcCfg.Project.ApplicationResolvers || {}
+          projProcCfg.Project.ApplicationResolvers || {},
         );
 
         this.applicationGraph![projProcCfg.ProjectLookup] = appLookups
@@ -184,12 +184,11 @@ export class DefaultEaCRuntime implements EaCRuntime {
 
             if (!app) {
               throw new Error(
-                `The '${appLookup}' app configured for the project does not exist in the EaC Applications configuration.`
+                `The '${appLookup}' app configured for the project does not exist in the EaC Applications configuration.`,
               );
             }
 
-            const resolverCfg =
-              projProcCfg.Project.ApplicationResolvers[appLookup];
+            const resolverCfg = projProcCfg.Project.ApplicationResolvers[appLookup];
 
             return {
               Application: app,
@@ -209,7 +208,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
           const pipeline = await this.constructPipeline(
             projProcCfg.Project,
             appProcCfg.Application,
-            this.EaC!.Modifiers || {}
+            this.EaC!.Modifiers || {},
           );
 
           pipeline.Append(await this.establishApplicationHandler(appProcCfg));
@@ -261,7 +260,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
   }
 
   protected async configurePlugins(
-    plugins?: (EaCRuntimePlugin | [string, ...args: unknown[]])[]
+    plugins?: (EaCRuntimePlugin | [string, ...args: unknown[]])[],
   ): Promise<void> {
     for (let pluginDef of plugins || []) {
       const pluginKey = pluginDef;
@@ -270,7 +269,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
         const [plugin, ...args] = pluginDef;
 
         pluginDef = new (await import(plugin)).default(
-          args
+          args,
         ) as EaCRuntimePlugin;
       }
 
@@ -296,7 +295,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
         if (pluginConfig.ModifierResolvers) {
           this.ModifierResolvers = merge(
             this.ModifierResolvers || {},
-            pluginConfig.ModifierResolvers
+            pluginConfig.ModifierResolvers,
           );
         }
 
@@ -308,7 +307,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
   protected async constructPipeline(
     project: EaCProjectAsCode,
     application: EaCApplicationAsCode,
-    modifiers: Record<string, EaCModifierAsCode>
+    modifiers: Record<string, EaCModifierAsCode>,
   ): Promise<EaCRuntimeHandlerPipeline> {
     let pipelineModifierResolvers: Record<
       string,
@@ -317,19 +316,19 @@ export class DefaultEaCRuntime implements EaCRuntime {
 
     pipelineModifierResolvers = merge(
       pipelineModifierResolvers,
-      this.ModifierResolvers || {}
+      this.ModifierResolvers || {},
     );
 
     // TODO(mcgear): Add application logic middlewares to pipeline
 
     pipelineModifierResolvers = merge(
       pipelineModifierResolvers,
-      project.ModifierResolvers || {}
+      project.ModifierResolvers || {},
     );
 
     pipelineModifierResolvers = merge(
       pipelineModifierResolvers,
-      application.ModifierResolvers || {}
+      application.ModifierResolvers || {},
     );
 
     const pipelineModifiers: EaCModifierAsCode[] = [];
@@ -350,14 +349,13 @@ export class DefaultEaCRuntime implements EaCRuntime {
 
     const pipeline = new EaCRuntimeHandlerPipeline();
 
-    const defaultModifierMiddlewareResolver =
-      await this.IoC.Resolve<ModifierHandlerResolver>(
-        this.IoC.Symbol('ModifierHandlerResolver')
-      );
+    const defaultModifierMiddlewareResolver = await this.IoC.Resolve<ModifierHandlerResolver>(
+      this.IoC.Symbol('ModifierHandlerResolver'),
+    );
 
     for (const mod of pipelineModifiers) {
       pipeline.Append(
-        await defaultModifierMiddlewareResolver.Resolve(this.IoC, mod)
+        await defaultModifierMiddlewareResolver.Resolve(this.IoC, mod),
       );
     }
 
@@ -365,17 +363,16 @@ export class DefaultEaCRuntime implements EaCRuntime {
   }
 
   protected async establishApplicationHandler(
-    appProcessorConfig: EaCApplicationProcessorConfig
+    appProcessorConfig: EaCApplicationProcessorConfig,
   ): Promise<EaCRuntimeHandler> {
-    const defaultProcessorHandlerResolver =
-      await this.IoC.Resolve<ProcessorHandlerResolver>(
-        this.IoC.Symbol('ProcessorHandlerResolver')
-      );
+    const defaultProcessorHandlerResolver = await this.IoC.Resolve<ProcessorHandlerResolver>(
+      this.IoC.Symbol('ProcessorHandlerResolver'),
+    );
 
     let handler = await defaultProcessorHandlerResolver.Resolve(
       this.IoC,
       appProcessorConfig,
-      this.EaC!
+      this.EaC!,
     );
 
     if (
@@ -391,7 +388,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
         resp = processCacheControlHeaders(
           resp,
           appProcessorConfig.Application.Processor.CacheControl,
-          appProcessorConfig.Application.Processor.ForceCache
+          appProcessorConfig.Application.Processor.ForceCache,
         );
 
         return resp;
@@ -402,28 +399,25 @@ export class DefaultEaCRuntime implements EaCRuntime {
   }
 
   protected establishProjectHandler(
-    projProcessorConfig: EaCProjectProcessorConfig
+    projProcessorConfig: EaCProjectProcessorConfig,
   ): EaCRuntimeHandler {
     return (req, ctx) => {
       const appProcessorConfig = this.applicationGraph![
         projProcessorConfig.ProjectLookup
       ].find((node) => {
-        const appResolverConfig =
-          projProcessorConfig.Project.ApplicationResolvers[
-            node.ApplicationLookup
-          ];
+        const appResolverConfig = projProcessorConfig.Project.ApplicationResolvers[
+          node.ApplicationLookup
+        ];
 
-        const isAllowedMethod =
-          !appResolverConfig.AllowedMethods ||
+        const isAllowedMethod = !appResolverConfig.AllowedMethods ||
           appResolverConfig.AllowedMethods.length === 0 ||
           appResolverConfig.AllowedMethods.some(
-            (arc) => arc.toLowerCase() === req.method.toLowerCase()
+            (arc) => arc.toLowerCase() === req.method.toLowerCase(),
           );
 
-        const matchesRegex =
-          !appResolverConfig.UserAgentRegex ||
+        const matchesRegex = !appResolverConfig.UserAgentRegex ||
           new RegExp(appResolverConfig.UserAgentRegex).test(
-            req.headers.get('user-agent') || ''
+            req.headers.get('user-agent') || '',
           );
 
         // TODO(mcgear): How to account for IsPrivate/IsTriggerSignIn during application resolution...
@@ -435,15 +429,14 @@ export class DefaultEaCRuntime implements EaCRuntime {
 
       if (!appProcessorConfig) {
         throw new Error(
-          `No application is configured for '${req.url}' in project '${projProcessorConfig.ProjectLookup}'.`
+          `No application is configured for '${req.url}' in project '${projProcessorConfig.ProjectLookup}'.`,
         );
       }
 
       ctx.Runtime.ApplicationProcessorConfig = appProcessorConfig;
 
       const pattern = new URLPattern({
-        pathname:
-          ctx.Runtime.ApplicationProcessorConfig.ResolverConfig.PathPattern,
+        pathname: ctx.Runtime.ApplicationProcessorConfig.ResolverConfig.PathPattern,
       });
 
       // console.log(
@@ -454,14 +447,13 @@ export class DefaultEaCRuntime implements EaCRuntime {
 
       const reqUrl = new URL(req.url);
 
-      const forwardedProto =
-        req.headers.get('x-forwarded-proto') || reqUrl.protocol;
+      const forwardedProto = req.headers.get('x-forwarded-proto') || reqUrl.protocol;
 
       const host = req.headers.get('host') || reqUrl.host;
 
       const reqCheckUrl = new URL(
         reqUrl.href.replace(reqUrl.origin, ''),
-        `${forwardedProto}://${host}`.replace('::', ':')
+        `${forwardedProto}://${host}`.replace('::', ':'),
       );
 
       // console.log(`Pattern: ${pattern.pathname}`);
@@ -481,7 +473,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
       ctx.Runtime.URLMatch = {
         Base: base.substring(
           0,
-          base.length - path.length - reqUrl.search.length - reqUrl.hash.length
+          base.length - path.length - reqUrl.search.length - reqUrl.hash.length,
         ),
         Hash: reqUrl.hash,
         Path: path,

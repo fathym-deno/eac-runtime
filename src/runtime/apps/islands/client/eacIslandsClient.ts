@@ -184,19 +184,19 @@ function walkNodeTree(
       }
 
       if (comment.startsWith('eac|container')) {
-        const [_eac, kind, containerId] = comment.split('|');
+        const [_eac, _kind, containerId] = comment.split('|');
 
         markerStack.push({
           startNode: sib,
           endNode: null,
           id: containerId,
-          kind: kind as MarkerKind,
+          kind: MarkerKind.Container,
         });
 
         // @ts-ignore TS gets confused
         vnodeStack.push(h(ServerComponent, { id: comment }));
       } else if (comment.startsWith('eac|island')) {
-        const [_tool, markerKind, id] = comment.split('|');
+        const [_tool, _markerKind, id, key] = comment.split('|');
 
         const { Name: islandTypeName, Props: islandProps } = data.get(id)!;
 
@@ -204,14 +204,14 @@ function walkNodeTree(
           startNode: sib,
           endNode: null,
           id: id,
-          kind: markerKind as MarkerKind,
+          kind: MarkerKind.Island,
         });
 
         const island = componentMap.get(islandTypeName)!;
 
         const vnode = h(island, islandProps) as VNode;
 
-        // if (key) vnode.key = key;
+        if (key) vnode.key = key;
 
         vnodeStack.push(vnode);
       } else if (marker !== null && comment.startsWith('/eac')) {
@@ -224,12 +224,16 @@ function walkNodeTree(
           // inside an island
           const vnode = vnodeStack.pop();
 
+          console.log(vnode);
+
           // For now only `props.children` is supported.
           const islandParent = vnodeStack[vnodeStack.length - 1]!;
 
           const [_id, target] = marker.id.split(':');
 
           (islandParent.props as any)[target] = vnode;
+
+          console.log(target);
 
           // hideMarker(marker);
 
@@ -238,10 +242,12 @@ function walkNodeTree(
           if (markerStack.length === 0) {
             const vnode = vnodeStack[vnodeStack.length - 1];
 
+            console.log(marker.id);
+
             if (vnode.props.children == null) {
               addChildrenFromTemplate(
                 data,
-                `${marker.id}:children`,
+                `${marker.id}`,
                 markerStack,
                 vnodeStack,
                 islandRoots,

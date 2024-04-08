@@ -18,7 +18,7 @@ export class EaCRuntimeHandlerPipeline {
           .filter((h) => h)
           .flatMap((h) => {
             return Array.isArray(h) ? h! : [h!];
-          })
+          }),
       );
     }
   }
@@ -26,7 +26,7 @@ export class EaCRuntimeHandlerPipeline {
   public Execute(
     request: Request,
     ctx: EaCRuntimeContext,
-    index = -1
+    index = -1,
   ): Response | Promise<Response> {
     ctx.Next = async (req) => {
       req ??= request;
@@ -34,8 +34,7 @@ export class EaCRuntimeHandlerPipeline {
       ++index;
 
       if (this.pipeline.length > index) {
-        let handler: EaCRuntimeHandler | EaCRuntimeHandlers | undefined =
-          this.pipeline[index];
+        let handler: EaCRuntimeHandler | EaCRuntimeHandlers | undefined = this.pipeline[index];
 
         console.log(handler);
 
@@ -71,7 +70,7 @@ export class EaCRuntimeHandlerPipeline {
           .filter((h) => h)
           .flatMap((h) => {
             return Array.isArray(h) ? h! : [h!];
-          })
+          }),
       );
     }
   }
