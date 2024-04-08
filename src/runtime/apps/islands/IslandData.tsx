@@ -11,14 +11,16 @@ export function buildIslandData(islandsData: Map<string, IslandDataStoreType>) {
   return function IslandData(props: IslandDataProps): JSX.Element {
     const data = Array.from(islandsData.entries());
 
+    const dataStr = JSON.stringify(data, getCircularReplacer());
+
     return (
       <script
-        type='module'
+        type="module"
         dangerouslySetInnerHTML={{
           __html: `import { renderIslands } from '${props.clientModulePath}';
   
 (function () {
-  renderIslands(new Map(${JSON.stringify(data, getCircularReplacer())}));
+  renderIslands(new Map(${dataStr}));
 })();
 `,
         }}
@@ -27,25 +29,50 @@ export function buildIslandData(islandsData: Map<string, IslandDataStoreType>) {
   };
 }
 
-function getCircularReplacer() {
-  const seen = new WeakSet();
-  return (key: any, value: any) => {
-    if (isVNode(value)) {
-      return null;
-    }
+// function getCircularReplacer() {
+//   const seen = new WeakSet();
+//   return (key: any, value: any) => {
+//     if (isVNode(value)) {
+//       return null;
+//     }
 
+//     if (typeof value === 'object' && value !== null) {
+//       if (seen.has(value)) {
+//         return;
+//       }
+//       seen.add(value);
+//     }
+//     return value;
+//   };
+// }
+function getCircularReplacer() {
+  const cache = new Set();
+  return (key:  string, value: any): any => {
     if (typeof value === 'object' && value !== null) {
-      if (seen.has(value)) {
-        return;
+      if (cache.has(value)) {
+        // Circular reference found
+        try {
+          // If this value does not reference a parent it can be deduped
+          return JSON.parse(JSON.stringify(value));
+        } catch (err) {
+          // discard key if value cannot be deduped
+          return;
+        }
       }
-      seen.add(value);
+      // Store value in our set
+      cache.add(value);
     }
     return value;
   };
 }
 
 function isVNode(x: any): x is VNode {
-  return x !== null && typeof x === 'object' && 'type' in x && 'ref' in x &&
+  return (
+    x !== null &&
+    typeof x === 'object' &&
+    'type' in x &&
+    'ref' in x &&
     '__k' in x &&
-    isValidElement(x);
+    isValidElement(x)
+  );
 }

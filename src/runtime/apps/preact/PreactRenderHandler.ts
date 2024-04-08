@@ -44,7 +44,7 @@ export class PreactRenderHandler {
     id: string;
     children?: ComponentChildren;
   }): VNode => {
-    this.tracking.containers.delete(props.id);
+    this.tracking.containers.set(props.id, undefined);
 
     return props.children as any;
   };
@@ -58,10 +58,14 @@ export class PreactRenderHandler {
 
     patched: WeakSet<VNode>;
 
+    rendering: boolean;
+
     renderingUserTemplate: boolean;
 
     template: {
       bodyProps?: Record<string, unknown>;
+
+      encounteredIslands: WeakSet<Island>;
 
       hasHeadChildren: boolean;
 
@@ -107,7 +111,8 @@ export class PreactRenderHandler {
 
     options.diffed = (vnode) => this.diffedHook(vnode);
 
-    options.__h = (component, index, type) => this.beforeHookStateHook(component, index, type);
+    options.__h = (component, index, type) =>
+      this.beforeHookStateHook(component, index, type);
 
     options.__r = (vnode) => this.beforeRenderHook(vnode);
 
@@ -118,7 +123,7 @@ export class PreactRenderHandler {
   public AddIsland(
     island: ComponentType,
     path: string,
-    contents: string,
+    contents: string
   ): void {
     this.islandsTypeMap.set(island.displayName || island.name, island);
 
@@ -167,7 +172,7 @@ export class PreactRenderHandler {
   public async RenderPage(
     renderStack: ComponentType<any>[],
     data: Record<string, unknown>,
-    ctx: EaCRuntimeContext,
+    ctx: EaCRuntimeContext
   ): Promise<string> {
     // const start = Date.now();
 
@@ -193,7 +198,7 @@ export class PreactRenderHandler {
     this.SetRendering();
 
     const componentStack: ComponentType<any>[] = new Array(
-      renderStack.length,
+      renderStack.length
     ).fill(null);
 
     for (let i = 0; i < renderStack.length; i++) {
@@ -259,18 +264,20 @@ export class PreactRenderHandler {
         }),
         !this.tracking.template.userTemplate
           ? h(
-            Fragment,
-            null,
-            h('meta', { charset: 'utf-8' }),
-            h('meta', {
-              name: 'viewport',
-              content: 'width=device-width, initial-scale=1.0',
-            }),
-          )
+              Fragment,
+              null,
+              h('meta', { charset: 'utf-8' }),
+              h('meta', {
+                name: 'viewport',
+                content: 'width=device-width, initial-scale=1.0',
+              })
+            )
           : undefined,
         this.tracking.template.titleNode ??
           h('title', null, 'Fathym EaC Runtime'),
-        this.tracking.template.headChildNodes.map((node) => h(node.type, node.props)),
+        this.tracking.template.headChildNodes.map((node) =>
+          h(node.type, node.props)
+        ),
         // opts.preloads.map((src) =>
         //   h("link", { rel: "modulepreload", href: withBase(src, state.basePath) })
         // ),
@@ -280,31 +287,31 @@ export class PreactRenderHandler {
             // nonce,
             type: 'module',
           })
-        ),
+        )
         // filteredHeadNodes,
       ),
       h('body', {
         ...this.tracking.template.bodyProps,
         dangerouslySetInnerHTML: { __html: bodyHtml },
-      }),
+      })
     ) as VNode;
 
     let pageHtml = await PreactRenderToString.renderToStringAsync(page);
 
     if (Array.from(this.tracking.containers.keys()).length > 0) {
-      for (
-        const [
-          containerId,
-          children,
-        ] of this.tracking.containers.entries()
-      ) {
-        const containerHtml = await PreactRenderToString.renderToStringAsync(
-          h(Fragment, null, children),
-        );
+      for (const [
+        containerId,
+        children,
+      ] of this.tracking.containers.entries()) {
+        if (children) {
+          const containerHtml = await PreactRenderToString.renderToStringAsync(
+            h(Fragment, null, children)
+          );
 
-        const [id, target] = containerId.split(':');
+          const [id, target] = containerId.split(':');
 
-        pageHtml += `<template id="eac-container-${id}-${target}">${containerHtml}</template>`;
+          pageHtml += `<template id="eac-container-${id}-${target}">${containerHtml}</template>`;
+        }
       }
     }
 
@@ -316,7 +323,11 @@ export class PreactRenderHandler {
   }
 
   public SetRendering() {
+    this.tracking.rendering = true;
+
     this.tracking.renderingUserTemplate = true;
+
+    this.tracking.template.hasHeadChildren;
   }
   //#endregion
 
@@ -324,7 +335,8 @@ export class PreactRenderHandler {
   protected addMarker(
     vnode: ComponentChildren,
     id: string,
-    markerType: 'island' | 'container' = 'island',
+    markerType: 'island' | 'container' | 'key' = 'island',
+    key?: string
   ) {
     // return h(
     //   Fragment,
@@ -342,13 +354,13 @@ export class PreactRenderHandler {
       null,
       h(Fragment, {
         // @ts-ignore unstable property is not typed
-        UNSTABLE_comment: `eac|${markerType}|${id}`,
+        UNSTABLE_comment: `eac|${markerType}|${id}|${key ?? ''}`,
       }),
       vnode,
       h(Fragment, {
         // @ts-ignore unstable property is not typed
-        UNSTABLE_comment: `/eac|${markerType}|${id}`,
-      }),
+        UNSTABLE_comment: `/eac|${markerType}|${id}|${key ?? ''}`,
+      })
     );
   }
 
@@ -356,7 +368,7 @@ export class PreactRenderHandler {
     // if (this.tracking.renderingUserTemplate) {
     this.tracking.owners.set(
       vnode,
-      this.tracking.ownerStack[this.tracking.ownerStack.length - 1],
+      this.tracking.ownerStack[this.tracking.ownerStack.length - 1]
     );
     // }
   }
@@ -373,7 +385,7 @@ export class PreactRenderHandler {
   }
 
   protected excludeChildren(
-    props: Record<string, unknown>,
+    props: Record<string, unknown>
   ): Record<string, unknown> {
     const out: Record<string, unknown> = {};
     for (const k in props) {
@@ -405,14 +417,14 @@ export class PreactRenderHandler {
   }
 
   protected loadEaCType(
-    vnodeType: string | ComponentType,
+    vnodeType: string | ComponentType
   ): string | ComponentType {
     if (typeof vnodeType !== 'string') {
       // Islands are loaded virtually, so when a new vnode is found
       //  to be of an island type, we must override the vnode type
       //  with the virtual island type.
       const islandType = this.islandsTypeMap.get(
-        vnodeType.displayName || vnodeType.name,
+        vnodeType.displayName || vnodeType.name
       );
 
       if (islandType) {
@@ -424,7 +436,7 @@ export class PreactRenderHandler {
   }
 
   protected processComponentMarkup(
-    vnode: VNode<Record<string, unknown>>,
+    vnode: VNode<Record<string, unknown>>
   ): void {
     if (typeof vnode.type === 'function') {
       const island = this.islandsMap.get(vnode.type as ComponentType);
@@ -442,61 +454,65 @@ export class PreactRenderHandler {
           this.tracking.patched.add(vnode);
 
           vnode.type = (props) => {
-            for (const propKey of Object.keys(props)) {
-              let prop = props[propKey] as ComponentChildren;
-              // if ('children' in props) {
-              //   let prop: ComponentChildren = props.children;
+            if (!this.tracking.rendering) return null;
 
-              // if (
-              //   typeof prop === 'function' ||
-              //   (prop !== null &&
-              //     typeof prop === 'object' &&
-              //     !Array.isArray(prop) &&
-              //     !isValidElement(prop))
-              // ) {
-              //   const name =
-              //     originalType.displayName || originalType.name || 'Anonymous';
+            this.tracking.template.encounteredIslands.add(island);
 
-              //   throw new Error(
-              //     `Invalid JSX ${propKey} passed to island <${name} />. To resolve this error, pass the data as a standard prop instead.`
-              //   );
-              // }
+            // for (const propKey of Object.keys(props)) {
+            //   let prop = props[propKey] as ComponentChildren;
+            const propKey = 'children';
+            if (propKey in props) {
+              let prop: ComponentChildren = props[propKey];
 
               if (
-                prop !== null &&
-                (isValidElement(prop) ||
-                  (Array.isArray(prop) && isValidElement(prop[0])))
+                typeof prop === 'function' ||
+                (prop !== null &&
+                  typeof prop === 'object' &&
+                  !Array.isArray(prop) &&
+                  !isValidElement(prop))
               ) {
-                const containerId = `${
-                  Array.from(
-                    this.tracking.containers.keys(),
-                  ).length.toString()
-                }:${propKey}`;
+                const name =
+                  originalType.displayName || originalType.name || 'Anonymous';
 
-                // @ts-ignore nonono
-                props.children = this.addMarker(
-                  prop,
-                  containerId, //`${island.Path}:${containerId}`,
-                  'container',
-                );
-
-                this.tracking.containers.set(containerId, prop);
-
-                prop = props.children;
-
-                (props as any).children = h(
-                  this.ContainerTracker,
-                  { id: containerId },
-                  prop,
+                throw new Error(
+                  `Invalid JSX ${propKey} passed to island <${name} />. To resolve this error, pass the data as a standard prop instead.`
                 );
               }
+
+              // if (
+              //   prop !== null &&
+              //   (isValidElement(prop) ||
+              //     (Array.isArray(prop) && isValidElement(prop[0])))
+              // ) {
+              const containerId = `${Array.from(
+                this.tracking.containers.keys()
+              ).length.toString()}:${propKey}`;
+
+              // @ts-ignore nonono
+              props[propKey] = this.addMarker(
+                prop,
+                containerId, //`${island.Path}:${containerId}`,
+                'container'
+              );
+
+              this.tracking.containers.set(containerId, prop);
+
+              prop = props[propKey];
+
+              // @ts-ignore nonono
+              props[propKey] = h(
+                this.ContainerTracker,
+                { id: containerId },
+                prop
+              );
+              // }
             }
 
             const islandNode = h(originalType, props) as VNode;
 
-            const islandId = this.islandsData.Store(originalType, props);
-
             this.tracking.patched.add(islandNode);
+
+            const islandId = this.islandsData.Store(originalType, props);
 
             return this.addMarker(islandNode, islandId);
           };
@@ -507,7 +523,7 @@ export class PreactRenderHandler {
         vnode.type = Fragment;
 
         vnode.props = {
-          children: this.addMarker(child, `eac-key:${vnode.key}`),
+          children: this.addMarker(child, `vnode.key`, 'key'),
         };
       }
     }
@@ -556,7 +572,7 @@ export class PreactRenderHandler {
   }
 
   protected processEaCBypassNodes(
-    vnode: { type: string } & VNode<Record<string, unknown>>,
+    vnode: { type: string } & VNode<Record<string, unknown>>
   ) {
     if (!vnode.props['data-eac-bypass-base']) {
       if (
@@ -572,18 +588,27 @@ export class PreactRenderHandler {
       ) {
         vnode.props.src = `.${vnode.props.src}`;
       }
+
+      if (
+        typeof vnode.props.action === 'string' &&
+        vnode.props.action.startsWith('/')
+      ) {
+        vnode.props.action = `.${vnode.props.action}`;
+      }
     }
   }
 
   protected refreshTracking(): typeof this.tracking {
     return {
+      containers: new Map(),
       ownerStack: [],
       owners: new Map<VNode, VNode>(),
       patched: new WeakSet<VNode>(),
+      rendering: false,
       renderingUserTemplate: false,
-      containers: new Map(),
       template: {
         bodyProps: undefined,
+        encounteredIslands: new WeakSet(),
         hasHeadChildren: false,
         headChildNodes: [],
         headProps: undefined,
@@ -641,7 +666,7 @@ export class PreactRenderHandler {
   protected beforeHookStateHook(
     component: Component,
     index: number,
-    type: PreactHookTypes,
+    type: PreactHookTypes
   ) {
     this.origHook?.(component, index, type);
   }

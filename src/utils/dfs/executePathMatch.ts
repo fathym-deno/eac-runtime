@@ -29,6 +29,10 @@ export async function executePathMatch(
 
   ctx.Params = patternResult?.pathname.groups || {};
 
+  console.log(match);
+  console.log(match.Handlers.pipeline[0]);
+  console.log(match.Handlers.pipeline[1]);
+
   let resp = match.Handlers.Execute(req, ctx);
 
   if (defaultContentType) {
