@@ -24,6 +24,12 @@ export async function start(
     let firstError;
     for (let port = startPort; port < endPort; port++) {
       try {
+        await (
+          await Deno.serve({ port }, () => {
+            throw new Error();
+          })
+        ).shutdown();
+
         config.Server.port = port;
 
         await startServer(config, configure);
