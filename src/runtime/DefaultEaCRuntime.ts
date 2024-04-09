@@ -73,32 +73,40 @@ export class DefaultEaCRuntime implements EaCRuntime {
 
     this.ModifierResolvers = this.config.ModifierResolvers || {};
 
-    let esbuild: ESBuild;
-
-    if (IS_DENO_DEPLOY()) {
-      esbuild = await import('https://deno.land/x/esbuild@v0.20.1/wasm.js');
-
-      console.log('Initialized esbuild with portable WASM.');
-    } else {
-      esbuild = await import('https://deno.land/x/esbuild@v0.20.1/mod.js');
-
-      console.log('Initialized esbuild with standard build.');
-    }
+    let esbuild: ESBuild | undefined;
 
     try {
-      const worker = IS_DENO_DEPLOY() ? false : undefined;
+      esbuild = await this.IoC.Resolve<ESBuild>(this.IoC!.Symbol('ESBuild'));
+    } catch {
+      esbuild = undefined;
+    }
 
-      await esbuild.initialize({
-        worker,
-      });
+    if (!esbuild) {
+      if (IS_DENO_DEPLOY()) {
+        esbuild = await import('https://deno.land/x/esbuild@v0.20.1/wasm.js');
 
-      this.IoC.Register<ESBuild>(() => esbuild, {
+        console.log('Initialized esbuild with portable WASM.');
+      } else {
+        esbuild = await import('https://deno.land/x/esbuild@v0.20.1/mod.js');
+
+        console.log('Initialized esbuild with standard build.');
+      }
+
+      try {
+        const worker = IS_DENO_DEPLOY() ? false : undefined;
+
+        await esbuild.initialize({
+          worker,
+        });
+      } catch (err) {
+        console.log(err);
+
+        // throw err;
+      }
+
+      this.IoC.Register<ESBuild>(() => esbuild!, {
         Type: this.IoC!.Symbol('ESBuild'),
       });
-    } catch (err) {
-      console.log('There was an error initializing esbuild');
-
-      throw err;
     }
 
     await this.configurePlugins(this.config.Plugins);
