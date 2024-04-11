@@ -1,22 +1,19 @@
 // deno-lint-ignore-file no-explicit-any
-import { ComponentChildren, componentMap, Fragment, h, render, VNode } from './client.deps.ts';
-
-type ClientIslandsData = Map<
-  string,
-  { Name: string; Props: Record<string, unknown> }
->;
-
-enum MarkerKind {
-  Island = 'island',
-  Container = 'container',
-}
-
-type Marker = {
-  kind: MarkerKind;
-  id: string;
-  startNode: Text | Comment | null;
-  endNode: Text | Comment | null;
-};
+import {
+  ClientIslandsData,
+  ComponentChildren,
+  componentMap,
+  Fragment,
+  h,
+  isCommentNode,
+  isElementNode,
+  isTextNode,
+  Marker,
+  MarkerKind,
+  render,
+  ServerComponent,
+  VNode,
+} from './client.deps.ts';
 
 function addChildrenFromTemplate(
   data: ClientIslandsData,
@@ -47,8 +44,6 @@ function addChildrenFromTemplate(
 
     const node = template.content.cloneNode(true);
 
-    console.log(node);
-
     walkNodeTree(data, node, markerStack, vnodeStack, islandRoots);
 
     markerStack.pop();
@@ -67,14 +62,6 @@ function addPropsChild(parent: VNode, vnode: ComponentChildren) {
     }
   }
 }
-
-function ServerComponent(props: {
-  children: ComponentChildren;
-  id: string;
-}): ComponentChildren {
-  return props.children;
-}
-ServerComponent.displayName = 'PreactServerComponent';
 
 function createRootFragment(
   parent: Element,
@@ -121,18 +108,6 @@ function createRootFragment(
       parent.removeChild(child);
     },
   });
-}
-
-function isCommentNode(node: Node): node is Comment {
-  return node.nodeType === Node.COMMENT_NODE;
-}
-
-function isTextNode(node: Node): node is Text {
-  return node.nodeType === Node.TEXT_NODE;
-}
-
-function isElementNode(node: Node): node is HTMLElement {
-  return node.nodeType === Node.ELEMENT_NODE && !('_eacRootFrag' in node);
 }
 
 function processIslandMarkers(data: ClientIslandsData): [VNode, HTMLElement][] {
@@ -224,8 +199,6 @@ function walkNodeTree(
           // inside an island
           const vnode = vnodeStack.pop();
 
-          console.log(vnode);
-
           // For now only `props.children` is supported.
           const islandParent = vnodeStack[vnodeStack.length - 1]!;
 
@@ -233,16 +206,12 @@ function walkNodeTree(
 
           (islandParent.props as any)[target] = vnode;
 
-          console.log(target);
-
           // hideMarker(marker);
 
           sib = marker.endNode.nextSibling;
         } else if (marker.kind === MarkerKind.Island) {
           if (markerStack.length === 0) {
             const vnode = vnodeStack[vnodeStack.length - 1];
-
-            console.log(marker.id);
 
             if (vnode.props.children == null) {
               addChildrenFromTemplate(

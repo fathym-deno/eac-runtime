@@ -490,11 +490,11 @@ export class PreactRenderHandler {
               }:${propKey}`;
 
               // @ts-ignore nonono
-              // props[propKey] = this.addMarker(
-              //   prop,
-              //   containerId, //`${island.Path}:${containerId}`,
-              //   'container'
-              // );
+              props[propKey] = this.addMarker(
+                prop,
+                containerId, //`${island.Path}:${containerId}`,
+                'container',
+              );
 
               this.tracking.containers.set(containerId, prop);
 
@@ -515,18 +515,18 @@ export class PreactRenderHandler {
 
             const islandId = this.islandsData.Store(originalType, props);
 
-            if (containerId) {
-              return this.addMarker(
-                this.addMarker(
-                  islandNode,
-                  containerId, //`${island.Path}:${containerId}`,
-                  'container',
-                ),
-                islandId,
-              );
-            } else {
-              return this.addMarker(islandNode, islandId);
-            }
+            // if (containerId) {
+            //   return this.addMarker(
+            //     this.addMarker(
+            //       islandNode,
+            //       containerId, //`${island.Path}:${containerId}`,
+            //       'container',
+            //     ),
+            //     islandId,
+            //   );
+            // } else {
+            return this.addMarker(islandNode, islandId);
+            // }
           };
         }
       } else if (vnode.key && this.tracking.template.islandDepth > 0) {
