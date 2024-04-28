@@ -13,12 +13,12 @@ export * from 'https://deno.land/x/fathym_common@v0.0.179/deno.ts';
 export * from 'https://deno.land/x/fathym_common@v0.0.179/mod.ts';
 export * from 'https://deno.land/x/fathym_common@v0.0.179/oauth.ts';
 // export * from '../everything-as-code/mod.ts';
-export * from 'https://deno.land/x/fathym_everything_as_code@v0.0.403/deno.ts';
-export * from 'https://deno.land/x/fathym_everything_as_code@v0.0.403/mod.ts';
-export * from 'https://deno.land/x/fathym_everything_as_code@v0.0.403/oauth.ts';
-export * from 'https://deno.land/x/fathym_everything_as_code@v0.0.403/octokit.ts';
+export * from 'https://deno.land/x/fathym_everything_as_code@v0.0.404/deno.ts';
+export * from 'https://deno.land/x/fathym_everything_as_code@v0.0.404/mod.ts';
+export * from 'https://deno.land/x/fathym_everything_as_code@v0.0.404/oauth.ts';
+export * from 'https://deno.land/x/fathym_everything_as_code@v0.0.404/octokit.ts';
 // export * from '../everything-as-code-api/mod.ts';
-export * from 'https://deno.land/x/fathym_everything_as_code_api@v0.0.32/mod.ts';
+export * from 'https://deno.land/x/fathym_everything_as_code_api@v0.0.34/mod.ts';
 
 import * as esbuild from 'https://deno.land/x/esbuild@v0.20.1/mod.js';
 export { esbuild };
