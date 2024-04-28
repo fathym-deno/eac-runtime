@@ -8,6 +8,7 @@
     "deploy": "deno task build && deno task test && ftm git",
     "test": "deno test -A tests/tests.ts --parallel --coverage=cov"
   },
+  "lock": false,
   "imports": {
     // "@fathym/atomic": "../fathym-atomic/mod.ts",
     // "@fathym/atomic/": "../fathym-atomic/",
