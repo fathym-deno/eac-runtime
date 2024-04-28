@@ -4,7 +4,7 @@ import { EaCRuntimeHandlerPipeline } from '../../runtime/EaCRuntimeHandlerPipeli
 import { EaCRuntimeHandlerResult } from '../../runtime/EaCRuntimeHandlerResult.ts';
 import { IS_BUILDING } from '../../constants.ts';
 import { PathMatch } from './PathMatch.ts';
-import { convertFilePathToPattern } from './convertFilePathToPattern.ts';
+import { convertFilePathToMatch } from './convertFilePathToMatch.ts';
 
 export async function loadRequestPathPatterns<TSetup>(
   fileHandler: DFSFileHandler,
@@ -31,7 +31,7 @@ export async function loadRequestPathPatterns<TSetup>(
         (p) => !p.endsWith('_middleware.ts') && !p.endsWith('_layout.tsx'),
       )
       .map((p) => {
-        return convertFilePathToPattern<TSetup>(
+        return convertFilePathToMatch<TSetup>(
           p,
           dfs,
           loadHandlers,

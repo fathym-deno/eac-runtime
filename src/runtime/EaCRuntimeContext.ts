@@ -3,6 +3,7 @@ import { EaCApplicationProcessorConfig } from './processors/EaCApplicationProces
 import { EaCProjectProcessorConfig } from './processors/EaCProjectProcessorConfig.ts';
 import { EaCRuntimeEaC } from './EaCRuntimeEaC.ts';
 import { EaCRuntimeConfig } from './config/EaCRuntimeConfig.ts';
+import { URLMatch } from './URLMatch.ts';
 
 export type EaCRuntimeContext<
   TState = Record<string, unknown>,
@@ -31,15 +32,7 @@ export type EaCRuntimeContext<
 
     Revision: number;
 
-    URLMatch: {
-      Base: string;
-
-      Hash?: string;
-
-      Path: string;
-
-      Search?: string;
-    };
+    URLMatch: URLMatch;
   };
 
   State: TState;

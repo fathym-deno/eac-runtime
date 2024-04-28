@@ -10,7 +10,7 @@ import { DFSFileHandler } from '../../runtime/dfs/DFSFileHandler.ts';
 // import { IS_DENO_DEPLOY } from '../../constants.ts';
 
 export async function importDFSTypescriptModule(
-  _esbuild: ESBuild,
+  _esbuild: ESBuild | undefined,
   fileHandler: DFSFileHandler,
   filePath: string,
   dfs: EaCDistributedFileSystem,

@@ -22,6 +22,7 @@ import { EaCRuntimeHandler } from './EaCRuntimeHandler.ts';
 import { EaCRuntimePlugin } from './plugins/EaCRuntimePlugin.ts';
 import { EaCRuntimePluginConfig } from './config/EaCRuntimePluginConfig.ts';
 import { EaCRuntimeHandlerPipeline } from './EaCRuntimeHandlerPipeline.ts';
+import { buildURLMatch } from './buildURLMatch.ts';
 
 export class DefaultEaCRuntime implements EaCRuntime {
   protected applicationGraph?: Record<string, EaCApplicationProcessorConfig[]>;
@@ -443,55 +444,12 @@ export class DefaultEaCRuntime implements EaCRuntime {
 
       ctx.Runtime.ApplicationProcessorConfig = appProcessorConfig;
 
-      const pattern = new URLPattern({
-        pathname: ctx.Runtime.ApplicationProcessorConfig.ResolverConfig.PathPattern,
-      });
-
-      // console.log(
-      //   '******************************** Project Request ********************************',
-      // );
-      // console.log(`Incoming request: ${req.url}`);
-      // console.log(req.headers);
-
-      const reqUrl = new URL(req.url);
-
-      const forwardedProto = req.headers.get('x-forwarded-proto') || reqUrl.protocol;
-
-      const host = req.headers.get('host') || reqUrl.host;
-
-      const reqCheckUrl = new URL(
-        reqUrl.href.replace(reqUrl.origin, ''),
-        `${forwardedProto}://${host}`.replace('::', ':'),
+      ctx.Runtime.URLMatch = buildURLMatch(
+        new URLPattern({
+          pathname: ctx.Runtime.ApplicationProcessorConfig.ResolverConfig.PathPattern,
+        }),
+        req,
       );
-
-      // console.log(`Pattern: ${pattern.pathname}`);
-
-      // console.log(`Request check: ${reqCheckUrl.href}`);
-
-      const patternResult = pattern.exec(reqCheckUrl.href);
-
-      const base = patternResult!.inputs[0].toString();
-
-      // console.log(`Request base: ${base}`);
-
-      const path = patternResult!.pathname.groups[0] || '';
-
-      // console.log(patternResult!.pathname);
-
-      ctx.Runtime.URLMatch = {
-        Base: base.substring(
-          0,
-          base.length - path.length - reqUrl.search.length - reqUrl.hash.length,
-        ),
-        Hash: reqUrl.hash,
-        Path: path,
-        Search: reqUrl.search,
-      };
-
-      // console.log(ctx.Runtime.URLMatch);
-      // console.log(
-      //   '****************************************************************',
-      // );
 
       return ctx.Runtime.ApplicationProcessorConfig.Handlers.Execute(req, ctx);
     };

@@ -1,3 +1,4 @@
+export * from './convertFilePathToMatch.ts';
 export * from './convertFilePathToPattern.ts';
 export * from './executePathMatch.ts';
 export * from './loadFileHandler.ts';
