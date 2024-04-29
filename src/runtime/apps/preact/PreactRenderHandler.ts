@@ -218,6 +218,8 @@ export class PreactRenderHandler {
 
     let finalComp = h(routeComponent, pageProps) as VNode;
 
+    console.log(`finalPageProps: ${pageProps.Data.currentEaC?.EnterpriseLookup}`);
+
     let i = componentStack.length - 1;
 
     while (i--) {
