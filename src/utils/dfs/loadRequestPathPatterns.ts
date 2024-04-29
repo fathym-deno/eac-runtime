@@ -43,6 +43,7 @@ export async function loadRequestPathPatterns<TSetup>(
     const patterns = await Promise.all(apiPathPatternCalls);
 
     return patterns
+      .flatMap((p) => p)
       .sort((a, b) => b.Priority - a.Priority)
       .sort((a, b) => {
         const aCatch = a.PatternText.endsWith('*') ? -1 : 1;

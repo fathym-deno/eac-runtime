@@ -12,11 +12,11 @@ export type PathMatch = {
   Priority: number;
 };
 
-export const pathToPatternRegexes: [RegExp, string, number][] = [
+export const pathToPatternRegexes: [RegExp, string, number, 'optional' | 'expand' | 'segment'][] = [
   // Handle [[optional]]
-  [/\[\[(.*?)\]\]/g, '{/:$1}?', 2],
+  [/\[\[(.*?)\]\]/g, '{/:$1}?', 2, 'optional'],
   // Handle [...ident]
-  [/\[\.\.\.(.*?)\]/g, ':$1*', -1000],
+  [/\[\.\.\.(.*?)\]/g, ':$1*', -1000, 'expand'],
   // Handle [segment]
-  [/\[(.*?)\]/g, ':$1', 3],
+  [/\[(.*?)\]/g, ':$1', 3, 'segment'],
 ];

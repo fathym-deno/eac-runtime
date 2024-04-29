@@ -6,6 +6,7 @@ import {
   Fragment,
   h,
   isValidElement,
+  jsonClone,
   PreactRenderToString,
   type VNode,
 } from '../../../src.deps.ts';
@@ -170,7 +171,6 @@ export class PreactRenderHandler {
 
   public async RenderPage(
     renderStack: ComponentType<any>[],
-    data: Record<string, unknown>,
     ctx: EaCRuntimeContext,
   ): Promise<string> {
     // const start = Date.now();
@@ -188,7 +188,7 @@ export class PreactRenderHandler {
     const baseUrl = new URL(path, base);
 
     const pageProps: PageProps = {
-      Data: data,
+      Data: jsonClone(ctx.Data),
       Params: ctx.Params,
       Revision: ctx.Runtime.Revision,
       Component: () => null,
@@ -217,8 +217,6 @@ export class PreactRenderHandler {
     const routeComponent = componentStack[componentStack.length - 1];
 
     let finalComp = h(routeComponent, pageProps) as VNode;
-
-    console.log(`finalPageProps: ${pageProps.Data.currentEaC?.EnterpriseLookup}`);
 
     let i = componentStack.length - 1;
 
