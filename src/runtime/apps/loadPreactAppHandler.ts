@@ -92,9 +92,6 @@ export async function loadPreactAppHandler(
   pipeline.Append(...pageHandlers);
 
   return (req, ctx) => {
-    console.log('Page Handlers: ');
-    console.log(pageHandlers);
-    console.log(pipeline.pipeline);
     return pipeline.Execute(req, ctx);
   };
 }

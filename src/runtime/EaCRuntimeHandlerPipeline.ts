@@ -36,8 +36,6 @@ export class EaCRuntimeHandlerPipeline {
       if (this.pipeline.length > index) {
         let handler: EaCRuntimeHandler | EaCRuntimeHandlers | undefined = this.pipeline[index];
 
-        console.log(handler);
-
         if (handler && typeof handler !== 'function') {
           handler = handler[req.method.toUpperCase() as KnownMethod];
 
