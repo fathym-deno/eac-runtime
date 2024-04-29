@@ -20,8 +20,6 @@ export function convertFilePathToPattern(
 
   const optionalParts: string[] = [];
 
-  console.log(parts);
-
   parts = parts.map((part) => {
     const partCheck = pathToPatternRegexes.find(([pc]) => pc.test(part));
 
@@ -45,8 +43,6 @@ export function convertFilePathToPattern(
 
     return part;
   });
-
-  console.log(optionalParts);
 
   if (optionalParts.length > 1) {
     return optionalParts.map((_op, i) => {
