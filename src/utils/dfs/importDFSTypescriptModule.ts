@@ -50,22 +50,21 @@ export async function importDFSTypescriptModule(
     //   apiUrl = `data:application/javascript;base64,${enc}`;
     // } else {
     if (
+      filePath.startsWith('http://') ||
+      filePath.startsWith('https://')
+    ) {
+      apiUrl = filePath;
+    } else if (
       fileHandler.Root.startsWith('http://') ||
       fileHandler.Root.startsWith('https://')
     ) {
       apiUrl = new URL(filePath, fileHandler.Root).href;
-
-      // if (!apiUrl.includes('?')) {
-      //   apiUrl += `?Rev=${Date.now()}`;
-      // }
     } else {
-      apiUrl = `file:///${
-        path.join(
-          Deno.cwd(),
-          fileHandler.Root,
-          filePath,
-        )
-      }`;
+      if (filePath.startsWith('file:')) {
+        apiUrl = filePath;
+      } else {
+        apiUrl = `file:///${path.join(Deno.cwd(), fileHandler.Root, filePath)}`;
+      }
     }
     // }
 

@@ -1,9 +1,14 @@
 import {
   creatAzureADB2COAuthConfig,
+  createAzureADOAuthConfig,
+  createGitHubOAuthConfig,
   createOAuthHelpers,
   creatOAuthConfig,
   DenoKVOAuth,
+  EaCProviderAsCode,
   isEaCAzureADB2CProviderDetails,
+  isEaCAzureADProviderDetails,
+  isEaCGitHubAppProviderDetails,
   isEaCOAuthProviderDetails,
   redirectRequest,
   UserOAuthConnection,
@@ -11,6 +16,44 @@ import {
 } from '../../src.deps.ts';
 import { EaCRuntimeContext } from '../../runtime/EaCRuntimeContext.ts';
 import { EaCRuntimeHandler } from '../../runtime/EaCRuntimeHandler.ts';
+
+export function loadOAuth2ClientConfig(provider: EaCProviderAsCode) {
+  let oAuthConfig: DenoKVOAuth.OAuth2ClientConfig | undefined = undefined;
+
+  if (isEaCAzureADB2CProviderDetails(provider.Details)) {
+    oAuthConfig = creatAzureADB2COAuthConfig(
+      provider.Details.ClientID,
+      provider.Details.ClientSecret,
+      provider.Details.Domain,
+      provider.Details.PolicyName,
+      provider.Details.TenantID,
+      provider.Details.Scopes,
+    );
+  } else if (isEaCAzureADProviderDetails(provider.Details)) {
+    oAuthConfig = createAzureADOAuthConfig(
+      provider.Details.ClientID,
+      provider.Details.ClientSecret,
+      provider.Details.TenantID,
+      provider.Details.Scopes,
+    );
+  } else if (isEaCGitHubAppProviderDetails(provider.Details)) {
+    oAuthConfig = createGitHubOAuthConfig(
+      provider.Details.ClientID,
+      provider.Details.ClientSecret,
+      provider.Details.Scopes,
+    );
+  } else if (isEaCOAuthProviderDetails(provider.Details)) {
+    oAuthConfig = creatOAuthConfig(
+      provider.Details.ClientID,
+      provider.Details.ClientSecret,
+      provider.Details.AuthorizationEndpointURI,
+      provider.Details.TokenURI,
+      provider.Details.Scopes,
+    );
+  }
+
+  return oAuthConfig;
+}
 
 export function establishOAuthMiddleware(
   providerLookup: string,
@@ -24,26 +67,9 @@ export function establishOAuthMiddleware(
       provider.DatabaseLookup,
     );
 
-    let oAuthConfig: DenoKVOAuth.OAuth2ClientConfig;
+    const oAuthConfig = loadOAuth2ClientConfig(provider);
 
-    if (isEaCAzureADB2CProviderDetails(provider.Details)) {
-      oAuthConfig = creatAzureADB2COAuthConfig(
-        provider.Details.ClientID,
-        provider.Details.ClientSecret,
-        provider.Details.Domain,
-        provider.Details.PolicyName,
-        provider.Details.TenantID,
-        provider.Details.Scopes,
-      );
-    } else if (isEaCOAuthProviderDetails(provider.Details)) {
-      oAuthConfig = creatOAuthConfig(
-        provider.Details.ClientID,
-        provider.Details.ClientSecret,
-        provider.Details.AuthorizationEndpointURI,
-        provider.Details.TokenURI,
-        provider.Details.Scopes,
-      );
-    } else {
+    if (!oAuthConfig) {
       throw new Error(
         `The provider '${providerLookup}' type cannot be handled in the oAuthMiddleware.`,
       );

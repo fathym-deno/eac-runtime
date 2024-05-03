@@ -14,15 +14,15 @@ export function buildURLMatch(pattern: URLPattern, req: Request): URLMatch {
 
   const patternResult = pattern.exec(reqCheckUrl.href);
 
-  const base = patternResult!.inputs[0].toString();
-
   const path = patternResult!.pathname.groups[0] || '';
 
+  const base = new URL(
+    reqCheckUrl.pathname.slice(0, path.length > 0 ? -path.length : undefined),
+    reqCheckUrl.origin,
+  ).href;
+
   return {
-    Base: base.substring(
-      0,
-      base.length - path.length - reqUrl.search.length - reqUrl.hash.length,
-    ),
+    Base: base,
     Hash: reqUrl.hash,
     Path: path,
     Search: reqUrl.search,

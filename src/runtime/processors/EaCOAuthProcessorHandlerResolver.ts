@@ -1,13 +1,11 @@
 import {
-  creatAzureADB2COAuthConfig,
-  createGitHubOAuthConfig,
-  creatOAuthConfig,
   DenoKVOAuth,
   djwt,
   EaCGitHubAppProviderDetails,
   EaCOAuthProcessor,
   EaCSourceConnectionDetails,
   isEaCAzureADB2CProviderDetails,
+  isEaCAzureADProviderDetails,
   isEaCGitHubAppProviderDetails,
   isEaCOAuthProcessor,
   isEaCOAuthProviderDetails,
@@ -15,6 +13,7 @@ import {
   oAuthRequest,
   UserOAuthConnection,
 } from '../../src.deps.ts';
+import { loadOAuth2ClientConfig } from '../../modules/oauth/oauthMiddleware.ts';
 import { ProcessorHandlerResolver } from './ProcessorHandlerResolver.ts';
 
 export const EaCOAuthProcessorHandlerResolver: ProcessorHandlerResolver = {
@@ -103,17 +102,10 @@ export const EaCOAuthProcessorHandlerResolver: ProcessorHandlerResolver = {
       }
     };
 
+    const oAuthConfig = loadOAuth2ClientConfig(provider)!;
+
     return (req, ctx) => {
       if (isEaCAzureADB2CProviderDetails(provider.Details)) {
-        const oAuthConfig = creatAzureADB2COAuthConfig(
-          provider.Details.ClientID,
-          provider.Details.ClientSecret,
-          provider.Details.Domain,
-          provider.Details.PolicyName,
-          provider.Details.TenantID,
-          provider.Details.Scopes,
-        );
-
         return oAuthRequest(
           req,
           oAuthConfig,
@@ -135,12 +127,12 @@ export const EaCOAuthProcessorHandlerResolver: ProcessorHandlerResolver = {
           ctx.Runtime.URLMatch.Base,
           ctx.Runtime.URLMatch.Path,
         );
-      } else if (isEaCGitHubAppProviderDetails(provider.Details)) {
-        const oAuthConfig = createGitHubOAuthConfig(
-          provider.Details.ClientID,
-          provider.Details.ClientSecret,
-          provider.Details.Scopes,
-        );
+      } else if (isEaCAzureADProviderDetails(provider.Details)) {
+        if (ctx.Runtime.URLMatch.Path.endsWith('callback')) {
+          const url = new URL(req.url);
+
+          oAuthConfig.redirectUri = new URL(url.pathname, url.origin).href;
+        }
 
         return oAuthRequest(
           req,
@@ -148,9 +140,34 @@ export const EaCOAuthProcessorHandlerResolver: ProcessorHandlerResolver = {
           async (tokens, newSessionId, oldSessionId) => {
             await handleCompleteCallback(
               async (accessToken) => {
-                const octokit = await loadOctokit(provider.Details as EaCGitHubAppProviderDetails, {
-                  Token: accessToken,
-                } as EaCSourceConnectionDetails);
+                const [_header, payload, _signature] = await djwt.decode(
+                  accessToken,
+                );
+
+                return (payload as Record<string, string>).upn;
+              },
+              tokens,
+              newSessionId,
+              oldSessionId,
+              provider.Details?.IsPrimary,
+            );
+          },
+          ctx.Runtime.URLMatch.Base,
+          ctx.Runtime.URLMatch.Path,
+        );
+      } else if (isEaCGitHubAppProviderDetails(provider.Details)) {
+        return oAuthRequest(
+          req,
+          oAuthConfig,
+          async (tokens, newSessionId, oldSessionId) => {
+            await handleCompleteCallback(
+              async (accessToken) => {
+                const octokit = await loadOctokit(
+                  provider.Details as EaCGitHubAppProviderDetails,
+                  {
+                    Token: accessToken,
+                  } as EaCSourceConnectionDetails,
+                );
 
                 const {
                   data: { login },
@@ -168,14 +185,6 @@ export const EaCOAuthProcessorHandlerResolver: ProcessorHandlerResolver = {
           ctx.Runtime.URLMatch.Path,
         );
       } else if (isEaCOAuthProviderDetails(provider.Details)) {
-        const oAuthConfig = creatOAuthConfig(
-          provider.Details.ClientID,
-          provider.Details.ClientSecret,
-          provider.Details.AuthorizationEndpointURI,
-          provider.Details.TokenURI,
-          provider.Details.Scopes,
-        );
-
         return oAuthRequest(
           req,
           oAuthConfig,

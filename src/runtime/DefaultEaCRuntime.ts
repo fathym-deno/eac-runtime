@@ -11,6 +11,8 @@ import {
 } from '../src.deps.ts';
 import { EAC_RUNTIME_DEV, IS_BUILDING, IS_DENO_DEPLOY } from '../constants.ts';
 import { EaCRuntimeConfig } from './config/EaCRuntimeConfig.ts';
+import { EaCRuntimePluginDefs } from './config/EaCRuntimePluginDefs.ts';
+import { EaCRuntimePluginDef } from './config/EaCRuntimePluginDef.ts';
 import { ProcessorHandlerResolver } from './processors/ProcessorHandlerResolver.ts';
 import { ModifierHandlerResolver } from './modifiers/ModifierHandlerResolver.ts';
 import { EaCApplicationProcessorConfig } from './processors/EaCApplicationProcessorConfig.ts';
@@ -269,46 +271,50 @@ export class DefaultEaCRuntime implements EaCRuntime {
   }
 
   protected async configurePlugins(
-    plugins?: (EaCRuntimePlugin | [string, ...args: unknown[]])[],
+    plugins?: EaCRuntimePluginDefs[],
   ): Promise<void> {
     for (let pluginDef of plugins || []) {
-      const pluginKey = pluginDef;
+      if (Array.isArray(pluginDef) && typeof pluginDef[0] === 'object') {
+        await this.configurePlugins(pluginDef as EaCRuntimePluginDefs[]);
+      } else {
+        const pluginKey = pluginDef as EaCRuntimePluginDef;
 
-      if (Array.isArray(pluginDef)) {
-        const [plugin, ...args] = pluginDef;
+        if (Array.isArray(pluginDef)) {
+          const [plugin, ...args] = pluginDef as [string, ...args: unknown[]];
 
-        pluginDef = new (await import(plugin)).default(
-          args,
-        ) as EaCRuntimePlugin;
-      }
-
-      this.pluginDefs.set(pluginKey, pluginDef);
-
-      const pluginConfig = this.pluginConfigs.has(pluginKey)
-        ? this.pluginConfigs.get(pluginKey)
-        : pluginDef.Build
-        ? await pluginDef.Build(this.config)
-        : undefined;
-
-      this.pluginConfigs.set(pluginKey, pluginConfig);
-
-      if (pluginConfig) {
-        if (pluginConfig.EaC) {
-          this.EaC = mergeWithArrays(this.EaC || {}, pluginConfig.EaC);
+          pluginDef = new (await import(plugin)).default(
+            args,
+          ) as EaCRuntimePlugin;
         }
 
-        if (pluginConfig.IoC) {
-          pluginConfig.IoC.CopyTo(this.IoC!);
-        }
+        this.pluginDefs.set(pluginKey, pluginDef);
 
-        if (pluginConfig.ModifierResolvers) {
-          this.ModifierResolvers = merge(
-            this.ModifierResolvers || {},
-            pluginConfig.ModifierResolvers,
-          );
-        }
+        const pluginConfig = this.pluginConfigs.has(pluginKey)
+          ? this.pluginConfigs.get(pluginKey)
+          : pluginDef.Build
+          ? await pluginDef.Build(this.config)
+          : undefined;
 
-        await this.configurePlugins(pluginConfig.Plugins);
+        this.pluginConfigs.set(pluginKey, pluginConfig);
+
+        if (pluginConfig) {
+          if (pluginConfig.EaC) {
+            this.EaC = mergeWithArrays(this.EaC || {}, pluginConfig.EaC);
+          }
+
+          if (pluginConfig.IoC) {
+            pluginConfig.IoC.CopyTo(this.IoC!);
+          }
+
+          if (pluginConfig.ModifierResolvers) {
+            this.ModifierResolvers = merge(
+              this.ModifierResolvers || {},
+              pluginConfig.ModifierResolvers,
+            );
+          }
+
+          await this.configurePlugins(pluginConfig.Plugins);
+        }
       }
     }
   }
