@@ -11,7 +11,7 @@ import { EaCRuntimeConfig } from '../config/EaCRuntimeConfig.ts';
 import { EaCRuntimePluginConfig } from '../config/EaCRuntimePluginConfig.ts';
 
 export default class FathymDFSFileHandlerPlugin implements EaCRuntimePlugin {
-  public Build(_config: EaCRuntimeConfig): Promise<EaCRuntimePluginConfig> {
+  public Setup(_config: EaCRuntimeConfig): Promise<EaCRuntimePluginConfig> {
     const pluginConfig: EaCRuntimePluginConfig = {
       Name: 'FathymDFSFileHandlerPlugin',
       IoC: new IoCContainer(),
@@ -21,35 +21,53 @@ export default class FathymDFSFileHandlerPlugin implements EaCRuntimePlugin {
       Type: pluginConfig.IoC!.Symbol('DFSFileHandler'),
     });
 
-    pluginConfig.IoC!.Register(() => EaCDenoKVDistributedFileSystemHandlerResolver, {
-      Name: 'EaCDenoKVDistributedFileSystem',
-      Type: pluginConfig.IoC!.Symbol('DFSFileHandler'),
-    });
+    pluginConfig.IoC!.Register(
+      () => EaCDenoKVDistributedFileSystemHandlerResolver,
+      {
+        Name: 'EaCDenoKVDistributedFileSystem',
+        Type: pluginConfig.IoC!.Symbol('DFSFileHandler'),
+      },
+    );
 
-    pluginConfig.IoC!.Register(() => EaCESMDistributedFileSystemHandlerResolver, {
-      Name: 'EaCESMDistributedFileSystem',
-      Type: pluginConfig.IoC!.Symbol('DFSFileHandler'),
-    });
+    pluginConfig.IoC!.Register(
+      () => EaCESMDistributedFileSystemHandlerResolver,
+      {
+        Name: 'EaCESMDistributedFileSystem',
+        Type: pluginConfig.IoC!.Symbol('DFSFileHandler'),
+      },
+    );
 
-    pluginConfig.IoC!.Register(() => EaCLocalDistributedFileSystemHandlerResolver, {
-      Name: 'EaCLocalDistributedFileSystem',
-      Type: pluginConfig.IoC!.Symbol('DFSFileHandler'),
-    });
+    pluginConfig.IoC!.Register(
+      () => EaCLocalDistributedFileSystemHandlerResolver,
+      {
+        Name: 'EaCLocalDistributedFileSystem',
+        Type: pluginConfig.IoC!.Symbol('DFSFileHandler'),
+      },
+    );
 
-    pluginConfig.IoC!.Register(() => EaCNPMDistributedFileSystemHandlerResolver, {
-      Name: 'EaCNPMDistributedFileSystem',
-      Type: pluginConfig.IoC!.Symbol('DFSFileHandler'),
-    });
+    pluginConfig.IoC!.Register(
+      () => EaCNPMDistributedFileSystemHandlerResolver,
+      {
+        Name: 'EaCNPMDistributedFileSystem',
+        Type: pluginConfig.IoC!.Symbol('DFSFileHandler'),
+      },
+    );
 
-    pluginConfig.IoC!.Register(() => EaCRemoteDistributedFileSystemHandlerResolver, {
-      Name: 'EaCRemoteDistributedFileSystem',
-      Type: pluginConfig.IoC!.Symbol('DFSFileHandler'),
-    });
+    pluginConfig.IoC!.Register(
+      () => EaCRemoteDistributedFileSystemHandlerResolver,
+      {
+        Name: 'EaCRemoteDistributedFileSystem',
+        Type: pluginConfig.IoC!.Symbol('DFSFileHandler'),
+      },
+    );
 
-    pluginConfig.IoC!.Register(() => UnknownEaCDistributedFileSystemHandlerResolver, {
-      Name: 'UnknownEaCDistributedFileSystem',
-      Type: pluginConfig.IoC!.Symbol('DFSFileHandler'),
-    });
+    pluginConfig.IoC!.Register(
+      () => UnknownEaCDistributedFileSystemHandlerResolver,
+      {
+        Name: 'UnknownEaCDistributedFileSystem',
+        Type: pluginConfig.IoC!.Symbol('DFSFileHandler'),
+      },
+    );
 
     return Promise.resolve(pluginConfig);
   }

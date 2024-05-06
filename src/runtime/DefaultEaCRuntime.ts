@@ -11,7 +11,6 @@ import {
 } from '../src.deps.ts';
 import { EAC_RUNTIME_DEV, IS_BUILDING, IS_DENO_DEPLOY } from '../constants.ts';
 import { EaCRuntimeConfig } from './config/EaCRuntimeConfig.ts';
-import { EaCRuntimePluginDefs } from './config/EaCRuntimePluginDefs.ts';
 import { EaCRuntimePluginDef } from './config/EaCRuntimePluginDef.ts';
 import { ProcessorHandlerResolver } from './processors/ProcessorHandlerResolver.ts';
 import { ModifierHandlerResolver } from './modifiers/ModifierHandlerResolver.ts';
@@ -128,15 +127,23 @@ export class DefaultEaCRuntime implements EaCRuntime {
 
     this.Revision = Date.now();
 
-    await this.afterEaCResolved();
+    await this.finalizePlugins();
 
     if (configure) {
       configure(this);
     }
 
+    console.time('projectGraph');
+
     this.buildProjectGraph();
 
+    console.timeEnd('projectGraph');
+
+    console.time('appGraph');
+
     await this.buildApplicationGraph();
+
+    console.timeEnd('appGraph');
 
     esbuild.stop();
   }
@@ -169,14 +176,6 @@ export class DefaultEaCRuntime implements EaCRuntime {
     return resp;
   }
 
-  protected async afterEaCResolved(): Promise<void> {
-    for (const pluginDef of this.pluginDefs.values() || []) {
-      if (pluginDef.AfterEaCResolved) {
-        await pluginDef.AfterEaCResolved(this.EaC!, this.IoC);
-      }
-    }
-  }
-
   protected async buildApplicationGraph(): Promise<void> {
     if (this.EaC!.Applications) {
       this.applicationGraph = {} as Record<
@@ -188,6 +187,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
         const appLookups = Object.keys(
           projProcCfg.Project.ApplicationResolvers || {},
         );
+        console.time(projProcCfg.ProjectLookup);
 
         this.applicationGraph![projProcCfg.ProjectLookup] = appLookups
           .map((appLookup) => {
@@ -216,6 +216,8 @@ export class DefaultEaCRuntime implements EaCRuntime {
         const appProcCfgCalls = this.applicationGraph![
           projProcCfg.ProjectLookup
         ].map(async (appProcCfg) => {
+          console.time(appProcCfg.ApplicationLookup);
+
           const pipeline = await this.constructPipeline(
             projProcCfg.Project,
             appProcCfg.Application,
@@ -225,9 +227,13 @@ export class DefaultEaCRuntime implements EaCRuntime {
           pipeline.Append(await this.establishApplicationHandler(appProcCfg));
 
           appProcCfg.Handlers = pipeline;
+
+          console.timeEnd(appProcCfg.ApplicationLookup);
         });
 
         await Promise.all(appProcCfgCalls);
+
+        console.timeEnd(projProcCfg.ProjectLookup);
       });
 
       await Promise.all(projProcCfgCalls);
@@ -271,50 +277,44 @@ export class DefaultEaCRuntime implements EaCRuntime {
   }
 
   protected async configurePlugins(
-    plugins?: EaCRuntimePluginDefs[],
+    plugins?: EaCRuntimePluginDef[],
   ): Promise<void> {
     for (let pluginDef of plugins || []) {
-      if (Array.isArray(pluginDef) && typeof pluginDef[0] === 'object') {
-        await this.configurePlugins(pluginDef as EaCRuntimePluginDefs[]);
-      } else {
-        const pluginKey = pluginDef as EaCRuntimePluginDef;
+      const pluginKey = pluginDef as EaCRuntimePluginDef;
 
-        if (Array.isArray(pluginDef)) {
-          const [plugin, ...args] = pluginDef as [string, ...args: unknown[]];
+      if (Array.isArray(pluginDef)) {
+        const [plugin, ...args] = pluginDef as [string, ...args: unknown[]];
 
-          pluginDef = new (await import(plugin)).default(
-            args,
-          ) as EaCRuntimePlugin;
+        pluginDef = new (await import(plugin)).default(
+          args,
+        ) as EaCRuntimePlugin;
+      }
+
+      this.pluginDefs.set(pluginKey, pluginDef);
+
+      const pluginConfig = this.pluginConfigs.has(pluginKey)
+        ? this.pluginConfigs.get(pluginKey)
+        : await pluginDef.Setup(this.config);
+
+      this.pluginConfigs.set(pluginKey, pluginConfig);
+
+      if (pluginConfig) {
+        if (pluginConfig.EaC) {
+          this.EaC = mergeWithArrays(this.EaC || {}, pluginConfig.EaC);
         }
 
-        this.pluginDefs.set(pluginKey, pluginDef);
-
-        const pluginConfig = this.pluginConfigs.has(pluginKey)
-          ? this.pluginConfigs.get(pluginKey)
-          : pluginDef.Build
-          ? await pluginDef.Build(this.config)
-          : undefined;
-
-        this.pluginConfigs.set(pluginKey, pluginConfig);
-
-        if (pluginConfig) {
-          if (pluginConfig.EaC) {
-            this.EaC = mergeWithArrays(this.EaC || {}, pluginConfig.EaC);
-          }
-
-          if (pluginConfig.IoC) {
-            pluginConfig.IoC.CopyTo(this.IoC!);
-          }
-
-          if (pluginConfig.ModifierResolvers) {
-            this.ModifierResolvers = merge(
-              this.ModifierResolvers || {},
-              pluginConfig.ModifierResolvers,
-            );
-          }
-
-          await this.configurePlugins(pluginConfig.Plugins);
+        if (pluginConfig.IoC) {
+          pluginConfig.IoC.CopyTo(this.IoC!);
         }
+
+        if (pluginConfig.ModifierResolvers) {
+          this.ModifierResolvers = merge(
+            this.ModifierResolvers || {},
+            pluginConfig.ModifierResolvers,
+          );
+        }
+
+        await this.configurePlugins(pluginConfig.Plugins);
       }
     }
   }
@@ -459,5 +459,19 @@ export class DefaultEaCRuntime implements EaCRuntime {
 
       return ctx.Runtime.ApplicationProcessorConfig.Handlers.Execute(req, ctx);
     };
+  }
+
+  protected async finalizePlugins(): Promise<void> {
+    const buildCalls = Array.from(this.pluginDefs.values()).map(
+      async (pluginDef) => {
+        await pluginDef.Build?.(this.EaC!, this.IoC);
+      },
+    );
+
+    await Promise.all(buildCalls);
+
+    for (const pluginDef of this.pluginDefs.values() || []) {
+      await pluginDef.AfterEaCResolved?.(this.EaC!, this.IoC);
+    }
   }
 }

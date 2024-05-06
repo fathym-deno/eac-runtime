@@ -21,7 +21,7 @@ import { EaCRuntimePlugin } from './EaCRuntimePlugin.ts';
 export default class FathymDemoPlugin implements EaCRuntimePlugin {
   constructor(protected port?: number) {}
 
-  public Build(config: EaCRuntimeConfig): Promise<EaCRuntimePluginConfig> {
+  public Setup(config: EaCRuntimeConfig): Promise<EaCRuntimePluginConfig> {
     const pluginConfig: EaCRuntimePluginConfig = {
       Name: 'FathymDemoPlugin',
       EaC: {

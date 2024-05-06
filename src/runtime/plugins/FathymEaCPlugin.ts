@@ -4,7 +4,7 @@ import { EaCRuntimePluginConfig } from '../config/EaCRuntimePluginConfig.ts';
 import { EaCRuntimePlugin } from './EaCRuntimePlugin.ts';
 
 export default class FathymEaCPlugin implements EaCRuntimePlugin {
-  public async Build(
+  public async Setup(
     _config: EaCRuntimeConfig,
   ): Promise<EaCRuntimePluginConfig> {
     const pluginConfig: EaCRuntimePluginConfig = {

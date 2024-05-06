@@ -12,7 +12,7 @@ import { EaCRuntimeConfig } from '../config/EaCRuntimeConfig.ts';
 import { EaCRuntimePluginConfig } from '../config/EaCRuntimePluginConfig.ts';
 
 export default class FathymModifierHandlerPlugin implements EaCRuntimePlugin {
-  public Build(_config: EaCRuntimeConfig): Promise<EaCRuntimePluginConfig> {
+  public Setup(_config: EaCRuntimeConfig): Promise<EaCRuntimePluginConfig> {
     const pluginConfig: EaCRuntimePluginConfig = {
       Name: 'FathymModifierHandlerPlugin',
       IoC: new IoCContainer(),

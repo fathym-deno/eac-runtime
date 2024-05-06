@@ -7,7 +7,7 @@ import { EaCRuntimePlugin } from '../EaCRuntimePlugin.ts';
  * Used to configure a handler for the azure container start processes.
  */
 export default class FathymAzureContainerCheckPlugin implements EaCRuntimePlugin {
-  public Build(config: EaCRuntimeConfig): Promise<EaCRuntimePluginConfig> {
+  public Setup(config: EaCRuntimeConfig): Promise<EaCRuntimePluginConfig> {
     const pluginConfig: EaCRuntimePluginConfig = {
       Name: 'FathymAzureContainerCheckPlugin',
       IoC: new IoCContainer(),
