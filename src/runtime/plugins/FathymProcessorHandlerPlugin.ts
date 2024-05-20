@@ -8,6 +8,7 @@ import { EaCPreactAppProcessorHandlerResolver } from '../processors/EaCPreactApp
 import { EaCProxyProcessorHandlerResolver } from '../processors/EaCProxyProcessorHandlerResolver.ts';
 import { EaCRedirectProcessorHandlerResolver } from '../processors/EaCRedirectProcessorHandlerResolver.ts';
 import { EaCResponseProcessorHandlerResolver } from '../processors/EaCResponseProcessorHandlerResolver.ts';
+import { EaCStripeProcessorHandlerResolver } from '../processors/EaCStripeProcessorHandlerResolver.ts';
 import { EaCTailwindProcessorHandlerResolver } from '../processors/EaCTailwindProcessorHandlerResolver.ts';
 import { UnknownEaCProcessorHandlerResolver } from '../processors/UnknownEaCProcessorHandlerResolver.ts';
 import { EaCRuntimePlugin } from './EaCRuntimePlugin.ts';
@@ -62,6 +63,11 @@ export default class FathymProcessorHandlerPlugin implements EaCRuntimePlugin {
 
     pluginConfig.IoC!.Register(() => EaCResponseProcessorHandlerResolver, {
       Name: 'EaCResponseProcessor',
+      Type: pluginConfig.IoC!.Symbol('ProcessorHandlerResolver'),
+    });
+
+    pluginConfig.IoC!.Register(() => EaCStripeProcessorHandlerResolver, {
+      Name: 'EaCStripeProcessor',
       Type: pluginConfig.IoC!.Symbol('ProcessorHandlerResolver'),
     });
 

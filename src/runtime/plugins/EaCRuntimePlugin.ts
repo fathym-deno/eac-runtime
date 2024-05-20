@@ -8,7 +8,11 @@ export type EaCRuntimePlugin = {
     ioc: IoCContainer,
   ) => Promise<void>;
 
-  Build?: (eac: EverythingAsCode, ioc: IoCContainer) => Promise<void>;
+  Build?: (
+    eac: EverythingAsCode,
+    ioc: IoCContainer,
+    pluginCfg?: EaCRuntimePluginConfig,
+  ) => Promise<void>;
 
   Setup: (config: EaCRuntimeConfig) => Promise<EaCRuntimePluginConfig>;
 };

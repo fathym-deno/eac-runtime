@@ -7,6 +7,7 @@ import {
   isEaCKeepAliveModifierDetails,
   isEaCMarkdownToHTMLModifierDetails,
   isEaCOAuthModifierDetails,
+  isEaCStripeModifierDetails,
   isEaCTracingModifierDetails,
 } from '../../src.deps.ts';
 import { ModifierHandlerResolver } from './ModifierHandlerResolver.ts';
@@ -27,6 +28,8 @@ export class DefaultModifierMiddlewareResolver implements ModifierHandlerResolve
       toResolveName = 'EaCMarkdownToHTMLModifierDetails';
     } else if (isEaCOAuthModifierDetails(modifier.Details)) {
       toResolveName = 'EaCOAuthModifierDetails';
+    } else if (isEaCStripeModifierDetails(modifier.Details)) {
+      toResolveName = 'EaCStripeModifierDetails';
     } else if (isEaCTracingModifierDetails(modifier.Details)) {
       toResolveName = 'EaCTracingModifierDetails';
     }

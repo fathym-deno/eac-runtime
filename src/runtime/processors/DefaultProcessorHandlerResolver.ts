@@ -8,6 +8,7 @@ import {
   isEaCProxyProcessor,
   isEaCRedirectProcessor,
   isEaCResponseProcessor,
+  isEaCStripeProcessor,
   isEaCTailwindProcessor,
 } from '../../src.deps.ts';
 import { EaCApplicationProcessorConfig } from './EaCApplicationProcessorConfig.ts';
@@ -38,6 +39,8 @@ export class DefaultProcessorHandlerResolver implements ProcessorHandlerResolver
       toResolveName = 'EaCDFSProcessor';
     } else if (isEaCResponseProcessor(appProcCfg.Application.Processor)) {
       toResolveName = 'EaCResponseProcessor';
+    } else if (isEaCStripeProcessor(appProcCfg.Application.Processor)) {
+      toResolveName = 'EaCStripeProcessor';
     } else if (isEaCTailwindProcessor(appProcCfg.Application.Processor)) {
       toResolveName = 'EaCTailwindProcessor';
     } else {

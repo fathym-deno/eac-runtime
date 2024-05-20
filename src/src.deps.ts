@@ -9,6 +9,7 @@ export * from 'https://deno.land/std@0.220.1/streams/mod.ts';
 export * as djwt from 'https://deno.land/x/djwt@v3.0.0/mod.ts';
 export { transpile } from 'https://deno.land/x/emit@0.37.0/mod.ts';
 export * from 'https://deno.land/x/deno_dom@v0.1.45/deno-dom-wasm-noinit.ts';
+export { Stripe } from 'npm:stripe';
 // export * as gfm from 'https://deno.land/x/gfm@0.2.3/mod.ts';
 
 export type {

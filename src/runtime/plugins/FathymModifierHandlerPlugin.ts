@@ -6,6 +6,7 @@ import { EaCJWTValidationModifierHandlerResolver } from '../modifiers/EaCJWTVali
 import { EaCKeepAliveModifierHandlerResolver } from '../modifiers/EaCKeepAliveModifierHandlerResolver.ts';
 import { EaCMarkdownToHTMLModifierHandlerResolver } from '../modifiers/EaCMarkdownToHTMLModifierHandlerResolver.ts';
 import { EaCOAuthModifierHandlerResolver } from '../modifiers/EaCOAuthModifierHandlerResolver.ts';
+import { EaCStripeModifierHandlerResolver } from '../modifiers/EaCStripeModifierHandlerResolver.ts';
 import { EaCTracingModifierHandlerResolver } from '../modifiers/EaCTracingModifierHandlerResolver.ts';
 import { EaCRuntimePlugin } from './EaCRuntimePlugin.ts';
 import { EaCRuntimeConfig } from '../config/EaCRuntimeConfig.ts';
@@ -49,6 +50,11 @@ export default class FathymModifierHandlerPlugin implements EaCRuntimePlugin {
 
     pluginConfig.IoC!.Register(() => EaCOAuthModifierHandlerResolver, {
       Name: 'EaCOAuthModifierDetails',
+      Type: pluginConfig.IoC!.Symbol('ModifierHandlerResolver'),
+    });
+
+    pluginConfig.IoC!.Register(() => EaCStripeModifierHandlerResolver, {
+      Name: 'EaCStripeModifierDetails',
       Type: pluginConfig.IoC!.Symbol('ModifierHandlerResolver'),
     });
 

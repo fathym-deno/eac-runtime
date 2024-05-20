@@ -6,7 +6,6 @@ import {
   ESBuild,
   IoCContainer,
   merge,
-  mergeWithArrays,
   processCacheControlHeaders,
 } from '../src.deps.ts';
 import { EAC_RUNTIME_DEV, IS_BUILDING, IS_DENO_DEPLOY } from '../constants.ts';
@@ -300,7 +299,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
 
       if (pluginConfig) {
         if (pluginConfig.EaC) {
-          this.EaC = mergeWithArrays(this.EaC || {}, pluginConfig.EaC);
+          this.EaC = merge(this.EaC || {}, pluginConfig.EaC);
         }
 
         if (pluginConfig.IoC) {
@@ -464,7 +463,9 @@ export class DefaultEaCRuntime implements EaCRuntime {
   protected async finalizePlugins(): Promise<void> {
     const buildCalls = Array.from(this.pluginDefs.values()).map(
       async (pluginDef) => {
-        await pluginDef.Build?.(this.EaC!, this.IoC);
+        const pluginCfg = this.pluginConfigs.get(pluginDef);
+
+        await pluginDef.Build?.(this.EaC!, this.IoC, pluginCfg);
       },
     );
 
