@@ -21,6 +21,7 @@ export * from 'https://deno.land/x/fathym_everything_as_code@v0.0.413/oauth.ts';
 export * from 'https://deno.land/x/fathym_everything_as_code@v0.0.413/octokit.ts';
 // export * from '../everything-as-code-api/mod.ts';
 export * from 'https://deno.land/x/fathym_everything_as_code_api@v0.0.42/mod.ts';
+export * from 'https://deno.land/x/fathym_synaptic@v0.0.56/mod.ts';
 
 import * as esbuild from 'https://deno.land/x/esbuild@v0.20.1/mod.js';
 export { esbuild };
