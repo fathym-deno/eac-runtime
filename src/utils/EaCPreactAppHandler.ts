@@ -869,7 +869,10 @@ export class EaCPreactAppHandler {
           const [type, pkg] = filePath.split(':');
 
           return {
-            path: preserveRemotes || type === 'file' ? filePath : pkg,
+            path: (preserveRemotes || type === 'file' ? filePath : pkg).replace(
+              '//',
+              '/',
+            ),
             namespace: type === 'file' ? 'remote' : type,
             external: preserveRemotes,
           };

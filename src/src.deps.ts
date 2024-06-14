@@ -47,6 +47,7 @@ export {
   AzureAISearchVectorStore,
 } from 'npm:@langchain/community/vectorstores/azure_aisearch';
 export { Embeddings } from 'npm:@langchain/core/embeddings';
+export { RecordManager } from 'npm:@langchain/core/indexing';
 export {
   BaseLanguageModel,
   type BaseLanguageModelCallOptions,

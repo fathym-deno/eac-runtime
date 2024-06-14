@@ -1,6 +1,5 @@
 // deno-lint-ignore-file no-explicit-any
 import { isValidElement, JSX, VNode } from 'preact';
-import { base64 } from '../../../src.deps.ts';
 import { IslandDataStoreType } from './IslandDataStore.tsx';
 
 type IslandDataProps = {
@@ -47,14 +46,14 @@ export function buildIslandData(islandsData: Map<string, IslandDataStoreType>) {
 // }
 function getCircularReplacer() {
   const cache = new Set();
-  return (key: string, value: any): any => {
+  return (_key: string, value: any): any => {
     if (typeof value === 'object' && value !== null) {
       if (cache.has(value)) {
         // Circular reference found
         try {
           // If this value does not reference a parent it can be deduped
           return JSON.parse(JSON.stringify(value));
-        } catch (err) {
+        } catch (_err) {
           // discard key if value cannot be deduped
           return;
         }
@@ -66,7 +65,7 @@ function getCircularReplacer() {
   };
 }
 
-function isVNode(x: any): x is VNode {
+function _isVNode(x: any): x is VNode {
   return (
     x !== null &&
     typeof x === 'object' &&

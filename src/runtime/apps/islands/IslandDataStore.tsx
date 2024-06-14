@@ -27,7 +27,7 @@ export class IslandDataStore {
     return Array.from(this.data).length > 0;
   }
 
-  public PrepareRender(clientModulePath: string) {
+  public PrepareRender(_clientModulePath: string) {
     const IslandData = buildIslandData(this.GetData());
 
     return IslandData;
