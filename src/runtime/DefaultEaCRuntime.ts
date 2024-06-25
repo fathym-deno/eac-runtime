@@ -5,6 +5,7 @@ import {
   EaCProjectAsCode,
   ESBuild,
   IoCContainer,
+  isEverythingAsCodeApplications,
   merge,
   processCacheControlHeaders,
 } from '../src.deps.ts';
@@ -24,30 +25,30 @@ import { EaCRuntimePluginConfig } from './config/EaCRuntimePluginConfig.ts';
 import { EaCRuntimeHandlerPipeline } from './EaCRuntimeHandlerPipeline.ts';
 import { buildURLMatch } from './buildURLMatch.ts';
 
-export class DefaultEaCRuntime implements EaCRuntime {
+export class DefaultEaCRuntime<TEaC = EaCRuntimeEaC> implements EaCRuntime<TEaC> {
   protected applicationGraph?: Record<string, EaCApplicationProcessorConfig[]>;
 
   protected pluginConfigs: Map<
-    EaCRuntimePlugin | [string, ...args: unknown[]],
-    EaCRuntimePluginConfig | undefined
+    EaCRuntimePlugin<TEaC> | [string, ...args: unknown[]],
+    EaCRuntimePluginConfig<TEaC> | undefined
   >;
 
   protected pluginDefs: Map<
-    EaCRuntimePlugin | [string, ...args: unknown[]],
-    EaCRuntimePlugin
+    EaCRuntimePlugin<TEaC> | [string, ...args: unknown[]],
+    EaCRuntimePlugin<TEaC>
   >;
 
   protected projectGraph?: EaCProjectProcessorConfig[];
 
   public IoC: IoCContainer;
 
-  public EaC?: EaCRuntimeEaC;
+  public EaC?: TEaC;
 
   public ModifierResolvers?: Record<string, EaCModifierResolverConfiguration>;
 
   public Revision: number;
 
-  constructor(protected config: EaCRuntimeConfig) {
+  constructor(protected config: EaCRuntimeConfig<TEaC>) {
     this.pluginConfigs = new Map();
 
     this.pluginDefs = new Map();
@@ -62,7 +63,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
   }
 
   public async Configure(
-    configure?: (rt: EaCRuntime) => Promise<void>,
+    configure?: (rt: EaCRuntime<TEaC>) => Promise<void>,
   ): Promise<void> {
     this.pluginConfigs = new Map();
 
@@ -118,7 +119,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
       );
     }
 
-    if (!this.EaC!.Projects) {
+    if (isEverythingAsCodeApplications(this.EaC) && !this.EaC.Projects) {
       throw new Error(
         'The EaC must provide a set of projects to use in the runtime.',
       );
@@ -176,7 +177,7 @@ export class DefaultEaCRuntime implements EaCRuntime {
   }
 
   protected async buildApplicationGraph(): Promise<void> {
-    if (this.EaC!.Applications) {
+    if (isEverythingAsCodeApplications(this.EaC) && this.EaC!.Applications) {
       this.applicationGraph = {} as Record<
         string,
         EaCApplicationProcessorConfig[]
@@ -190,6 +191,11 @@ export class DefaultEaCRuntime implements EaCRuntime {
 
         this.applicationGraph![projProcCfg.ProjectLookup] = appLookups
           .map((appLookup) => {
+            if (!isEverythingAsCodeApplications(this.EaC)) {
+              // This will never happen, check is just to get proper typing
+              throw new Error();
+            }
+
             const app = this.EaC!.Applications![appLookup];
 
             if (!app) {
@@ -217,6 +223,11 @@ export class DefaultEaCRuntime implements EaCRuntime {
         ].map(async (appProcCfg) => {
           console.time(appProcCfg.ApplicationLookup);
 
+          if (!isEverythingAsCodeApplications(this.EaC)) {
+            // This will never happen, check is just to get proper typing
+            throw new Error();
+          }
+
           const pipeline = await this.constructPipeline(
             projProcCfg.Project,
             appProcCfg.Application,
@@ -240,11 +251,16 @@ export class DefaultEaCRuntime implements EaCRuntime {
   }
 
   protected buildProjectGraph(): void {
-    if (this.EaC!.Projects) {
+    if (isEverythingAsCodeApplications(this.EaC) && this.EaC!.Projects) {
       const projLookups = Object.keys(this.EaC?.Projects || {});
 
       this.projectGraph = projLookups
         .map((projLookup) => {
+          if (!isEverythingAsCodeApplications(this.EaC)) {
+            // This will never happen, check is just to get proper typing
+            throw new Error();
+          }
+
           const proj = this.EaC!.Projects![projLookup];
 
           const resolverKeys = Object.keys(proj.ResolverConfigs);
@@ -276,17 +292,17 @@ export class DefaultEaCRuntime implements EaCRuntime {
   }
 
   protected async configurePlugins(
-    plugins?: EaCRuntimePluginDef[],
+    plugins?: EaCRuntimePluginDef<TEaC>[],
   ): Promise<void> {
     for (let pluginDef of plugins || []) {
-      const pluginKey = pluginDef as EaCRuntimePluginDef;
+      const pluginKey = pluginDef as EaCRuntimePluginDef<TEaC>;
 
       if (Array.isArray(pluginDef)) {
         const [plugin, ...args] = pluginDef as [string, ...args: unknown[]];
 
         pluginDef = new (await import(plugin)).default(
           args,
-        ) as EaCRuntimePlugin;
+        ) as EaCRuntimePlugin<TEaC>;
       }
 
       this.pluginDefs.set(pluginKey, pluginDef);

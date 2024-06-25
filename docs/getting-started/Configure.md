@@ -51,7 +51,7 @@ import {
 export default class MyDemoPlugin implements EaCRuntimePlugin {
   constructor() {}
 
-  public Build(config: EaCRuntimeConfig): Promise<EaCRuntimePluginConfig> {
+  public Setup(config: EaCRuntimeConfig): Promise<EaCRuntimePluginConfig> {
     const pluginConfig: EaCRuntimePluginConfig = {
       Name: 'MyDemoPlugin',
     };
@@ -481,7 +481,7 @@ import {
 export default class MyDemoPlugin implements EaCRuntimePlugin {
   constructor() {}
 
-  public Build(config: EaCRuntimeConfig): Promise<EaCRuntimePluginConfig> {
+  public Setup(config: EaCRuntimeConfig): Promise<EaCRuntimePluginConfig> {
     const pluginConfig: EaCRuntimePluginConfig = {
       Name: 'MyDemoPlugin',
       EaC: {

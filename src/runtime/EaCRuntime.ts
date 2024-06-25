@@ -1,16 +1,16 @@
 import { EaCModifierResolverConfiguration, IoCContainer } from '../src.deps.ts';
 import { EaCRuntimeEaC } from './EaCRuntimeEaC.ts';
 
-export type EaCRuntime = {
+export type EaCRuntime<TEaC = EaCRuntimeEaC> = {
   IoC: IoCContainer;
 
-  EaC?: EaCRuntimeEaC;
+  EaC?: TEaC;
 
   ModifierResolvers?: Record<string, EaCModifierResolverConfiguration>;
 
   Revision: number;
 
-  Configure(configure?: (rt: EaCRuntime) => Promise<void>): Promise<void>;
+  Configure(configure?: (rt: EaCRuntime<TEaC>) => Promise<void>): Promise<void>;
 
   Handle: Deno.ServeHandler;
 };

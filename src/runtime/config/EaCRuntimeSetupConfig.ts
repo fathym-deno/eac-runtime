@@ -9,5 +9,5 @@ export type EaCRuntimeSetupConfig<TEaC = EaCRuntimeEaC> = {
 
   ModifierResolvers?: Record<string, EaCModifierResolverConfiguration>;
 
-  Plugins?: EaCRuntimePluginDef[];
+  Plugins?: EaCRuntimePluginDef<TEaC>[];
 };

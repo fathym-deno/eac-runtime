@@ -1,18 +1,21 @@
-import { EverythingAsCode, IoCContainer } from '../../src.deps.ts';
+import { IoCContainer } from '../../src.deps.ts';
+import { EaCRuntimeEaC } from '../EaCRuntimeEaC.ts';
 import { EaCRuntimeConfig } from '../config/EaCRuntimeConfig.ts';
 import { EaCRuntimePluginConfig } from '../config/EaCRuntimePluginConfig.ts';
 
-export type EaCRuntimePlugin = {
+export type EaCRuntimePlugin<TEaC = EaCRuntimeEaC> = {
   AfterEaCResolved?: (
-    eac: EverythingAsCode,
+    eac: TEaC,
     ioc: IoCContainer,
   ) => Promise<void>;
 
   Build?: (
-    eac: EverythingAsCode,
+    eac: TEaC,
     ioc: IoCContainer,
-    pluginCfg?: EaCRuntimePluginConfig,
+    pluginCfg?: EaCRuntimePluginConfig<TEaC>,
   ) => Promise<void>;
 
-  Setup: (config: EaCRuntimeConfig) => Promise<EaCRuntimePluginConfig>;
+  Setup: (
+    config: EaCRuntimeConfig<TEaC>,
+  ) => Promise<EaCRuntimePluginConfig<TEaC>>;
 };
