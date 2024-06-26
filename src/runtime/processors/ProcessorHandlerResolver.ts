@@ -3,10 +3,10 @@ import { EaCApplicationProcessorConfig } from './EaCApplicationProcessorConfig.t
 import { EaCRuntimeEaC } from '../EaCRuntimeEaC.ts';
 import { EaCRuntimeHandler } from '../EaCRuntimeHandler.ts';
 
-export type ProcessorHandlerResolver = {
+export type ProcessorHandlerResolver<TEaC = EaCRuntimeEaC> = {
   Resolve: (
     ioc: IoCContainer,
     appProcCfg: EaCApplicationProcessorConfig,
-    eac: EaCRuntimeEaC,
+    eac: TEaC,
   ) => Promise<EaCRuntimeHandler | undefined>;
 };
