@@ -18,6 +18,7 @@ export const EaCProxyProcessorHandlerResolver: ProcessorHandlerResolver = {
         processor.ProxyRoot,
         ctx.Runtime.URLMatch.Base,
         ctx.Runtime.URLMatch.Path,
+        processor.Headers,
         ctx.Runtime.URLMatch.Search,
         ctx.Runtime.URLMatch.Hash,
         processor.RedirectMode,
