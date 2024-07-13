@@ -108,15 +108,15 @@ export class PreactRenderHandler {
 
     this.origVNodeHook = options.vnode;
 
-    options.__b = (vnode) => this.beforeDiffHook(vnode);
+    options.__b = (vnode: VNode<Record<string, unknown>>) => this.beforeDiffHook(vnode);
 
-    options.diffed = (vnode) => this.diffedHook(vnode);
+    options.diffed = (vnode: VNode<Record<string, unknown>>) => this.diffedHook(vnode);
 
     options.__h = (component, index, type) => this.beforeHookStateHook(component, index, type);
 
-    options.__r = (vnode) => this.beforeRenderHook(vnode);
+    options.__r = (vnode: VNode<Record<string, unknown>>) => this.beforeRenderHook(vnode);
 
-    options.vnode = (vnode) => this.vNodeCreateHook(vnode);
+    options.vnode = (vnode: VNode<Record<string, unknown>>) => this.vNodeCreateHook(vnode);
   }
 
   //#region API Methods

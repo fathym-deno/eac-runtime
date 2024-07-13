@@ -10,47 +10,78 @@ import { EaCRuntimeInstallerFlags } from '../../../install.ts';
 import { Command } from './Command.ts';
 
 export class InstallCommand implements Command {
-  protected filesToCreate: [string, string, ((contents: string) => string)?][];
-
-  constructor(protected flags: EaCRuntimeInstallerFlags) {
-    this.filesToCreate = [
+  private fileSets: Record<string, typeof this.filesToCreate> = {
+    core: [
       ['../files/README.md', './README.md'],
       ['../files/.gitignore', './.gitignore'],
       ['../files/dev.ts', './dev.ts'],
       ['../files/main.ts', './main.ts'],
-      ['../files/apps/api/[slug]/_middleware.ts', './apps/api/[slug]/_middleware.ts'],
-      ['../files/apps/api/[slug]/another.ts', './apps/api/[slug]/another.ts'],
-      ['../files/apps/api/_middleware.ts', './apps/api/_middleware.ts'],
-      ['../files/apps/api/index.ts', './apps/api/index.ts'],
-      ['../files/apps/components/Button.tsx', './apps/components/Button.tsx'],
-      ['../files/apps/components/Counter.tsx', './apps/components/Counter.tsx'],
-      ['../files/apps/home/_layout.tsx', './apps/home/_layout.tsx'],
-      ['../files/apps/home/index.tsx', './apps/home/index.tsx'],
-      ['../files/apps/tailwind/styles.css', './apps/tailwind/styles.css'],
-      [
-        '../files/apps/tailwind/tailwind.config.ts',
-        './apps/tailwind/tailwind.config.ts',
-      ],
-      [
-        '../files/configs/eac-runtime.config.ts',
-        './configs/eac-runtime.config.ts',
-      ],
       [
         '../files/deno.template.jsonc',
         './deno.jsonc',
-        (contents) => this.ensureDenoConfigSetup(contents),
+        (contents: string) => this.ensureDenoConfigSetup(contents),
       ],
       ['../files/tests/tests.ts', './tests/tests.ts'],
       ['../files/tests/test.deps.ts', './tests/test.deps.ts'],
-    ];
+      [
+        '../files/core/src/plugins/MyCorePlugin.ts',
+        './src/plugins/MyCorePlugin.ts',
+      ],
+    ],
+    demo: [
+      ['../files/README.md', './README.md'],
+      ['../files/.gitignore', './.gitignore'],
+      ['../files/dev.ts', './dev.ts'],
+      ['../files/main.ts', './main.ts'],
+      [
+        '../files/deno.template.jsonc',
+        './deno.jsonc',
+        (contents: string) => this.ensureDenoConfigSetup(contents),
+      ],
+      ['../files/tests/tests.ts', './tests/tests.ts'],
+      ['../files/tests/test.deps.ts', './tests/test.deps.ts'],
+      [
+        '../files/demo/apps/api/[slug]/_middleware.ts',
+        './apps/api/[slug]/_middleware.ts',
+      ],
+      [
+        '../files/demo/apps/api/[slug]/another.ts',
+        './apps/api/[slug]/another.ts',
+      ],
+      ['../files/demo/apps/api/_middleware.ts', './apps/api/_middleware.ts'],
+      ['../files/demo/apps/api/index.ts', './apps/api/index.ts'],
+      [
+        '../files/demo/apps/components/Button.tsx',
+        './apps/components/Button.tsx',
+      ],
+      [
+        '../files/demo/apps/components/Counter.tsx',
+        './apps/components/Counter.tsx',
+      ],
+      ['../files/demo/apps/home/_layout.tsx', './apps/home/_layout.tsx'],
+      ['../files/demo/apps/home/index.tsx', './apps/home/index.tsx'],
+      ['../files/demo/apps/tailwind/styles.css', './apps/tailwind/styles.css'],
+      [
+        '../files/demo/apps/tailwind/tailwind.config.ts',
+        './apps/tailwind/tailwind.config.ts',
+      ],
+      [
+        '../files/demo/configs/eac-runtime.config.ts',
+        './configs/eac-runtime.config.ts',
+      ],
+    ],
+  };
+
+  protected filesToCreate: [string, string, ((contents: string) => string)?][];
+
+  constructor(protected flags: EaCRuntimeInstallerFlags) {
+    this.filesToCreate = this.fileSets[flags.template ?? 'demo'];
   }
 
   public async Run(): Promise<void> {
     console.log(`Installing Fathym's EaC Runtime...`);
 
     const installDirectory = path.resolve('.');
-
-    // TODO(mcgear): Verify no existing files
 
     if (this.flags.docker) {
       this.filesToCreate.push(['../files/DOCKERFILE', './DOCKERFILE']);
