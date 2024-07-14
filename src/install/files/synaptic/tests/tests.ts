@@ -1,1 +1,1 @@
-import './core/.tests.ts';
+import './circuits/.tests.ts';

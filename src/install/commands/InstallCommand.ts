@@ -22,7 +22,7 @@ export class InstallCommand implements Command {
         (contents: string) => this.ensureDenoConfigSetup(contents),
       ],
       ['../files/tests/tests.ts', './tests/tests.ts'],
-      ['../files/tests/test.deps.ts', './tests/test.deps.ts'],
+      ['../files/tests/tests.deps.ts', './tests/test.deps.ts'],
       [
         '../files/core/configs/eac-runtime.config.ts',
         './configs/eac-runtime.config.ts',
@@ -43,7 +43,7 @@ export class InstallCommand implements Command {
         (contents: string) => this.ensureDenoConfigSetup(contents),
       ],
       ['../files/tests/tests.ts', './tests/tests.ts'],
-      ['../files/tests/test.deps.ts', './tests/test.deps.ts'],
+      ['../files/tests/tests.deps.ts', './tests/test.deps.ts'],
       [
         '../files/demo/configs/eac-runtime.config.ts',
         './configs/eac-runtime.config.ts',
@@ -72,6 +72,47 @@ export class InstallCommand implements Command {
       [
         '../files/demo/apps/tailwind/tailwind.config.ts',
         './apps/tailwind/tailwind.config.ts',
+      ],
+    ],
+    install: [
+      ['../files/README.md', './README.md'],
+      ['../files/.gitignore', './.gitignore'],
+      ['../files/dev.ts', './dev.ts'],
+      ['../files/main.ts', './main.ts'],
+      [
+        '../files/deno.template.jsonc',
+        './deno.jsonc',
+        (contents: string) => this.ensureDenoConfigSetup(contents),
+      ],
+      ['../files/synaptic/tests/tests.ts', './tests/tests.ts'],
+      ['../files/synaptic/tests/tests.deps.ts', './tests/test.deps.ts'],
+      [
+        '../files/synaptic/tests/test-eac-setup.ts',
+        './tests/test-eac-setup.ts',
+      ],
+      [
+        '../files/synaptic/tests/circuits/.tests.ts',
+        './tests/core/.tests.ts',
+      ],
+      [
+        '../files/synaptic/tests/circuits/simple-tool.tests.ts',
+        './tests/core/simple-tool.tests.ts',
+      ],
+      [
+        '../files/synaptic/configs/eac-runtime.config.ts',
+        './configs/eac-runtime.config.ts',
+      ],
+      [
+        '../files/synaptic/src/plugins/MyCoreRuntimePlugin.ts',
+        './src/plugins/MyCoreRuntimePlugin.ts',
+      ],
+      [
+        '../files/synaptic/src/plugins/MyCoreSynapticPlugin.ts',
+        './src/plugins/MyCoreSynapticPlugin.ts',
+      ],
+      [
+        '../files/synaptic/src/plugins/DefaultMyCoreProcessorHandlerResolver.ts',
+        './src/plugins/DefaultMyCoreProcessorHandlerResolver.ts',
       ],
     ],
   };
