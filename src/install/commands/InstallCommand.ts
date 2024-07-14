@@ -194,6 +194,16 @@ export class InstallCommand implements Command {
       });
     }
 
+    if (this.flags.template === 'synaptic') {
+      config = mergeWithArrays(config, {
+        imports: {
+          '@fathym/ioc': 'https://deno.land/x/fathym_ioc@v0.0.10/mod.ts',
+          '@fathym/synaptic': 'https://deno.land/x/fathym_synaptic@v0.0.64/mod.ts',
+          '@fathym/synaptic/': 'https://deno.land/x/fathym_synaptic@v0.0.64/',
+        },
+      });
+    }
+
     const configStr = JSON.stringify(config, null, 2) + '\n';
 
     return configStr;
