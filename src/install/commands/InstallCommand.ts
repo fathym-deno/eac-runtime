@@ -28,8 +28,8 @@ export class InstallCommand implements Command {
         './configs/eac-runtime.config.ts',
       ],
       [
-        '../files/core/src/plugins/MyCorePlugin.ts',
-        './src/plugins/MyCorePlugin.ts',
+        '../files/core/src/plugins/MyCoreRuntimePlugin.ts',
+        './src/plugins/MyCoreRuntimePlugin.ts',
       ],
     ],
     demo: [
