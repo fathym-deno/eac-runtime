@@ -24,6 +24,10 @@ export class InstallCommand implements Command {
       ['../files/tests/tests.ts', './tests/tests.ts'],
       ['../files/tests/test.deps.ts', './tests/test.deps.ts'],
       [
+        '../files/core/configs/eac-runtime.config.ts',
+        './configs/eac-runtime.config.ts',
+      ],
+      [
         '../files/core/src/plugins/MyCorePlugin.ts',
         './src/plugins/MyCorePlugin.ts',
       ],
@@ -40,6 +44,10 @@ export class InstallCommand implements Command {
       ],
       ['../files/tests/tests.ts', './tests/tests.ts'],
       ['../files/tests/test.deps.ts', './tests/test.deps.ts'],
+      [
+        '../files/demo/configs/eac-runtime.config.ts',
+        './configs/eac-runtime.config.ts',
+      ],
       [
         '../files/demo/apps/api/[slug]/_middleware.ts',
         './apps/api/[slug]/_middleware.ts',
@@ -64,10 +72,6 @@ export class InstallCommand implements Command {
       [
         '../files/demo/apps/tailwind/tailwind.config.ts',
         './apps/tailwind/tailwind.config.ts',
-      ],
-      [
-        '../files/demo/configs/eac-runtime.config.ts',
-        './configs/eac-runtime.config.ts',
       ],
     ],
   };
