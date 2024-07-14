@@ -22,7 +22,7 @@ export class InstallCommand implements Command {
         (contents: string) => this.ensureDenoConfigSetup(contents),
       ],
       ['../files/tests/tests.ts', './tests/tests.ts'],
-      ['../files/tests/tests.deps.ts', './tests/test.deps.ts'],
+      ['../files/tests/tests.deps.ts', './tests/tests.deps.ts'],
       [
         '../files/core/configs/eac-runtime.config.ts',
         './configs/eac-runtime.config.ts',
@@ -43,7 +43,7 @@ export class InstallCommand implements Command {
         (contents: string) => this.ensureDenoConfigSetup(contents),
       ],
       ['../files/tests/tests.ts', './tests/tests.ts'],
-      ['../files/tests/tests.deps.ts', './tests/test.deps.ts'],
+      ['../files/tests/tests.deps.ts', './tests/tests.deps.ts'],
       [
         '../files/demo/configs/eac-runtime.config.ts',
         './configs/eac-runtime.config.ts',
@@ -85,18 +85,18 @@ export class InstallCommand implements Command {
         (contents: string) => this.ensureDenoConfigSetup(contents),
       ],
       ['../files/synaptic/tests/tests.ts', './tests/tests.ts'],
-      ['../files/synaptic/tests/tests.deps.ts', './tests/test.deps.ts'],
+      ['../files/synaptic/tests/tests.deps.ts', './tests/tests.deps.ts'],
       [
         '../files/synaptic/tests/test-eac-setup.ts',
         './tests/test-eac-setup.ts',
       ],
       [
         '../files/synaptic/tests/circuits/.tests.ts',
-        './tests/core/.tests.ts',
+        './tests/circuits/.tests.ts',
       ],
       [
         '../files/synaptic/tests/circuits/simple-tool.tests.ts',
-        './tests/core/simple-tool.tests.ts',
+        './tests/circuits/simple-tool.tests.ts',
       ],
       [
         '../files/synaptic/configs/eac-runtime.config.ts',
