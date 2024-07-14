@@ -74,7 +74,7 @@ export class InstallCommand implements Command {
         './apps/tailwind/tailwind.config.ts',
       ],
     ],
-    install: [
+    synaptic: [
       ['../files/README.md', './README.md'],
       ['../files/.gitignore', './.gitignore'],
       ['../files/dev.ts', './dev.ts'],
