@@ -44,7 +44,12 @@ export default class MyCoreRuntimePlugin implements EaCRuntimePlugin {
               },
             },
             ModifierResolvers: {},
-            ApplicationResolvers: {},
+            ApplicationResolvers: {
+              circuits: {
+                PathPattern: '/circuits*',
+                Priority: 100,
+              },
+            },
           },
         },
         Applications: {
