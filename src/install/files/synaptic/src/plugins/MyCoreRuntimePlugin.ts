@@ -1,7 +1,15 @@
-import { EaCRuntimeConfig, EaCRuntimePlugin, EaCRuntimePluginConfig } from '@fathym/eac/runtime';
-import { EaCSynapticCircuitsProcessor } from '@fathym/synaptic';
+import {
+  EaCRuntimeConfig,
+  EaCRuntimePlugin,
+  EaCRuntimePluginConfig,
+  FathymAzureContainerCheckPlugin,
+  FathymDFSFileHandlerPlugin,
+  FathymEaCServicesPlugin,
+} from '@fathym/eac/runtime';
+import { EaCSynapticCircuitsProcessor, FathymSynapticPlugin } from '@fathym/synaptic';
 import { DefaultMyCoreProcessorHandlerResolver } from './DefaultMyCoreProcessorHandlerResolver.ts';
 import MyCoreSynapticPlugin from './MyCoreSynapticPlugin.ts';
+import { IoCContainer } from '@fathym/ioc';
 
 export default class MyCoreRuntimePlugin implements EaCRuntimePlugin {
   constructor() {}
@@ -9,7 +17,14 @@ export default class MyCoreRuntimePlugin implements EaCRuntimePlugin {
   public Setup(config: EaCRuntimeConfig) {
     const pluginConfig: EaCRuntimePluginConfig = {
       Name: MyCoreRuntimePlugin.name,
-      Plugins: [new MyCoreSynapticPlugin()],
+      Plugins: [
+        new FathymAzureContainerCheckPlugin(),
+        new FathymEaCServicesPlugin(),
+        new FathymDFSFileHandlerPlugin(),
+        new MyCoreSynapticPlugin(),
+        new FathymSynapticPlugin(),
+      ],
+      IoC: new IoCContainer(),
       EaC: {
         Projects: {
           core: {

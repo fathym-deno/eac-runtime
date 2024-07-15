@@ -19,7 +19,7 @@ export default class MyCoreSynapticPlugin implements EaCRuntimePlugin {
             IncludeDependencies: false,
           } as EaCESMDistributedFileSystem,
         },
-        AIS: {
+        AIs: {
           core: {
             Tools: {
               simple: {
@@ -51,7 +51,7 @@ export default class MyCoreSynapticPlugin implements EaCRuntimePlugin {
               Neurons: {
                 '': {
                   Type: 'Tool',
-                  ToolLookup: 'core|tavily',
+                  ToolLookup: 'core|simple',
                   BootstrapInput: ({ Input }: { Input: string }) => {
                     return { Value: Input };
                   },

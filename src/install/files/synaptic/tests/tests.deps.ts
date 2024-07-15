@@ -4,4 +4,6 @@ export * from '@fathym/eac';
 export * from '@fathym/eac/runtime';
 export * from '@fathym/synaptic';
 
+export * from './test-eac-setup.ts';
+
 export { Runnable } from 'npm:@langchain/core/runnables';

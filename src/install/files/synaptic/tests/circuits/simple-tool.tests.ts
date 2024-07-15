@@ -1,7 +1,11 @@
-import { assertStringIncludes } from '@fathym/eac/runtime/tests/test.deps.ts';
-import { assert, EverythingAsCodeSynaptic, Runnable } from '../tests.deps.ts';
+import {
+  assert,
+  assertStringIncludes,
+  buildTestIoC,
+  EverythingAsCodeSynaptic,
+  Runnable,
+} from '../tests.deps.ts';
 import MyCoreRuntimePlugin from '../../src/plugins/MyCoreRuntimePlugin.ts';
-import { buildTestIoC } from '../test-eac-setup.ts';
 
 Deno.test('Simple Tool Tests', async (t) => {
   const eac = {} as EverythingAsCodeSynaptic;
@@ -11,7 +15,7 @@ Deno.test('Simple Tool Tests', async (t) => {
   await t.step('Invoke', async () => {
     const circuit = await ioc.Resolve<Runnable>(
       ioc.Symbol('Circuit'),
-      'thinky-public:open-chat',
+      'simple-tool',
     );
 
     const response = await circuit.invoke({
@@ -19,7 +23,7 @@ Deno.test('Simple Tool Tests', async (t) => {
     });
 
     assert(response?.Result);
-    assertStringIncludes('Tool Processed: ', response.Result);
+    assertStringIncludes(response.Result, 'Tool Processed: ');
     assert(response.Result.startsWith('Tool Processed: '));
 
     console.log(response.Result);
