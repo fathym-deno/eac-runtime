@@ -1,0 +1,142 @@
+import { IoCContainer } from '@fathym/ioc';
+import { FathymWorker } from '../../../workers/FathymWorker.ts';
+import { correlateResult } from '../../../workers/waitForCorrelation.ts';
+import { DFSFileHandler } from '../DFSFileHandler.ts';
+import { DFSFileHandlerResolver } from '../DFSFileHandlerResolver.ts';
+import { EaCDistributedFileSystemWorkerMessageTypes } from './EaCDistributedFileSystemWorkerMessageTypes.ts';
+import {
+  EaCDistributedFileSystemWorkerConfig,
+  EaCDistributedFileSystemWorkerMessage,
+  EaCDistributedFileSystemWorkerMessageGetFileInfoPayload,
+  EaCDistributedFileSystemWorkerMessageLoadAllPathsPayload,
+  EaCDistributedFileSystemWorkerMessageWriteFilePayload,
+} from './EaCDistributedFileSystemWorkerMessage.ts';
+import { DFSFileInfo } from '../DFSFileInfo.ts';
+
+export abstract class EaCDistributedFileSystemWorker extends FathymWorker<
+  EaCDistributedFileSystemWorkerConfig,
+  EaCDistributedFileSystemWorkerMessage,
+  EaCDistributedFileSystemWorkerMessageTypes
+> {
+  protected loadAllPaths?: Promise<string[]>;
+
+  protected dfsHandler?: DFSFileHandler;
+
+  protected fileGetters?: Record<string, Promise<DFSFileInfo | undefined>>;
+
+  protected abstract loadDFSHandlerResolver(): DFSFileHandlerResolver;
+
+  protected async handleInitConfig() {
+    this.fileGetters = {};
+
+    const resolver = this.loadDFSHandlerResolver();
+
+    this.dfsHandler = await resolver.Resolve(
+      new IoCContainer(),
+      this.config.DFS,
+    );
+
+    return this.dfsHandler
+      ? {
+        Root: this.dfsHandler.Root,
+      }
+      : undefined;
+  }
+
+  protected async handleWorkerGetFileInfo(
+    msg: EaCDistributedFileSystemWorkerMessage<
+      EaCDistributedFileSystemWorkerMessageGetFileInfoPayload
+    >,
+  ): Promise<void> {
+    if (msg.Payload) {
+      const filePath = msg.Payload.FilePath;
+
+      if (!(filePath in (this.fileGetters || {}))) {
+        this.fileGetters![filePath] = new Promise((resolve) => {
+          if (this.dfsHandler) {
+            this.dfsHandler
+              .GetFileInfo(
+                filePath,
+                msg.Payload!.Revision,
+                msg.Payload!.DefaultFileName,
+                msg.Payload!.Extensions,
+                msg.Payload!.UseCascading,
+                msg.Payload!.CacheDB,
+                msg.Payload!.CacheSeconds,
+              )
+              .then((fileInfo) => {
+                resolve(fileInfo);
+              });
+          } else {
+            resolve(undefined);
+          }
+        });
+      }
+
+      const fileInfo = await this.fileGetters![filePath];
+
+      correlateResult(this.worker, msg.CorrelationID, {
+        FileInfo: fileInfo,
+      });
+    } else {
+      correlateResult(this.worker, msg.CorrelationID, {
+        FileInfo: undefined,
+      });
+    }
+  }
+
+  protected async handleWorkerLoadAllPaths(
+    msg: EaCDistributedFileSystemWorkerMessage<
+      EaCDistributedFileSystemWorkerMessageLoadAllPathsPayload
+    >,
+  ): Promise<void> {
+    if (!this.loadAllPaths) {
+      this.loadAllPaths = new Promise((resolve) => {
+        if (this.dfsHandler) {
+          this.dfsHandler
+            .LoadAllPaths(msg.Payload?.Revision ?? Date.now())
+            .then((paths) => {
+              resolve(paths);
+            });
+        } else {
+          resolve([]);
+        }
+      });
+    }
+
+    const filePaths = await this.loadAllPaths;
+
+    correlateResult(this.worker, msg.CorrelationID, {
+      FilePaths: filePaths,
+    });
+  }
+
+  protected async handleWorkerWriteFile(
+    msg: EaCDistributedFileSystemWorkerMessage<
+      EaCDistributedFileSystemWorkerMessageWriteFilePayload
+    >,
+  ): Promise<void> {
+    if (msg.Payload && this.dfsHandler) {
+      await this.dfsHandler.WriteFile(
+        msg.Payload.FilePath,
+        msg.Payload.Revision,
+        msg.Payload.Stream,
+        msg.Payload.TTLSeconds,
+        msg.Payload.Headers ? new Headers(msg.Payload!.Headers) : undefined,
+        msg.Payload.MaxChunkSize,
+        msg.Payload.CacheDB,
+      );
+    }
+
+    correlateResult(this.worker, msg.CorrelationID);
+  }
+
+  protected loadWorkerMessageHandlers(): typeof this.workerMessageHandlers {
+    return {
+      ...super.loadWorkerMessageHandlers(),
+      [EaCDistributedFileSystemWorkerMessageTypes.GetFileInfo]: this.handleWorkerGetFileInfo,
+      [EaCDistributedFileSystemWorkerMessageTypes.LoadAllPaths]: this.handleWorkerLoadAllPaths,
+      [EaCDistributedFileSystemWorkerMessageTypes.WriteFile]: this.handleWorkerWriteFile,
+    } as typeof this.workerMessageHandlers;
+  }
+}

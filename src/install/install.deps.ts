@@ -8,4 +8,4 @@ export { toText } from 'https://deno.land/std@0.220.1/streams/to_text.ts';
 
 export * from 'https://deno.land/x/fathym_common@v0.0.185/src/utils/path/exists.ts';
 export * from 'https://deno.land/x/fathym_common@v0.0.185/src/utils/merge.helpers.ts';
-export * from 'https://deno.land/x/fathym_everything_as_code@v0.0.414/src/utils/library.helpers.ts';
+export * from 'https://deno.land/x/fathym_everything_as_code@v0.0.415/src/utils/library.helpers.ts';

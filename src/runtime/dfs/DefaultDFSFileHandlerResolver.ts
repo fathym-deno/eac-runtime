@@ -13,7 +13,9 @@ export class DefaultDFSFileHandlerResolver implements DFSFileHandlerResolver {
   public async Resolve(ioc: IoCContainer, dfs: EaCDistributedFileSystem) {
     let toResolveName: string = '';
 
-    if (isEaCDenoKVDistributedFileSystem(dfs)) {
+    if (dfs.WorkerPath) {
+      toResolveName = 'EaCWorkerDistributedFileSystem';
+    } else if (isEaCDenoKVDistributedFileSystem(dfs)) {
       toResolveName = 'EaCDenoKVDistributedFileSystem';
     } else if (isEaCESMDistributedFileSystem(dfs)) {
       toResolveName = 'EaCESMDistributedFileSystem';

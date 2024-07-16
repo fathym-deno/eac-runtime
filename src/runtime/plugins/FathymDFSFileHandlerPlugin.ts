@@ -5,6 +5,7 @@ import { EaCESMDistributedFileSystemHandlerResolver } from '../dfs/EaCESMDistrib
 import { EaCLocalDistributedFileSystemHandlerResolver } from '../dfs/EaCLocalDistributedFileSystemHandlerResolver.ts';
 import { EaCNPMDistributedFileSystemHandlerResolver } from '../dfs/EaCNPMDistributedFileSystemHandlerResolver.ts';
 import { EaCRemoteDistributedFileSystemHandlerResolver } from '../dfs/EaCRemoteDistributedFileSystemHandlerResolver.ts';
+import { EaCWorkerDistributedFileSystemHandlerResolver } from '../dfs/EaCWorkerDistributedFileSystemHandlerResolver.ts';
 import { UnknownEaCDistributedFileSystemHandlerResolver } from '../dfs/UnknownEaCDistributedFileSystemHandlerResolver.ts';
 import { EaCRuntimePlugin } from './EaCRuntimePlugin.ts';
 import { EaCRuntimeConfig } from '../config/EaCRuntimeConfig.ts';
@@ -57,6 +58,14 @@ export default class FathymDFSFileHandlerPlugin implements EaCRuntimePlugin {
       () => EaCRemoteDistributedFileSystemHandlerResolver,
       {
         Name: 'EaCRemoteDistributedFileSystem',
+        Type: pluginConfig.IoC!.Symbol('DFSFileHandler'),
+      },
+    );
+
+    pluginConfig.IoC!.Register(
+      () => EaCWorkerDistributedFileSystemHandlerResolver,
+      {
+        Name: 'EaCWorkerDistributedFileSystem',
         Type: pluginConfig.IoC!.Symbol('DFSFileHandler'),
       },
     );

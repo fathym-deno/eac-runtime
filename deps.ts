@@ -1,5 +1,6 @@
 import 'https://deno.land/std@0.220.1/dotenv/load.ts';
 export * from 'https://esm.sh/preact@10.20.1';
+export { delay } from 'https://deno.land/std@0.220.1/async/delay.ts';
 export * as colors from 'https://deno.land/std@0.220.1/fmt/colors.ts';
 export * as base64 from 'https://deno.land/std@0.220.1/encoding/base64.ts';
 export * as jsonc from 'https://deno.land/std@0.220.1/jsonc/mod.ts';
@@ -15,11 +16,11 @@ export * from 'https://deno.land/x/fathym_common@v0.0.185/mod.ts';
 // export * from '../reference-architecture/oauth.ts';
 export * from 'https://deno.land/x/fathym_common@v0.0.185/oauth.ts';
 // export * from '../everything-as-code/deno.ts';
-export * from 'https://deno.land/x/fathym_everything_as_code@v0.0.414/deno.ts';
+export * from 'https://deno.land/x/fathym_everything_as_code@v0.0.415/deno.ts';
 // export * from '../everything-as-code/mod.ts';
-export * from 'https://deno.land/x/fathym_everything_as_code@v0.0.414/mod.ts';
-export * from 'https://deno.land/x/fathym_everything_as_code@v0.0.414/oauth.ts';
-export * from 'https://deno.land/x/fathym_everything_as_code@v0.0.414/octokit.ts';
+export * from 'https://deno.land/x/fathym_everything_as_code@v0.0.415/mod.ts';
+export * from 'https://deno.land/x/fathym_everything_as_code@v0.0.415/oauth.ts';
+export * from 'https://deno.land/x/fathym_everything_as_code@v0.0.415/octokit.ts';
 // export * from '../everything-as-code-api/mod.ts';
 export * from 'https://deno.land/x/fathym_everything_as_code_api@v0.0.43/mod.ts';
 
