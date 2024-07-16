@@ -68,9 +68,9 @@ export abstract class FathymWorker<
 
   protected loadWorkerMessageHandlers(): typeof this.workerMessageHandlers {
     return {
-      [FathymWorkerMessageTypes.Init]: this.handleWorkerInit,
-      [FathymWorkerMessageTypes.Ping]: this.handleWorkerPing,
-      [FathymWorkerMessageTypes.Terminate]: this.handleWorkerTerminate,
+      [FathymWorkerMessageTypes.Init]: this.handleWorkerInit.bind(this),
+      [FathymWorkerMessageTypes.Ping]: this.handleWorkerPing.bind(this),
+      [FathymWorkerMessageTypes.Terminate]: this.handleWorkerTerminate.bind(this),
     } as typeof this.workerMessageHandlers;
   }
 

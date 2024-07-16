@@ -22,14 +22,29 @@ export class EaCDistributedFileSystemWorkerClient extends FathymWorkerClient<
     payload: EaCDistributedFileSystemWorkerMessageGetFileInfoPayload,
   ): Promise<DFSFileInfo | undefined> {
     const resp = await this.Send<
-      { FileInfo: DFSFileInfo | undefined },
+      {
+        FileInfo:
+          | {
+            Contents: ArrayBuffer;
+
+            Headers?: Record<string, string>;
+
+            Path: string;
+          }
+          | undefined;
+      },
       EaCDistributedFileSystemWorkerMessageGetFileInfoPayload
     >({
       Type: EaCDistributedFileSystemWorkerMessageTypes.GetFileInfo,
       Payload: payload,
     });
 
-    return resp.FileInfo;
+    return resp.FileInfo
+      ? {
+        ...resp.FileInfo,
+        Contents: new Blob([resp.FileInfo!.Contents]).stream(),
+      }
+      : undefined;
   }
 
   public async LoadAllPaths(revision: number): Promise<string[]> {

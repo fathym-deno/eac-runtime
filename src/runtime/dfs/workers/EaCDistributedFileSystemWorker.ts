@@ -1,4 +1,4 @@
-import { IoCContainer } from '@fathym/ioc';
+import { IoCContainer, toArrayBuffer } from '../../../src.deps.ts';
 import { FathymWorker } from '../../../workers/FathymWorker.ts';
 import { correlateResult } from '../../../workers/waitForCorrelation.ts';
 import { DFSFileHandler } from '../DFSFileHandler.ts';
@@ -11,7 +11,6 @@ import {
   EaCDistributedFileSystemWorkerMessageLoadAllPathsPayload,
   EaCDistributedFileSystemWorkerMessageWriteFilePayload,
 } from './EaCDistributedFileSystemWorkerMessage.ts';
-import { DFSFileInfo } from '../DFSFileInfo.ts';
 
 export abstract class EaCDistributedFileSystemWorker extends FathymWorker<
   EaCDistributedFileSystemWorkerConfig,
@@ -22,9 +21,19 @@ export abstract class EaCDistributedFileSystemWorker extends FathymWorker<
 
   protected dfsHandler?: DFSFileHandler;
 
-  protected fileGetters?: Record<string, Promise<DFSFileInfo | undefined>>;
+  protected fileGetters?: Record<
+    string,
+    Promise<
+      | {
+        Contents: ArrayBuffer;
 
-  protected abstract loadDFSHandlerResolver(): DFSFileHandlerResolver;
+        Headers?: Record<string, string>;
+
+        Path: string;
+      }
+      | undefined
+    >
+  >;
 
   protected async handleInitConfig() {
     this.fileGetters = {};
@@ -53,9 +62,9 @@ export abstract class EaCDistributedFileSystemWorker extends FathymWorker<
 
       if (!(filePath in (this.fileGetters || {}))) {
         this.fileGetters![filePath] = new Promise((resolve) => {
-          if (this.dfsHandler) {
-            this.dfsHandler
-              .GetFileInfo(
+          const loadFile = async () => {
+            if (this.dfsHandler) {
+              const fileInfo = await this.dfsHandler.GetFileInfo(
                 filePath,
                 msg.Payload!.Revision,
                 msg.Payload!.DefaultFileName,
@@ -63,13 +72,22 @@ export abstract class EaCDistributedFileSystemWorker extends FathymWorker<
                 msg.Payload!.UseCascading,
                 msg.Payload!.CacheDB,
                 msg.Payload!.CacheSeconds,
-              )
-              .then((fileInfo) => {
-                resolve(fileInfo);
-              });
-          } else {
-            resolve(undefined);
-          }
+              );
+
+              return fileInfo
+                ? {
+                  ...fileInfo,
+                  Contents: await toArrayBuffer(fileInfo.Contents!),
+                }
+                : undefined;
+            } else {
+              return undefined;
+            }
+          };
+
+          loadFile().then((fileInfo) => {
+            resolve(fileInfo);
+          });
         });
       }
 
@@ -131,12 +149,18 @@ export abstract class EaCDistributedFileSystemWorker extends FathymWorker<
     correlateResult(this.worker, msg.CorrelationID);
   }
 
+  protected abstract loadDFSHandlerResolver(): DFSFileHandlerResolver;
+
   protected loadWorkerMessageHandlers(): typeof this.workerMessageHandlers {
     return {
       ...super.loadWorkerMessageHandlers(),
-      [EaCDistributedFileSystemWorkerMessageTypes.GetFileInfo]: this.handleWorkerGetFileInfo,
-      [EaCDistributedFileSystemWorkerMessageTypes.LoadAllPaths]: this.handleWorkerLoadAllPaths,
-      [EaCDistributedFileSystemWorkerMessageTypes.WriteFile]: this.handleWorkerWriteFile,
+      [EaCDistributedFileSystemWorkerMessageTypes.GetFileInfo]: this.handleWorkerGetFileInfo.bind(
+        this,
+      ),
+      [EaCDistributedFileSystemWorkerMessageTypes.LoadAllPaths]: this.handleWorkerLoadAllPaths.bind(
+        this,
+      ),
+      [EaCDistributedFileSystemWorkerMessageTypes.WriteFile]: this.handleWorkerWriteFile.bind(this),
     } as typeof this.workerMessageHandlers;
   }
 }

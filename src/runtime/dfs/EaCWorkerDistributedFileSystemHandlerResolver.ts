@@ -3,7 +3,7 @@ import { buildWorkerDFSFileHandler } from '@fathym/eac/runtime/src/runtime/dfs/b
 
 export const EaCWorkerDistributedFileSystemHandlerResolver: DFSFileHandlerResolver = {
   Resolve(_ioc, dfs) {
-    if (dfs.WorkerPath) {
+    if (!dfs.WorkerPath) {
       throw new Deno.errors.NotSupported(
         'The provided dfs is not supported for the EaCWorkerDistributedFileSystemHandlerResolver.',
       );
