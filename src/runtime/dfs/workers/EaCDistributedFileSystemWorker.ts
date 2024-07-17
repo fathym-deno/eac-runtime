@@ -110,7 +110,9 @@ export abstract class EaCDistributedFileSystemWorker extends FathymWorker<
   ): Promise<void> {
     if (!this.loadAllPaths) {
       this.loadAllPaths = new Promise((resolve) => {
+        console.log('Handling DFS Worker files...');
         if (this.dfsHandler) {
+          console.log('DFS Handler located...');
           this.dfsHandler
             .LoadAllPaths(msg.Payload?.Revision ?? Date.now())
             .then((paths) => {

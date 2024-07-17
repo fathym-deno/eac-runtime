@@ -28,6 +28,8 @@ export const EaCESMDistributedFileSystemHandlerResolver: DFSFileHandlerResolver 
     const esmDFSResolver = buildFetchDFSFileHandler(root);
 
     esmDFSResolver.LoadAllPaths = async (_revision: number) => {
+      console.log('Loading all ESM files...');
+
       let epRoot = root;
 
       if (epRoot.startsWith('./') || epRoot.startsWith('../')) {
