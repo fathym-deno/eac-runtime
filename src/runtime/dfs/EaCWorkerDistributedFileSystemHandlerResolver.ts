@@ -1,5 +1,5 @@
 import { DFSFileHandlerResolver } from './DFSFileHandlerResolver.ts';
-import { buildWorkerDFSFileHandler } from '@fathym/eac/runtime/src/runtime/dfs/buildWorkerDFSFileHandler.ts';
+import { buildWorkerDFSFileHandler } from './buildWorkerDFSFileHandler.ts';
 
 export const EaCWorkerDistributedFileSystemHandlerResolver: DFSFileHandlerResolver = {
   Resolve(_ioc, dfs) {
