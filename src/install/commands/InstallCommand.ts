@@ -240,8 +240,8 @@ export class InstallCommand implements Command {
       config = mergeWithArrays(config, {
         imports: {
           '@fathym/ioc': 'https://deno.land/x/fathym_ioc@v0.0.10/mod.ts',
-          '@fathym/synaptic': 'https://deno.land/x/fathym_synaptic@v0.0.65/mod.ts',
-          '@fathym/synaptic/': 'https://deno.land/x/fathym_synaptic@v0.0.65/',
+          '@fathym/synaptic': 'https://deno.land/x/fathym_synaptic@v0.0.66/mod.ts',
+          '@fathym/synaptic/': 'https://deno.land/x/fathym_synaptic@v0.0.66/',
         },
       });
     }
