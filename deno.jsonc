@@ -10,9 +10,10 @@
   },
   "lock": false,
   "imports": {
-    "@fathym/atomic": "https://deno.land/x/fathym_atomic_design_kit@v0.0.114/mod.ts",
-    "@fathym/atomic/": "https://deno.land/x/fathym_atomic_design_kit@v0.0.114/",
-    "@fathym/eac": "https://deno.land/x/fathym_everything_as_code@v0.0.413/mod.ts",
+    "@fathym/atomic": "https://deno.land/x/fathym_atomic_design_kit@v0.0.131/mod.ts",
+    "@fathym/atomic/": "https://deno.land/x/fathym_atomic_design_kit@v0.0.131/",
+    "@fathym/common": "https://deno.land/x/fathym_common@v0.0.185/mod.ts",
+    "@fathym/eac": "https://deno.land/x/fathym_everything_as_code@v0.0.415/mod.ts",
     "@fathym/eac/runtime": "./mod.ts",
     "@fathym/eac/runtime/": "./",
     "@fathym/ioc": "https://deno.land/x/fathym_ioc@v0.0.10/mod.ts",

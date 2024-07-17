@@ -22,7 +22,7 @@ export * from 'https://deno.land/x/fathym_everything_as_code@v0.0.415/mod.ts';
 export * from 'https://deno.land/x/fathym_everything_as_code@v0.0.415/oauth.ts';
 export * from 'https://deno.land/x/fathym_everything_as_code@v0.0.415/octokit.ts';
 // export * from '../everything-as-code-api/mod.ts';
-export * from 'https://deno.land/x/fathym_everything_as_code_api@v0.0.43/mod.ts';
+export * from 'https://deno.land/x/fathym_everything_as_code_api@v0.0.44/mod.ts';
 
 import * as esbuild from 'https://deno.land/x/esbuild@v0.20.1/mod.js';
 export { esbuild };

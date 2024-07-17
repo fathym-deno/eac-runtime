@@ -201,6 +201,7 @@ export class InstallCommand implements Command {
 
     config = mergeWithArrays(config, {
       imports: {
+        '@fathym/common': 'https://deno.land/x/fathym_common@v0.0.185/mod.ts',
         '@fathym/eac': loadEverythingAsCodeMetaUrl('../../mod.ts'),
         '@fathym/eac/runtime': import.meta.resolve('../../../mod.ts'),
         '@fathym/eac/runtime/': import.meta.resolve('../../../'),

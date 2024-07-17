@@ -17,6 +17,9 @@ export default class MyCoreSynapticPlugin implements EaCRuntimePlugin {
             Root: '@fathym/synaptic/',
             EntryPoints: ['resolvers.ts'],
             IncludeDependencies: false,
+            WorkerPath: import.meta.resolve(
+              '@fathym/eac/runtime/src/runtime/dfs/workers/EaCESMDistributedFileSystemWorker.ts',
+            ),
           } as EaCESMDistributedFileSystem,
         },
         AIs: {
