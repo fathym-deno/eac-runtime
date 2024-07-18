@@ -11,6 +11,33 @@ import { Command } from './Command.ts';
 
 export class InstallCommand implements Command {
   private fileSets: Record<string, typeof this.filesToCreate> = {
+    api: [
+      ['../files/README.md', './README.md'],
+      ['../files/.gitignore', './.gitignore'],
+      ['../files/dev.ts', './dev.ts'],
+      ['../files/main.ts', './main.ts'],
+      [
+        '../files/deno.template.jsonc',
+        './deno.jsonc',
+        (contents: string) => this.ensureDenoConfigSetup(contents),
+      ],
+      ['../files/tests/tests.ts', './tests/tests.ts'],
+      ['../files/tests/tests.deps.ts', './tests/tests.deps.ts'],
+      [
+        '../files/api/configs/eac-runtime.config.ts',
+        './configs/eac-runtime.config.ts',
+      ],
+      [
+        '../files/api/apps/api/[slug]/_middleware.ts',
+        './apps/api/[slug]/_middleware.ts',
+      ],
+      [
+        '../files/api/apps/api/[slug]/another.ts',
+        './apps/api/[slug]/another.ts',
+      ],
+      ['../files/api/apps/api/_middleware.ts', './apps/api/_middleware.ts'],
+      ['../files/api/apps/api/index.ts', './apps/api/index.ts'],
+    ],
     core: [
       ['../files/README.md', './README.md'],
       ['../files/.gitignore', './.gitignore'],
