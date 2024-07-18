@@ -8,6 +8,8 @@ import {
 } from '@fathym/eac';
 import { EaCAtomicIconsProcessor } from '@fathym/atomic-icons';
 import { DefaultMyCoreProcessorHandlerResolver } from './DefaultMyCoreProcessorHandlerResolver.ts';
+import { IoCContainer } from '@fathym/ioc';
+import { FathymAtomicIconsPlugin } from '@fathym/atomic-icons/plugin';
 
 export default class MyCoreRuntimePlugin implements EaCRuntimePlugin {
   constructor() {}
@@ -15,7 +17,8 @@ export default class MyCoreRuntimePlugin implements EaCRuntimePlugin {
   public Setup(config: EaCRuntimeConfig) {
     const pluginConfig: EaCRuntimePluginConfig = {
       Name: MyCoreRuntimePlugin.name,
-      Plugins: [],
+      Plugins: [new FathymAtomicIconsPlugin()],
+      IoC: new IoCContainer(),
       EaC: {
         Projects: {
           core: {
