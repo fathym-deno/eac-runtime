@@ -28,6 +28,10 @@ export class InstallCommand implements Command {
         './configs/eac-runtime.config.ts',
       ],
       [
+        '../files/api/src/plugins/MyCoreRuntimePlugin.ts',
+        './src/plugins/MyCoreRuntimePlugin.ts',
+      ],
+      [
         '../files/api/apps/api/[slug]/_middleware.ts',
         './apps/api/[slug]/_middleware.ts',
       ],
