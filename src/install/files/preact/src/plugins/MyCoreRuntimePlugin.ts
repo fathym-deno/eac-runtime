@@ -6,6 +6,8 @@ import {
   EaCPreactAppProcessor,
   EaCTailwindProcessor,
 } from '@fathym/eac';
+import { EaCAtomicIconsProcessor } from '@fathym/atomic-icons';
+import { DefaultMyCoreProcessorHandlerResolver } from './DefaultMyCoreProcessorHandlerResolver.ts';
 
 export default class MyCoreRuntimePlugin implements EaCRuntimePlugin {
   constructor() {}
@@ -38,10 +40,10 @@ export default class MyCoreRuntimePlugin implements EaCRuntimePlugin {
               },
             },
             ApplicationResolvers: {
-              // atomicIcons: {
-              //   PathPattern: '/icons*',
-              //   Priority: 200,
-              // },
+              atomicIcons: {
+                PathPattern: '/icons*',
+                Priority: 200,
+              },
               home: {
                 PathPattern: '*',
                 Priority: 100,
@@ -54,26 +56,26 @@ export default class MyCoreRuntimePlugin implements EaCRuntimePlugin {
           },
         },
         Applications: {
-          // atomicIcons: {
-          //   Details: {
-          //     Name: 'Atomic Icons',
-          //     Description: 'The atomic icons for the project.',
-          //   },
-          //   ModifierResolvers: {},
-          //   Processor: {
-          //     Type: 'AtomicIcons',
-          //     Config: {
-          //       IconSet: {
-          //         IconMap: {
-          //           check: 'https://api.iconify.design/lets-icons:check-fill.svg',
-          //           loading: 'https://api.iconify.design/line-md:loading-alt-loop.svg',
-          //         },
-          //       },
-          //       Generate: true,
-          //       SpriteSheet: '/iconset',
-          //     },
-          //   } as EaCAtomicIconsProcessor,
-          // },
+          atomicIcons: {
+            Details: {
+              Name: 'Atomic Icons',
+              Description: 'The atomic icons for the project.',
+            },
+            ModifierResolvers: {},
+            Processor: {
+              Type: 'AtomicIcons',
+              Config: {
+                IconSet: {
+                  IconMap: {
+                    check: 'https://api.iconify.design/lets-icons:check-fill.svg',
+                    loading: 'https://api.iconify.design/line-md:loading-alt-loop.svg',
+                  },
+                },
+                Generate: true,
+                SpriteSheet: '/iconset',
+              },
+            } as EaCAtomicIconsProcessor,
+          },
           home: {
             Details: {
               Name: 'Home Site',
@@ -87,7 +89,10 @@ export default class MyCoreRuntimePlugin implements EaCRuntimePlugin {
             Processor: {
               Type: 'PreactApp',
               AppDFSLookup: 'local:apps/home',
-              ComponentDFSLookups: [['local:apps/islands', ['tsx']]],
+              ComponentDFSLookups: [
+                ['local:apps/components', ['tsx']],
+                ['local:apps/islands', ['tsx']],
+              ],
             } as EaCPreactAppProcessor,
           },
           tailwind: {
@@ -147,6 +152,10 @@ export default class MyCoreRuntimePlugin implements EaCRuntimePlugin {
         },
       },
     };
+
+    pluginConfig.IoC!.Register(DefaultMyCoreProcessorHandlerResolver, {
+      Type: pluginConfig.IoC!.Symbol('ProcessorHandlerResolver'),
+    });
 
     return Promise.resolve(pluginConfig);
   }

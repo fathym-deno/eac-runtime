@@ -105,6 +105,46 @@ export class InstallCommand implements Command {
         './apps/tailwind/tailwind.config.ts',
       ],
     ],
+    preact: [
+      ['../files/README.md', './README.md'],
+      ['../files/.gitignore', './.gitignore'],
+      ['../files/dev.ts', './dev.ts'],
+      ['../files/main.ts', './main.ts'],
+      [
+        '../files/deno.template.jsonc',
+        './deno.jsonc',
+        (contents: string) => this.ensureDenoConfigSetup(contents),
+      ],
+      ['../files/tests/tests.ts', './tests/tests.ts'],
+      ['../files/tests/tests.deps.ts', './tests/tests.deps.ts'],
+      [
+        '../files/preact/src/plugins/MyCoreRuntimePlugin.ts',
+        './src/plugins/MyCoreRuntimePlugin.ts',
+      ],
+      [
+        '../files/preact/src/plugins/DefaultMyCoreProcessorHandlerResolver.ts',
+        './src/plugins/DefaultMyCoreProcessorHandlerResolver.ts',
+      ],
+      [
+        '../files/preact/configs/eac-runtime.config.ts',
+        './configs/eac-runtime.config.ts',
+      ],
+      [
+        '../files/preact/apps/components/Button.tsx',
+        './apps/components/Button.tsx',
+      ],
+      [
+        '../files/preact/apps/islands/Counter.tsx',
+        './apps/islands/Counter.tsx',
+      ],
+      ['../files/preact/apps/home/_layout.tsx', './apps/home/_layout.tsx'],
+      ['../files/preact/apps/home/index.tsx', './apps/home/index.tsx'],
+      ['../files/preact/apps/tailwind/styles.css', './apps/tailwind/styles.css'],
+      [
+        '../files/preact/tailwind.config.ts',
+        './tailwind.config.ts',
+      ],
+    ],
     synaptic: [
       ['../files/README.md', './README.md'],
       ['../files/.gitignore', './.gitignore'],
