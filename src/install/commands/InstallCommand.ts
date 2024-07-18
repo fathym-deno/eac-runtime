@@ -139,11 +139,11 @@ export class InstallCommand implements Command {
       ],
       ['../files/preact/apps/home/_layout.tsx', './apps/home/_layout.tsx'],
       ['../files/preact/apps/home/index.tsx', './apps/home/index.tsx'],
-      ['../files/preact/apps/tailwind/styles.css', './apps/tailwind/styles.css'],
       [
-        '../files/preact/tailwind.config.ts',
-        './tailwind.config.ts',
+        '../files/preact/apps/tailwind/styles.css',
+        './apps/tailwind/styles.css',
       ],
+      ['../files/preact/tailwind.config.ts', './tailwind.config.ts'],
     ],
     synaptic: [
       ['../files/README.md', './README.md'],
@@ -282,6 +282,40 @@ export class InstallCommand implements Command {
       },
     });
 
+    if (
+      this.flags.template === 'preact' ||
+      this.flags.template === 'synaptic'
+    ) {
+      config = mergeWithArrays(config, {
+        imports: {
+          '@fathym/ioc': 'https://deno.land/x/fathym_ioc@v0.0.10/mod.ts',
+        },
+      });
+    }
+
+    if (this.flags.template === 'preact') {
+      config = mergeWithArrays(config, {
+        imports: {
+          '@fathym/atomic': 'https://deno.land/x/fathym_atomic_design_kit@v0.0.134/mod.ts',
+          '@fathym/atomic/': 'https://deno.land/x/fathym_atomic_design_kit@v0.0.134/',
+          '@fathym/atomic-icons': 'https://deno.land/x/fathym_atomic_icons@v0.0.44/mod.ts',
+          '@fathym/atomic-icons/browser':
+            'https://deno.land/x/fathym_atomic_icons@v0.0.44/browser.ts',
+          '@fathym/atomic-icons/plugin':
+            'https://deno.land/x/fathym_atomic_icons@v0.0.44/plugin.ts',
+        },
+      });
+    }
+
+    if (this.flags.template === 'synaptic') {
+      config = mergeWithArrays(config, {
+        imports: {
+          '@fathym/synaptic': 'https://deno.land/x/fathym_synaptic@v0.0.67/mod.ts',
+          '@fathym/synaptic/': 'https://deno.land/x/fathym_synaptic@v0.0.67/',
+        },
+      });
+    }
+
     if (this.flags.preact) {
       config = mergeWithArrays(config, {
         imports: {
@@ -303,16 +337,6 @@ export class InstallCommand implements Command {
           'tailwindcss/': 'npm:/tailwindcss@3.4.1/',
           'tailwindcss/plugin': 'npm:/tailwindcss@3.4.1/plugin.js',
           'tailwindcss/unimportant': 'npm:tailwindcss-unimportant@2.1.1',
-        },
-      });
-    }
-
-    if (this.flags.template === 'synaptic') {
-      config = mergeWithArrays(config, {
-        imports: {
-          '@fathym/ioc': 'https://deno.land/x/fathym_ioc@v0.0.10/mod.ts',
-          '@fathym/synaptic': 'https://deno.land/x/fathym_synaptic@v0.0.67/mod.ts',
-          '@fathym/synaptic/': 'https://deno.land/x/fathym_synaptic@v0.0.67/',
         },
       });
     }
