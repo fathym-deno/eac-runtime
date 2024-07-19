@@ -19,6 +19,7 @@ export {
   CloudConnectExistingForm,
   type CloudConnectExistingFormProps,
   CloudConnectNewSubForm,
+  type CloudConnectNewSubFormProps,
 } from '../src.deps.ts';
 
 export {

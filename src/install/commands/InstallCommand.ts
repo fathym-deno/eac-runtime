@@ -46,7 +46,7 @@ export class InstallCommand implements Command {
       ['../files/README.md', './README.md'],
       ['../files/.gitignore', './.gitignore'],
       [
-        '../files/deno.template.jsonc',
+        '../files/atomic/deno.template.jsonc',
         './deno.jsonc',
         (contents: string) => this.ensureDenoConfigSetup(contents),
       ],
@@ -58,11 +58,23 @@ export class InstallCommand implements Command {
         '../files/core/configs/eac-runtime.config.ts',
         './configs/eac-runtime.config.ts',
       ],
-      ['../files/atomic/src/atoms/forms/.exports.ts', './src/atoms/forms/.exports.ts'],
+      [
+        '../files/atomic/src/atoms/forms/.exports.ts',
+        './src/atoms/forms/.exports.ts',
+      ],
       ['../files/atomic/src/atoms/.exports.ts', './src/atoms/.exports.ts'],
-      ['../files/atomic/src/molecules/.exports.ts', './src/molecules/.exports.ts'],
-      ['../files/atomic/src/organisms/.exports.ts', './src/organisms/.exports.ts'],
-      ['../files/atomic/src/templates/.exports.ts', './src/templates/.exports.ts'],
+      [
+        '../files/atomic/src/molecules/.exports.ts',
+        './src/molecules/.exports.ts',
+      ],
+      [
+        '../files/atomic/src/organisms/.exports.ts',
+        './src/organisms/.exports.ts',
+      ],
+      [
+        '../files/atomic/src/templates/.exports.ts',
+        './src/templates/.exports.ts',
+      ],
       ['../files/atomic/src/utils/.exports.ts', './src/utils/.exports.ts'],
       ['../files/atomic/src/.exports.ts', './src/.exports.ts'],
       ['../files/atomic/src/src.deps.ts', './src/src.deps.ts'],
@@ -295,17 +307,19 @@ export class InstallCommand implements Command {
     // Is there a Deno type that represents the configuration file?
     let config: Record<string, unknown> = JSON.parse(contents);
 
-    config = mergeWithArrays(config, {
-      imports: {
-        '@fathym/common': 'https://deno.land/x/fathym_common@v0.0.185/mod.ts',
-        '@fathym/eac': loadEverythingAsCodeMetaUrl('../../mod.ts'),
-        '@fathym/eac/runtime': import.meta.resolve('../../../mod.ts'),
-        '@fathym/eac/runtime/': import.meta.resolve('../../../'),
-        '@fathym/eac/runtime/browser': import.meta.resolve(
-          '../../../browser.ts',
-        ),
-      },
-    });
+    if (this.flags.template !== 'atomic') {
+      config = mergeWithArrays(config, {
+        imports: {
+          '@fathym/common': 'https://deno.land/x/fathym_common@v0.0.185/mod.ts',
+          '@fathym/eac': loadEverythingAsCodeMetaUrl('../../mod.ts'),
+          '@fathym/eac/runtime': import.meta.resolve('../../../mod.ts'),
+          '@fathym/eac/runtime/': import.meta.resolve('../../../'),
+          '@fathym/eac/runtime/browser': import.meta.resolve(
+            '../../../browser.ts',
+          ),
+        },
+      });
+    }
 
     if (
       this.flags.template === 'preact' ||
@@ -355,7 +369,12 @@ export class InstallCommand implements Command {
       });
     }
 
-    if (this.flags.tailwind) {
+    if (
+      this.flags.tailwind &&
+      this.flags.template !== 'api' &&
+      this.flags.template !== 'atomic' &&
+      this.flags.template !== 'synaptic'
+    ) {
       config = mergeWithArrays(config, {
         imports: {
           tailwindcss: 'npm:tailwindcss@3.4.1',
