@@ -1,13 +1,7 @@
-import { ComponentChildren, JSX } from 'preact';
+import { Action, ActionProps } from '@fathym/atomic';
 
-type ButtonProps = {
-  children: ComponentChildren;
-} & JSX.HTMLAttributes<HTMLAnchorElement>;
+type ButtonProps = ActionProps;
 
 export default function Button(props: ButtonProps) {
-  return (
-    <a class='rounded px-4 py-2 bg-blue-500' {...props}>
-      {props.children}
-    </a>
-  );
+  return <Action {...props} />;
 }
