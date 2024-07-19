@@ -69,10 +69,7 @@ export default class MyCoreRuntimePlugin implements EaCRuntimePlugin {
               Type: 'AtomicIcons',
               Config: {
                 IconSet: {
-                  IconMap: {
-                    check: 'https://api.iconify.design/lets-icons:check-fill.svg',
-                    loading: 'https://api.iconify.design/line-md:loading-alt-loop.svg',
-                  },
+                  IconMap: { add: 'https://api.iconify.design/gg:add.svg' },
                 },
                 Generate: true,
                 SpriteSheet: '/iconset',

@@ -3,9 +3,14 @@ import { URLMatch } from './URLMatch.ts';
 export function buildURLMatch(pattern: URLPattern, req: Request): URLMatch {
   const reqUrl = new URL(req.url);
 
-  const forwardedProto = req.headers.get('x-forwarded-proto') || reqUrl.protocol;
+  const forwardedProto = req.headers.get('x-eac-forwarded-proto') ??
+    req.headers.get('x-forwarded-proto') ??
+    reqUrl.protocol;
 
-  const host = req.headers.get('host') || reqUrl.host;
+  const host = req.headers.get('x-eac-forwarded-host') ??
+    req.headers.get('x-forwarded-host') ??
+    req.headers.get('host') ??
+    reqUrl.host;
 
   const reqCheckUrl = new URL(
     reqUrl.href.replace(reqUrl.origin, ''),

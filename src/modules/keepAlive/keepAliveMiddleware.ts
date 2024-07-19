@@ -75,12 +75,22 @@ export function establishKeepAliveMiddleware(
           const doc = new DOMParser().parseFromString(htmlStr, 'text/html');
 
           if (doc) {
+            const keepAliveClientURL = new URL(
+              keepAliveClientPath,
+              ctx.Runtime.URLMatch.Base,
+            );
+
+            const keepAliveURL = new URL(
+              keepAlivePath,
+              ctx.Runtime.URLMatch.Base,
+            );
+
             const keepAliveClientScriptNode = doc.createElement('script');
             keepAliveClientScriptNode.setAttribute('type', 'module');
             keepAliveClientScriptNode.innerHTML =
-              `import { configureKeepAlive } from '${ctx.Runtime.URLMatch.Base}${keepAliveClientPath}?${ctx.Runtime.Revision}';
+              `import { configureKeepAlive } from '${keepAliveClientURL.href}?${ctx.Runtime.Revision}';
 
-configureKeepAlive('${ctx.Runtime.URLMatch.Base}${keepAlivePath}');`;
+configureKeepAlive('${keepAliveURL.href}');`;
             // keepAliveClientScriptNode.setAttribute('src', keepAliveClientPath);
 
             doc.head.appendChild(keepAliveClientScriptNode);
