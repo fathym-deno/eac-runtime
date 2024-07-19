@@ -8,10 +8,11 @@
     "build:lint": "deno lint",
     "build:main": "deno run -A main.ts build",
     "check": "deno fmt --check && deno lint && deno check **/*.ts && deno check **/*.tsx",
+    "clean:docker": "docker stop proconex-api-runtime || true && docker rm proconex-api-runtime || true",
     "deploy": "deno task build && deno task test && npx ftm git",
     "deploy:docker": "docker run -dp 127.0.0.1:3000:3000 eac-runtime",
     "dev": "deno run -A --watch=apps/,configs/,data/,routes/,src/,static/ dev.ts",
-    "refresh:docker": "deno task build:docker && deno task deploy:docker",
+    "refresh:docker": "deno task build:docker && deno task clean:docker && deno task deploy:docker",
     "start": "deno run -A main.ts",
     "test": "deno test -A tests/tests.ts --coverage=cov"
   },
