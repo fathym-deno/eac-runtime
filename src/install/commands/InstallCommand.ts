@@ -52,6 +52,7 @@ export class InstallCommand implements Command {
       ],
       ['../files/tests/tests.ts', './tests/tests.ts'],
       ['../files/tests/tests.deps.ts', './tests/tests.deps.ts'],
+      ['../files/atomic/.github/workflows/build.yaml', './.github/workflows/build.yaml'],
       ['../files/atomic/mod.ts', './mod.ts'],
       ['../files/atomic/tailwind.config.js', './tailwind.config.js'],
       [
