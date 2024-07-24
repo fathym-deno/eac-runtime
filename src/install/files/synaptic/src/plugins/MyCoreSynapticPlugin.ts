@@ -1,5 +1,4 @@
 import { EaCRuntimeConfig, EaCRuntimePlugin, EaCRuntimePluginConfig } from '@fathym/eac/runtime';
-import { EaCESMDistributedFileSystem } from '@fathym/eac';
 import { EaCDynamicToolDetails, EaCLinearCircuitDetails, EaCToolNeuron } from '@fathym/synaptic';
 import { z } from 'npm:zod';
 
@@ -11,17 +10,6 @@ export default class MyCoreSynapticPlugin implements EaCRuntimePlugin {
       Name: MyCoreSynapticPlugin.name,
       Plugins: [],
       EaC: {
-        DFS: {
-          'fathym-synaptic-resolvers': {
-            Type: 'ESM',
-            Root: '@fathym/synaptic/',
-            EntryPoints: ['resolvers.ts'],
-            IncludeDependencies: false,
-            WorkerPath: import.meta.resolve(
-              '@fathym/eac/runtime/src/runtime/dfs/workers/EaCESMDistributedFileSystemWorker.ts',
-            ),
-          } as EaCESMDistributedFileSystem,
-        },
         AIs: {
           core: {
             Tools: {
@@ -40,7 +28,6 @@ export default class MyCoreSynapticPlugin implements EaCRuntimePlugin {
           },
         },
         Circuits: {
-          $handlers: ['fathym-synaptic-resolvers'],
           'simple-tool': {
             Details: {
               Type: 'Linear',
