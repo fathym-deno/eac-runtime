@@ -1,3 +1,4 @@
+import 'npm:html-to-text';
 import { DefaultEaCConfig, defineEaCConfig, EaCRuntime } from '@fathym/eac/runtime';
 import MyCoreRuntimePlugin from '../src/plugins/MyCoreRuntimePlugin.ts';
 
