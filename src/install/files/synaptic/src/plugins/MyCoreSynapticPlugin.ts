@@ -1,5 +1,14 @@
-import { EaCRuntimeConfig, EaCRuntimePlugin, EaCRuntimePluginConfig } from '@fathym/eac/runtime';
-import { EaCDynamicToolDetails, EaCLinearCircuitDetails, EaCToolNeuron } from '@fathym/synaptic';
+import {
+  EaCRuntimeConfig,
+  EaCRuntimePlugin,
+  EaCRuntimePluginConfig,
+} from '@fathym/eac/runtime';
+import {
+  EaCDynamicToolDetails,
+  EaCLinearCircuitDetails,
+  EaCPassthroughNeuron,
+  EaCToolNeuron,
+} from '@fathym/synaptic';
 import { z } from 'npm:zod';
 
 export default class MyCoreSynapticPlugin implements EaCRuntimePlugin {
@@ -28,6 +37,11 @@ export default class MyCoreSynapticPlugin implements EaCRuntimePlugin {
           },
         },
         Circuits: {
+          $neurons: {
+            $pass: {
+              Type: 'Passthrough',
+            } as EaCPassthroughNeuron,
+          },
           'simple-tool': {
             Details: {
               Type: 'Linear',
