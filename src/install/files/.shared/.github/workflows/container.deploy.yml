@@ -5,8 +5,8 @@ on:
     branches: main
 
 env:
-  AZURE_APP_NAME: proconex-core-runtime
-  IMAGE_NAME: proconex-core-runtime:latest
+  AZURE_APP_NAME: www_xxx_yyy_zzz
+  IMAGE_NAME: www_xxx_yyy_zzz:latest
   ACR_REGISTRY: ${{ secrets.ACR_REGISTRY }}
   ACR_USERNAME: ${{ secrets.ACR_USERNAME }}
   ACR_PASSWORD: ${{ secrets.ACR_PASSWORD }}

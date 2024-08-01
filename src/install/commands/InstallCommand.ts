@@ -14,6 +14,14 @@ export class InstallCommand implements Command {
     api: [
       ['../files/.shared/README.md', './README.md'],
       ['../files/.shared/.gitignore', './.gitignore'],
+      [
+        '../files/.shared/.github/workflows/container.deploy.yml',
+        './.github/workflows/container.deploy.yml',
+      ],
+      [
+        '../files/.shared/.github/workflows/deno.deploy.yml',
+        './.github/workflows/deno.deploy.yml',
+      ],
       ['../files/.shared/dev.ts', './dev.ts'],
       ['../files/.shared/main.ts', './main.ts'],
       [
@@ -45,6 +53,14 @@ export class InstallCommand implements Command {
     atomic: [
       ['../files/.shared/README.md', './README.md'],
       ['../files/.shared/.gitignore', './.gitignore'],
+      // [
+      //   '../files/.shared/.github/workflows/container.deploy.yml',
+      //   './.github/workflows/container.deploy.yml',
+      // ],
+      // [
+      //   '../files/.shared/.github/workflows/deno.deploy.yml',
+      //   './.github/workflows/deno.deploy.yml',
+      // ],
       [
         '../files/atomic/deno.template.jsonc',
         './deno.jsonc',
@@ -52,7 +68,10 @@ export class InstallCommand implements Command {
       ],
       ['../files/.shared/tests/tests.ts', './tests/tests.ts'],
       ['../files/.shared/tests/tests.deps.ts', './tests/tests.deps.ts'],
-      ['../files/atomic/.github/workflows/build.yaml', './.github/workflows/build.yaml'],
+      [
+        '../files/atomic/.github/workflows/build.yaml',
+        './.github/workflows/build.yaml',
+      ],
       ['../files/atomic/mod.ts', './mod.ts'],
       ['../files/atomic/tailwind.config.js', './tailwind.config.js'],
       [
@@ -79,6 +98,14 @@ export class InstallCommand implements Command {
     core: [
       ['../files/.shared/README.md', './README.md'],
       ['../files/.shared/.gitignore', './.gitignore'],
+      [
+        '../files/.shared/.github/workflows/container.deploy.yml',
+        './.github/workflows/container.deploy.yml',
+      ],
+      [
+        '../files/.shared/.github/workflows/deno.deploy.yml',
+        './.github/workflows/deno.deploy.yml',
+      ],
       ['../files/.shared/dev.ts', './dev.ts'],
       ['../files/.shared/main.ts', './main.ts'],
       [
@@ -142,6 +169,14 @@ export class InstallCommand implements Command {
     preact: [
       ['../files/.shared/README.md', './README.md'],
       ['../files/.shared/.gitignore', './.gitignore'],
+      [
+        '../files/.shared/.github/workflows/container.deploy.yml',
+        './.github/workflows/container.deploy.yml',
+      ],
+      [
+        '../files/.shared/.github/workflows/deno.deploy.yml',
+        './.github/workflows/deno.deploy.yml',
+      ],
       ['../files/.shared/dev.ts', './dev.ts'],
       ['../files/.shared/main.ts', './main.ts'],
       [
@@ -182,6 +217,14 @@ export class InstallCommand implements Command {
     synaptic: [
       ['../files/.shared/README.md', './README.md'],
       ['../files/.shared/.gitignore', './.gitignore'],
+      [
+        '../files/.shared/.github/workflows/container.deploy.yml',
+        './.github/workflows/container.deploy.yml',
+      ],
+      [
+        '../files/.shared/.github/workflows/deno.deploy.yml',
+        './.github/workflows/deno.deploy.yml',
+      ],
       ['../files/.shared/dev.ts', './dev.ts'],
       ['../files/.shared/main.ts', './main.ts'],
       [
@@ -225,7 +268,7 @@ export class InstallCommand implements Command {
   protected filesToCreate: [string, string, ((contents: string) => string)?][];
 
   constructor(protected flags: EaCRuntimeInstallerFlags) {
-    this.filesToCreate = this.fileSets[flags.template ?? 'demo'];
+    this.filesToCreate = this.fileSets[flags.template ?? 'core'];
   }
 
   public async Run(): Promise<void> {

@@ -7,7 +7,7 @@ on:
 
 env:
   ENTRY_POINT: ./main.ts
-  PROJECT_NAME: proconex-core-runtime
+  PROJECT_NAME: www_xxx_yyy_zzz
 
 jobs:
   deploy:
