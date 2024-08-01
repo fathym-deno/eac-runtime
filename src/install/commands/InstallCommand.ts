@@ -350,8 +350,8 @@ export class InstallCommand implements Command {
     if (this.flags.template === 'synaptic') {
       config = mergeWithArrays(config, {
         imports: {
-          '@fathym/synaptic': 'https://deno.land/x/fathym_synaptic@v0.0.88/mod.ts',
-          '@fathym/synaptic/': 'https://deno.land/x/fathym_synaptic@v0.0.88/',
+          '@fathym/synaptic': 'https://deno.land/x/fathym_synaptic@v0.0.99/mod.ts',
+          '@fathym/synaptic/': 'https://deno.land/x/fathym_synaptic@v0.0.99/',
         },
       });
     }

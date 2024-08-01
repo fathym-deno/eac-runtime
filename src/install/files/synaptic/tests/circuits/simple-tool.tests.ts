@@ -5,12 +5,11 @@ import {
   EverythingAsCodeSynaptic,
   Runnable,
 } from '../tests.deps.ts';
-import MyCoreRuntimePlugin from '../../src/plugins/MyCoreRuntimePlugin.ts';
 
 Deno.test('Simple Tool Tests', async (t) => {
   const eac = {} as EverythingAsCodeSynaptic;
 
-  const { ioc } = await buildTestIoC(eac, [new MyCoreRuntimePlugin()]);
+  const { ioc } = await buildTestIoC(eac);
 
   await t.step('Invoke', async () => {
     const circuit = await ioc.Resolve<Runnable>(
