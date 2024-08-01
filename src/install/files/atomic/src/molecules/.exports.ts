@@ -43,6 +43,19 @@ export {
 
 export { CopyInput } from '../src.deps.ts';
 
+export {
+  ChatInput,
+  type ChatInputProps,
+  ChatMessages,
+  type ChatMessagesProps,
+  Chats,
+  type ChatSet,
+  type ChatSets,
+  type ChatsProps,
+  Thinky,
+  type ThinkyProps,
+} from '../src.deps.ts';
+
 export { EnterpriseManagementItem } from '../src.deps.ts';
 
 export { IoTDisplay, type IoTDisplayProps } from '../src.deps.ts';

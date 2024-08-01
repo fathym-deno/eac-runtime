@@ -10,8 +10,8 @@
   },
   "lock": false,
   "imports": {
-    "@fathym/atomic": "https://deno.land/x/fathym_atomic_design_kit@v0.0.136/mod.ts",
-    "@fathym/atomic/": "https://deno.land/x/fathym_atomic_design_kit@v0.0.136/",
+    "@fathym/atomic": "https://deno.land/x/fathym_atomic_design_kit@v0.0.155/mod.ts",
+    "@fathym/atomic/": "https://deno.land/x/fathym_atomic_design_kit@v0.0.155/",
     "@fathym/atomic-icons": "https://deno.land/x/fathym_atomic_icons@v0.0.44/mod.ts",
     "@fathym/atomic-icons/browser": "https://deno.land/x/fathym_atomic_icons@v0.0.44/browser.ts",
     "@fathym/atomic-icons/plugin": "https://deno.land/x/fathym_atomic_icons@v0.0.44/plugin.ts",
