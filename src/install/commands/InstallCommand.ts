@@ -12,6 +12,9 @@ import { Command } from './Command.ts';
 export class InstallCommand implements Command {
   private fileSets: Record<string, typeof this.filesToCreate> = {
     api: [
+      ['../files/.shared/.vscode/extensions.json', './.vscode/extensions.json'],
+      ['../files/.shared/.vscode/.app/launch.json', './.vscode/launch.json'],
+      ['../files/.shared/.vscode/settings.json', './.vscode/settings.json'],
       ['../files/.shared/README.md', './README.md'],
       ['../files/.shared/.gitignore', './.gitignore'],
       [
@@ -51,6 +54,9 @@ export class InstallCommand implements Command {
       ['../files/api/apps/api/index.ts', './apps/api/index.ts'],
     ],
     atomic: [
+      ['../files/.shared/.vscode/extensions.json', './.vscode/extensions.json'],
+      ['../files/.shared/.vscode/.library/launch.json', './.vscode/launch.json'],
+      ['../files/.shared/.vscode/settings.json', './.vscode/settings.json'],
       ['../files/.shared/README.md', './README.md'],
       ['../files/.shared/.gitignore', './.gitignore'],
       [
@@ -88,6 +94,9 @@ export class InstallCommand implements Command {
       ['../files/atomic/src/src.deps.ts', './src/src.deps.ts'],
     ],
     core: [
+      ['../files/.shared/.vscode/extensions.json', './.vscode/extensions.json'],
+      ['../files/.shared/.vscode/.app/launch.json', './.vscode/launch.json'],
+      ['../files/.shared/.vscode/settings.json', './.vscode/settings.json'],
       ['../files/.shared/README.md', './README.md'],
       ['../files/.shared/.gitignore', './.gitignore'],
       [
@@ -117,6 +126,9 @@ export class InstallCommand implements Command {
       ],
     ],
     demo: [
+      ['../files/.shared/.vscode/extensions.json', './.vscode/extensions.json'],
+      ['../files/.shared/.vscode/.app/launch.json', './.vscode/launch.json'],
+      ['../files/.shared/.vscode/settings.json', './.vscode/settings.json'],
       ['../files/.shared/README.md', './README.md'],
       ['../files/.shared/.gitignore', './.gitignore'],
       ['../files/.shared/dev.ts', './dev.ts'],
@@ -159,6 +171,9 @@ export class InstallCommand implements Command {
       ],
     ],
     library: [
+      ['../files/.shared/.vscode/extensions.json', './.vscode/extensions.json'],
+      ['../files/.shared/.vscode/.library/launch.json', './.vscode/launch.json'],
+      ['../files/.shared/.vscode/settings.json', './.vscode/settings.json'],
       ['../files/.shared/README.md', './README.md'],
       ['../files/.shared/.gitignore', './.gitignore'],
       [
@@ -187,6 +202,9 @@ export class InstallCommand implements Command {
       ['../files/library/src/src.deps.ts', './src/src.deps.ts'],
     ],
     preact: [
+      ['../files/.shared/.vscode/extensions.json', './.vscode/extensions.json'],
+      ['../files/.shared/.vscode/.app/launch.json', './.vscode/launch.json'],
+      ['../files/.shared/.vscode/settings.json', './.vscode/settings.json'],
       ['../files/.shared/README.md', './README.md'],
       ['../files/.shared/.gitignore', './.gitignore'],
       [
@@ -235,6 +253,9 @@ export class InstallCommand implements Command {
       ['../files/preact/tailwind.config.ts', './tailwind.config.ts'],
     ],
     synaptic: [
+      ['../files/.shared/.vscode/extensions.json', './.vscode/extensions.json'],
+      ['../files/.shared/.vscode/.app/launch.json', './.vscode/launch.json'],
+      ['../files/.shared/.vscode/settings.json', './.vscode/settings.json'],
       ['../files/.shared/README.md', './README.md'],
       ['../files/.shared/.gitignore', './.gitignore'],
       [
@@ -302,23 +323,6 @@ export class InstallCommand implements Command {
       this.flags.template !== 'library'
     ) {
       this.filesToCreate.push(['../files/DOCKERFILE', './DOCKERFILE']);
-    }
-
-    if (this.flags.vscode) {
-      this.filesToCreate.push([
-        '../files/.shared/.vscode/extensions.json',
-        './.vscode/extensions.json',
-      ]);
-
-      this.filesToCreate.push([
-        '../files/.shared/.vscode/launch.json',
-        './.vscode/launch.json',
-      ]);
-
-      this.filesToCreate.push([
-        '../files/.shared/.vscode/settings.json',
-        './.vscode/settings.json',
-      ]);
     }
 
     await this.ensureFilesCreated(installDirectory);
