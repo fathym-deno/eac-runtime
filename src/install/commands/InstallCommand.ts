@@ -15,11 +15,11 @@ export class InstallCommand implements Command {
       ['../files/.shared/README.md', './README.md'],
       ['../files/.shared/.gitignore', './.gitignore'],
       [
-        '../files/.shared/.github/workflows/container.deploy.yml',
+        '../files/.shared/.github/workflows/.deploy/container.deploy.yml',
         './.github/workflows/container.deploy.yml',
       ],
       [
-        '../files/.shared/.github/workflows/deno.deploy.yml',
+        '../files/.shared/.github/workflows/.deploy/deno.deploy.yml',
         './.github/workflows/deno.deploy.yml',
       ],
       ['../files/.shared/dev.ts', './dev.ts'],
@@ -53,14 +53,10 @@ export class InstallCommand implements Command {
     atomic: [
       ['../files/.shared/README.md', './README.md'],
       ['../files/.shared/.gitignore', './.gitignore'],
-      // [
-      //   '../files/.shared/.github/workflows/container.deploy.yml',
-      //   './.github/workflows/container.deploy.yml',
-      // ],
-      // [
-      //   '../files/.shared/.github/workflows/deno.deploy.yml',
-      //   './.github/workflows/deno.deploy.yml',
-      // ],
+      [
+        '../files/.shared/.github/workflows/.build/build.yml',
+        './.github/workflows/build.yml',
+      ],
       [
         '../files/atomic/deno.template.jsonc',
         './deno.jsonc',
@@ -99,11 +95,11 @@ export class InstallCommand implements Command {
       ['../files/.shared/README.md', './README.md'],
       ['../files/.shared/.gitignore', './.gitignore'],
       [
-        '../files/.shared/.github/workflows/container.deploy.yml',
+        '../files/.shared/.github/workflows/.deploy/container.deploy.yml',
         './.github/workflows/container.deploy.yml',
       ],
       [
-        '../files/.shared/.github/workflows/deno.deploy.yml',
+        '../files/.shared/.github/workflows/.deploy/deno.deploy.yml',
         './.github/workflows/deno.deploy.yml',
       ],
       ['../files/.shared/dev.ts', './dev.ts'],
@@ -166,15 +162,39 @@ export class InstallCommand implements Command {
         './apps/tailwind/tailwind.config.ts',
       ],
     ],
+    library: [
+      ['../files/.shared/README.md', './README.md'],
+      ['../files/.shared/.gitignore', './.gitignore'],
+      [
+        '../files/.shared/.github/workflows/.build/build.yml',
+        './.github/workflows/build.yml',
+      ],
+      [
+        '../files/library/deno.template.jsonc',
+        './deno.jsonc',
+        (contents: string) => this.ensureDenoConfigSetup(contents),
+      ],
+      ['../files/.shared/tests/tests.ts', './tests/tests.ts'],
+      ['../files/.shared/tests/tests.deps.ts', './tests/tests.deps.ts'],
+      [
+        '../files/library/.github/workflows/build.yaml',
+        './.github/workflows/build.yaml',
+      ],
+      ['../files/library/mod.ts', './mod.ts'],
+      ['../files/library/src/utils/.exports.ts', './src/utils/.exports.ts'],
+      ['../files/library/src/utils/sampleFunction.ts', './src/utils/sampleFunction.ts'],
+      ['../files/library/src/.exports.ts', './src/.exports.ts'],
+      ['../files/library/src/src.deps.ts', './src/src.deps.ts'],
+    ],
     preact: [
       ['../files/.shared/README.md', './README.md'],
       ['../files/.shared/.gitignore', './.gitignore'],
       [
-        '../files/.shared/.github/workflows/container.deploy.yml',
+        '../files/.shared/.github/workflows/.deploy/container.deploy.yml',
         './.github/workflows/container.deploy.yml',
       ],
       [
-        '../files/.shared/.github/workflows/deno.deploy.yml',
+        '../files/.shared/.github/workflows/.deploy/deno.deploy.yml',
         './.github/workflows/deno.deploy.yml',
       ],
       ['../files/.shared/dev.ts', './dev.ts'],
@@ -218,11 +238,11 @@ export class InstallCommand implements Command {
       ['../files/.shared/README.md', './README.md'],
       ['../files/.shared/.gitignore', './.gitignore'],
       [
-        '../files/.shared/.github/workflows/container.deploy.yml',
+        '../files/.shared/.github/workflows/.deploy/container.deploy.yml',
         './.github/workflows/container.deploy.yml',
       ],
       [
-        '../files/.shared/.github/workflows/deno.deploy.yml',
+        '../files/.shared/.github/workflows/.deploy/deno.deploy.yml',
         './.github/workflows/deno.deploy.yml',
       ],
       ['../files/.shared/dev.ts', './dev.ts'],
