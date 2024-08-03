@@ -306,17 +306,17 @@ export class InstallCommand implements Command {
 
     if (this.flags.vscode) {
       this.filesToCreate.push([
-        '../files/.vscode/extensions.json',
+        '../files/.shared/.vscode/extensions.json',
         './.vscode/extensions.json',
       ]);
 
       this.filesToCreate.push([
-        '../files/.vscode/launch.json',
+        '../files/.shared/.vscode/launch.json',
         './.vscode/launch.json',
       ]);
 
       this.filesToCreate.push([
-        '../files/.vscode/settings.json',
+        '../files/.shared/.vscode/settings.json',
         './.vscode/settings.json',
       ]);
     }
