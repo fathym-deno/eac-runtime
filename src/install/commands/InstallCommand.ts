@@ -54,8 +54,8 @@ export class InstallCommand implements Command {
       ['../files/.shared/README.md', './README.md'],
       ['../files/.shared/.gitignore', './.gitignore'],
       [
-        '../files/.shared/.github/workflows/.build/build.yml',
-        './.github/workflows/build.yml',
+        '../files/.shared/.github/workflows/.build/build.yaml',
+        './.github/workflows/build.yaml',
       ],
       [
         '../files/atomic/deno.template.jsonc',
@@ -64,10 +64,6 @@ export class InstallCommand implements Command {
       ],
       ['../files/.shared/tests/tests.ts', './tests/tests.ts'],
       ['../files/.shared/tests/tests.deps.ts', './tests/tests.deps.ts'],
-      [
-        '../files/atomic/.github/workflows/build.yaml',
-        './.github/workflows/build.yaml',
-      ],
       ['../files/atomic/mod.ts', './mod.ts'],
       ['../files/atomic/tailwind.config.js', './tailwind.config.js'],
       [
@@ -166,8 +162,8 @@ export class InstallCommand implements Command {
       ['../files/.shared/README.md', './README.md'],
       ['../files/.shared/.gitignore', './.gitignore'],
       [
-        '../files/.shared/.github/workflows/.build/build.yml',
-        './.github/workflows/build.yml',
+        '../files/.shared/.github/workflows/.build/build.yaml',
+        './.github/workflows/build.yaml',
       ],
       [
         '../files/library/deno.template.jsonc',
@@ -180,10 +176,6 @@ export class InstallCommand implements Command {
       [
         '../files/library/tests/utils/sampleFunction.tests.ts',
         './tests/utils/sampleFunction.tests.ts',
-      ],
-      [
-        '../files/library/.github/workflows/build.yaml',
-        './.github/workflows/build.yaml',
       ],
       ['../files/library/mod.ts', './mod.ts'],
       ['../files/library/src/utils/.exports.ts', './src/utils/.exports.ts'],
