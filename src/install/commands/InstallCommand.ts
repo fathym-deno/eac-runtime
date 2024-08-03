@@ -182,7 +182,10 @@ export class InstallCommand implements Command {
       ],
       ['../files/library/mod.ts', './mod.ts'],
       ['../files/library/src/utils/.exports.ts', './src/utils/.exports.ts'],
-      ['../files/library/src/utils/sampleFunction.ts', './src/utils/sampleFunction.ts'],
+      [
+        '../files/library/src/utils/sampleFunction.ts',
+        './src/utils/sampleFunction.ts',
+      ],
       ['../files/library/src/.exports.ts', './src/.exports.ts'],
       ['../files/library/src/src.deps.ts', './src/src.deps.ts'],
     ],
@@ -296,7 +299,11 @@ export class InstallCommand implements Command {
 
     const installDirectory = path.resolve('.');
 
-    if (this.flags.docker) {
+    if (
+      this.flags.docker &&
+      this.flags.template !== 'atomic' &&
+      this.flags.template !== 'library'
+    ) {
       this.filesToCreate.push(['../files/DOCKERFILE', './DOCKERFILE']);
     }
 
