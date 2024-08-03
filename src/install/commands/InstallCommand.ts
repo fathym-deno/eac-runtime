@@ -182,7 +182,10 @@ export class InstallCommand implements Command {
       ],
       ['../files/library/mod.ts', './mod.ts'],
       ['../files/library/src/utils/.exports.ts', './src/utils/.exports.ts'],
-      ['../files/library/src/utils/sampleFunction.ts', './src/utils/sampleFunction.ts'],
+      [
+        '../files/library/src/utils/sampleFunction.ts',
+        './src/utils/sampleFunction.ts',
+      ],
       ['../files/library/src/.exports.ts', './src/.exports.ts'],
       ['../files/library/src/src.deps.ts', './src/src.deps.ts'],
     ],
@@ -324,7 +327,7 @@ export class InstallCommand implements Command {
     installDirectory: string,
     filePath: string,
     outputFilePath: string,
-    transformer?: (contents: string) => string,
+    transformer?: (contents: string) => string
   ): Promise<void> {
     const outputTo = path.join(installDirectory, outputFilePath);
 
@@ -367,7 +370,7 @@ export class InstallCommand implements Command {
     // Is there a Deno type that represents the configuration file?
     let config: Record<string, unknown> = JSON.parse(contents);
 
-    if (this.flags.template !== 'atomic') {
+    if (this.flags.template !== 'atomic' && this.flags.template !== 'library') {
       config = mergeWithArrays(config, {
         imports: {
           '@fathym/common': 'https://deno.land/x/fathym_common@v0.0.185/mod.ts',
@@ -375,7 +378,7 @@ export class InstallCommand implements Command {
           '@fathym/eac/runtime': import.meta.resolve('../../../mod.ts'),
           '@fathym/eac/runtime/': import.meta.resolve('../../../'),
           '@fathym/eac/runtime/browser': import.meta.resolve(
-            '../../../browser.ts',
+            '../../../browser.ts'
           ),
         },
       });
@@ -395,9 +398,12 @@ export class InstallCommand implements Command {
     if (this.flags.template === 'preact') {
       config = mergeWithArrays(config, {
         imports: {
-          '@fathym/atomic': 'https://deno.land/x/fathym_atomic_design_kit@v0.0.134/mod.ts',
-          '@fathym/atomic/': 'https://deno.land/x/fathym_atomic_design_kit@v0.0.134/',
-          '@fathym/atomic-icons': 'https://deno.land/x/fathym_atomic_icons@v0.0.44/mod.ts',
+          '@fathym/atomic':
+            'https://deno.land/x/fathym_atomic_design_kit@v0.0.134/mod.ts',
+          '@fathym/atomic/':
+            'https://deno.land/x/fathym_atomic_design_kit@v0.0.134/',
+          '@fathym/atomic-icons':
+            'https://deno.land/x/fathym_atomic_icons@v0.0.44/mod.ts',
           '@fathym/atomic-icons/browser':
             'https://deno.land/x/fathym_atomic_icons@v0.0.44/browser.ts',
           '@fathym/atomic-icons/plugin':
@@ -409,18 +415,20 @@ export class InstallCommand implements Command {
     if (this.flags.template === 'synaptic') {
       config = mergeWithArrays(config, {
         imports: {
-          '@fathym/synaptic': 'https://deno.land/x/fathym_synaptic@v0.0.99/mod.ts',
+          '@fathym/synaptic':
+            'https://deno.land/x/fathym_synaptic@v0.0.99/mod.ts',
           '@fathym/synaptic/': 'https://deno.land/x/fathym_synaptic@v0.0.99/',
         },
       });
     }
 
-    if (this.flags.preact) {
+    if (this.flags.preact && this.flags.template !== 'library') {
       config = mergeWithArrays(config, {
         imports: {
           preact: 'https://esm.sh/preact@10.20.1',
           'preact/': 'https://esm.sh/preact@10.20.1/',
-          'preact-render-to-string': 'https://esm.sh/*preact-render-to-string@6.4.0',
+          'preact-render-to-string':
+            'https://esm.sh/*preact-render-to-string@6.4.0',
         },
         compilerOptions: {
           jsx: 'react-jsx',
@@ -433,6 +441,7 @@ export class InstallCommand implements Command {
       this.flags.tailwind &&
       this.flags.template !== 'api' &&
       this.flags.template !== 'atomic' &&
+      this.flags.template !== 'library' &&
       this.flags.template !== 'synaptic'
     ) {
       config = mergeWithArrays(config, {
@@ -456,13 +465,13 @@ export class InstallCommand implements Command {
         installDirectory,
         inputFile,
         outputFile,
-        transformer,
+        transformer
       );
     }
   }
 
   protected async openTemplateFile(
-    filePath: string,
+    filePath: string
   ): Promise<ReadableStream<Uint8Array>> {
     const fileUrl = new URL(filePath, import.meta.url);
 
