@@ -16,11 +16,11 @@ export * from 'https://deno.land/x/fathym_common@v0.0.185/mod.ts';
 // export * from '../reference-architecture/oauth.ts';
 export * from 'https://deno.land/x/fathym_common@v0.0.185/oauth.ts';
 // export * from '../everything-as-code/deno.ts';
-export * from 'https://deno.land/x/fathym_everything_as_code@v0.0.415/deno.ts';
+export * from 'https://deno.land/x/fathym_everything_as_code@v0.0.416/deno.ts';
 // export * from '../everything-as-code/mod.ts';
-export * from 'https://deno.land/x/fathym_everything_as_code@v0.0.415/mod.ts';
-export * from 'https://deno.land/x/fathym_everything_as_code@v0.0.415/oauth.ts';
-export * from 'https://deno.land/x/fathym_everything_as_code@v0.0.415/octokit.ts';
+export * from 'https://deno.land/x/fathym_everything_as_code@v0.0.416/mod.ts';
+export * from 'https://deno.land/x/fathym_everything_as_code@v0.0.416/oauth.ts';
+export * from 'https://deno.land/x/fathym_everything_as_code@v0.0.416/octokit.ts';
 // export * from '../everything-as-code-api/mod.ts';
 export * from 'https://deno.land/x/fathym_everything_as_code_api@v0.0.44/mod.ts';
 

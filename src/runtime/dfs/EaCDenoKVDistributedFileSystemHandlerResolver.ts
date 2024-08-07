@@ -16,6 +16,7 @@ export const EaCDenoKVDistributedFileSystemHandlerResolver: DFSFileHandlerResolv
       denoKv,
       dfs.RootKey || ['DFS'],
       dfs.FileRoot,
+      dfs.SegmentPath,
     );
   },
 };

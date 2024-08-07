@@ -81,6 +81,7 @@ export class EaCPreactAppHandler {
     this.isDev = EAC_RUNTIME_DEV();
   }
   //#endregion
+
   //#region API Methods
   public async Build(
     processor: EaCPreactAppProcessor,
@@ -134,6 +135,7 @@ export class EaCPreactAppHandler {
     return pipeline.Execute(request, ctx);
   }
   //#endregion
+
   //#region Helpers
   // protected async buildCompIslandsLibrary(
   //   options: Partial<esbuild.BuildOptions>,

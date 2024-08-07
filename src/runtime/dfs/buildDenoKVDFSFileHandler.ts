@@ -4,10 +4,29 @@ import { DFSFileInfo } from './DFSFileInfo.ts';
 import { getFileCheckPathsToProcess } from './getFileCheckPathsToProcess.ts';
 import { withDFSCache } from './withDFSCache.ts';
 
+function getFullFileKey(
+  rootKey: Deno.KvKey,
+  revision: number,
+  filePath: string,
+  segmentPath?: string,
+) {
+  const fullFileKey = [
+    ...rootKey,
+    'Revision',
+    revision,
+    'Path',
+    ...(segmentPath?.split('/') || []).filter((fp) => fp),
+    ...filePath.split('/').filter((fp) => fp),
+  ];
+
+  return fullFileKey;
+}
+
 export const buildDenoKVDFSFileHandler = (
   denoKv: Deno.Kv,
   rootKey: Deno.KvKey,
   root: string,
+  segmentPath?: string,
   pathResolver?: (filePath: string) => string,
 ): DFSFileHandler => {
   const fileStream = new DenoKVFileStream(denoKv);
@@ -48,13 +67,12 @@ export const buildDenoKVDFSFileHandler = (
             const resolvedPath = pathResolver ? pathResolver(fcp) : fcp;
 
             if (resolvedPath) {
-              const fullFileKey = [
-                ...rootKey,
-                'Revision',
+              const fullFileKey = getFullFileKey(
+                rootKey,
                 revision,
-                'Path',
                 resolvedPath,
-              ];
+                segmentPath,
+              );
 
               fileChecks.push(fileStream.Read(fullFileKey));
             }
@@ -106,11 +124,14 @@ export const buildDenoKVDFSFileHandler = (
       const paths: string[] = [];
 
       for await (const fileRevisionEntry of fileRevisionEntries) {
-        const filePath = fileRevisionEntry.key[
-          fileRevisionEntry.key.length - 3
-        ] as string;
+        const filePath = fileRevisionEntry.key
+          .slice(
+            filesRevisionRootKey.length + 1,
+            fileRevisionEntry.key.length - 2,
+          )
+          .join('/');
 
-        paths.push(filePath);
+        paths.push(`/${filePath}`);
       }
 
       // Cleanup old revisions
@@ -146,7 +167,12 @@ export const buildDenoKVDFSFileHandler = (
     },
 
     async RemoveFile(filePath: string, revision: number): Promise<void> {
-      const fullFileKey = [...rootKey, 'Revision', revision, 'Path', filePath];
+      const fullFileKey = getFullFileKey(
+        rootKey,
+        revision,
+        filePath,
+        segmentPath,
+      );
 
       await fileStream.Remove(fullFileKey);
     },
@@ -160,7 +186,12 @@ export const buildDenoKVDFSFileHandler = (
       maxChunkSize = 8000,
       _cacheDb?: Deno.Kv,
     ): Promise<void> {
-      const fullFileKey = [...rootKey, 'Revision', revision, 'Path', filePath];
+      const fullFileKey = getFullFileKey(
+        rootKey,
+        revision,
+        filePath,
+        segmentPath,
+      );
 
       await fileStream.Write(
         fullFileKey,
