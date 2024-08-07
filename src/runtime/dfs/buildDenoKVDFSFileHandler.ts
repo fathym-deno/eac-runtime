@@ -145,6 +145,12 @@ export const buildDenoKVDFSFileHandler = (
       return root;
     },
 
+    async RemoveFile(filePath: string, revision: number): Promise<void> {
+      const fullFileKey = [...rootKey, 'Revision', revision, 'Path', filePath];
+
+      await fileStream.Remove(fullFileKey);
+    },
+
     async WriteFile(
       filePath: string,
       revision: number,

@@ -9,6 +9,7 @@ import {
   EaCDistributedFileSystemWorkerMessage,
   EaCDistributedFileSystemWorkerMessageGetFileInfoPayload,
   EaCDistributedFileSystemWorkerMessageLoadAllPathsPayload,
+  EaCDistributedFileSystemWorkerMessageRemoveFilePayload,
   EaCDistributedFileSystemWorkerMessageWriteFilePayload,
 } from './EaCDistributedFileSystemWorkerMessage.ts';
 
@@ -129,6 +130,22 @@ export abstract class EaCDistributedFileSystemWorker extends FathymWorker<
     });
   }
 
+  protected async handleWorkerRemoveFile(
+    msg: EaCDistributedFileSystemWorkerMessage<
+      EaCDistributedFileSystemWorkerMessageRemoveFilePayload
+    >,
+  ): Promise<void> {
+    if (msg.Payload && this.dfsHandler) {
+      await this.dfsHandler.RemoveFile(
+        msg.Payload.FilePath,
+        msg.Payload.Revision,
+        msg.Payload.CacheDB,
+      );
+    }
+
+    correlateResult(this.worker, msg.CorrelationID);
+  }
+
   protected async handleWorkerWriteFile(
     msg: EaCDistributedFileSystemWorkerMessage<
       EaCDistributedFileSystemWorkerMessageWriteFilePayload
@@ -158,6 +175,9 @@ export abstract class EaCDistributedFileSystemWorker extends FathymWorker<
         this,
       ),
       [EaCDistributedFileSystemWorkerMessageTypes.LoadAllPaths]: this.handleWorkerLoadAllPaths.bind(
+        this,
+      ),
+      [EaCDistributedFileSystemWorkerMessageTypes.RemoveFile]: this.handleWorkerRemoveFile.bind(
         this,
       ),
       [EaCDistributedFileSystemWorkerMessageTypes.WriteFile]: this.handleWorkerWriteFile.bind(this),

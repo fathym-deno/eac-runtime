@@ -101,6 +101,14 @@ export const buildLocalDFSFileHandler = (
       return root;
     },
 
+    RemoveFile(
+      _filePath: string,
+      _revision: number,
+      _cacheDb?: Deno.Kv,
+    ): Promise<void> {
+      throw new Deno.errors.NotSupported('File removal not yet supported.');
+    },
+
     WriteFile(
       _filePath: string,
       _revision: number,

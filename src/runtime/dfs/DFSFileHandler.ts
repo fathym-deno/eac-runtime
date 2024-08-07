@@ -15,6 +15,12 @@ export type DFSFileHandler = {
 
   readonly Root: string;
 
+  RemoveFile(
+    filePath: string,
+    revision: number,
+    cacheDb?: Deno.Kv,
+  ): Promise<void>;
+
   WriteFile(
     filePath: string,
     revision: number,

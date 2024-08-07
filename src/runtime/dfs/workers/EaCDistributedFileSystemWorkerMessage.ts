@@ -26,6 +26,14 @@ export type EaCDistributedFileSystemWorkerMessageLoadAllPathsPayload = {
   Revision?: number;
 };
 
+export type EaCDistributedFileSystemWorkerMessageRemoveFilePayload = {
+  CacheDB?: Deno.Kv;
+
+  FilePath: string;
+
+  Revision: number;
+};
+
 export type EaCDistributedFileSystemWorkerMessageWriteFilePayload = {
   CacheDB?: Deno.Kv;
 
@@ -47,5 +55,6 @@ export type EaCDistributedFileSystemWorkerMessage<
     | undefined
     | EaCDistributedFileSystemWorkerMessageGetFileInfoPayload
     | EaCDistributedFileSystemWorkerMessageLoadAllPathsPayload
+    | EaCDistributedFileSystemWorkerMessageRemoveFilePayload
     | EaCDistributedFileSystemWorkerMessageWriteFilePayload = undefined,
 > = FathymWorkerMessage<TPayload>;

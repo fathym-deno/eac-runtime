@@ -69,6 +69,20 @@ export class DenoKVFileStream {
     }
   }
 
+  public async Remove(key: Deno.KvKey): Promise<void> {
+    const denoKv = this.denoKv;
+
+    const cachedFileChunks = await denoKv.list<
+      DenoKVFileStreamData<Uint8Array>
+    >({
+      prefix: key,
+    });
+
+    for await (const cachedFileChunk of cachedFileChunks) {
+      await denoKv.delete(cachedFileChunk.key);
+    }
+  }
+
   public async Write(
     key: Deno.KvKey,
     stream: ReadableStream<Uint8Array>,
@@ -116,7 +130,7 @@ export class DenoKVFileStream {
             } else {
               content = concatUint8Arrays(content, value);
 
-              const contentBlob = new Blob([content]);
+              let contentBlob = new Blob([content]);
 
               if (chunkCount < 0) {
                 storeChunk(content.slice(0, 1)).then();
@@ -124,10 +138,12 @@ export class DenoKVFileStream {
                 content = content.slice(1);
               }
 
-              if (contentBlob.size > maxChunkSize) {
+              while (contentBlob.size > maxChunkSize) {
                 storeChunk(content.slice(0, maxChunkSize)).then();
 
                 content = content.slice(maxChunkSize);
+
+                contentBlob = new Blob([content]);
               }
 
               return fileReader.read().then(processFile);

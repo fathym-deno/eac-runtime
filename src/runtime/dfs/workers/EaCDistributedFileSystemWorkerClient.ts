@@ -4,6 +4,7 @@ import {
   EaCDistributedFileSystemWorkerMessage,
   EaCDistributedFileSystemWorkerMessageGetFileInfoPayload,
   EaCDistributedFileSystemWorkerMessageLoadAllPathsPayload,
+  EaCDistributedFileSystemWorkerMessageRemoveFilePayload,
   EaCDistributedFileSystemWorkerMessageWriteFilePayload,
 } from './EaCDistributedFileSystemWorkerMessage.ts';
 import { EaCDistributedFileSystemWorkerMessageTypes } from '../workers/EaCDistributedFileSystemWorkerMessageTypes.ts';
@@ -59,6 +60,20 @@ export class EaCDistributedFileSystemWorkerClient extends FathymWorkerClient<
     });
 
     return resp.FilePaths;
+  }
+
+  public async RemoveFile(
+    payload: EaCDistributedFileSystemWorkerMessageRemoveFilePayload,
+  ): Promise<DFSFileInfo | undefined> {
+    const resp = await this.Send<
+      { FileInfo: DFSFileInfo | undefined },
+      EaCDistributedFileSystemWorkerMessageRemoveFilePayload
+    >({
+      Type: EaCDistributedFileSystemWorkerMessageTypes.RemoveFile,
+      Payload: payload,
+    });
+
+    return resp.FileInfo;
   }
 
   public async WriteFile(

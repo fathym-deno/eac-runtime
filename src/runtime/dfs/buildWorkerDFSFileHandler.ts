@@ -43,6 +43,18 @@ export const buildWorkerDFSFileHandler = async (
       return started.Root;
     },
 
+    async RemoveFile(
+      filePath: string,
+      revision: number,
+      cacheDb?: Deno.Kv,
+    ): Promise<void> {
+      await dfsWorkerClient.RemoveFile({
+        FilePath: filePath,
+        Revision: revision,
+        CacheDB: cacheDb,
+      });
+    },
+
     async WriteFile(
       filePath: string,
       revision: number,
