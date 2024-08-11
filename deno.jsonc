@@ -60,8 +60,6 @@
     "experimentalDecorators": true,
     "jsx": "react-jsx",
     "jsxImportSource": "preact",
-    // "jsxFactory": "h",
-    // "jsxFragmentFactory": "Fragment",
     "lib": [
       "dom",
       "dom.iterable",
