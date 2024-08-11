@@ -23,9 +23,9 @@ export * from 'jsr:@fathym/eac@0.0.423/octokit';
 // export * from '../everything-as-code-api/mod.ts';
 export * from 'jsr:@fathym/eac-api@0.0.47';
 
-import * as esbuild from 'https://deno.land/x/esbuild@v0.20.1/mod.js';
+import * as esbuild from 'npm:esbuild@0.23.0';
 export { esbuild };
-export { denoPlugins } from 'https://deno.land/x/esbuild_deno_loader@0.9.0/mod.ts';
+// export { denoPlugins } from 'https://deno.land/x/esbuild_deno_loader@0.9.0/mod.ts';
 export type ESBuild = {
   context: typeof esbuild.context;
   build: typeof esbuild.build;
