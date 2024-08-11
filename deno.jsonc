@@ -1,4 +1,10 @@
 {
+  "name": "@fathym/eac-runtime",
+  "version": "0.0.0",
+  "exports": {
+    ".": "./mod.ts",
+    "./browser": "./browser.ts"
+  },
   "tasks": {
     "build": "deno task build:fmt && deno task build:lint && deno task build:mod",
     "build:mod": "deno run -A mod.ts build",
@@ -6,9 +12,9 @@
     "build:lint": "deno lint",
     "check": "deno fmt --check && deno lint && deno check **/*.ts && deno check **/*.tsx",
     "deploy": "deno task build && deno task test && ftm git",
-    "test": "deno test -A tests/tests.ts --parallel --coverage=cov"
+    "test": "deno test -A tests/tests.ts --parallel --coverage=cov",
+    "version": "deno run -A jsr:@fathym/common@0.0.205/version"
   },
-  "lock": false,
   "imports": {
     "@fathym/atomic": "https://deno.land/x/fathym_atomic_design_kit@v0.0.155/mod.ts",
     "@fathym/atomic/": "https://deno.land/x/fathym_atomic_design_kit@v0.0.155/",
@@ -65,5 +71,6 @@
       "deno.unstable"
     ],
     "strict": true
-  }
+  },
+  "lock": false
 }
