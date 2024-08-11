@@ -6,9 +6,10 @@ import {
 import { IS_BUILDING } from '../../constants.ts';
 import { ModifierHandlerResolver } from './ModifierHandlerResolver.ts';
 import { establishJwtValidationMiddleware } from '../../modules/jwt/jwtValidationMiddleware.ts';
+import { EaCRuntimeHandler } from '../EaCRuntimeHandler.ts';
 
 export const EaCJWTValidationModifierHandlerResolver: ModifierHandlerResolver = {
-  Resolve(_ioc, modifier) {
+  Resolve(_ioc, modifier): Promise<EaCRuntimeHandler | undefined> {
     if (IS_BUILDING) {
       return Promise.resolve(undefined);
     }

@@ -1,5 +1,4 @@
 export * from './DefaultProcessorHandlerResolver.ts';
-export * from './EaCAIChatProcessorHandlerResolver.ts';
 export * from './EaCApplicationProcessorConfig.ts';
 export * from './EaCDFSProcessorHandlerResolver.ts';
 export * from './EaCOAuthProcessorHandlerResolver.ts';

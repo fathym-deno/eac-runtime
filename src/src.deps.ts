@@ -1,15 +1,15 @@
 export * from '../deps.ts';
 import * as _parse from 'npm:pdf-parse@1.1.1';
 import * as _azureSearch from 'npm:@azure/search-documents@12.1.0';
-export * as DenoKVOAuth from 'https://raw.githubusercontent.com/fathym-deno/deno_kv_oauth/main/mod.ts';
-export * as colors from 'https://deno.land/std@0.220.1/fmt/colors.ts';
-export * as frontMatter from 'https://deno.land/std@0.220.1/front_matter/yaml.ts';
-export * from 'https://deno.land/std@0.220.1/http/mod.ts';
-export * from 'https://deno.land/std@0.220.1/streams/mod.ts';
-export * as djwt from 'https://deno.land/x/djwt@v3.0.0/mod.ts';
-export { transpile } from 'https://deno.land/x/emit@0.37.0/mod.ts';
-export * from 'https://deno.land/x/deno_dom@v0.1.45/deno-dom-wasm-noinit.ts';
-export { Stripe } from 'npm:stripe';
+export * as DenoKVOAuth from 'jsr:@deno/kv-oauth@0.11.0';
+export * as colors from 'jsr:@std/fmt@1.0.0/colors';
+export * as frontMatter from 'jsr:@std/front-matter@1.0.1/yaml';
+export * from 'jsr:@std/http@1.0.2';
+export * from 'jsr:@std/streams@1.0.1';
+export * as djwt from 'jsr:@zaubrik/djwt@3.0.2';
+export { transpile } from 'jsr:@deno/emit@0.44.0';
+export { DOMParser, Element, initParser } from 'jsr:@b-fuze/deno-dom@0.1.47/wasm-noinit';
+export { Stripe } from 'npm:stripe@16.7.0';
 // export * as gfm from 'https://deno.land/x/gfm@0.2.3/mod.ts';
 
 export type {
@@ -20,9 +20,9 @@ export type {
   OnResolveArgs as ESBuildOnResolveArgs,
   OnResolveResult as ESBuildOnResolveResult,
   Plugin as ESBuildPlugin,
-} from 'https://deno.land/x/esbuild@v0.20.1/mod.js';
+} from 'npm:esbuild@0.23.0';
 
-import Mime from 'npm:mime';
+import Mime from 'npm:mime@4.0.4';
 export const mime = Mime;
 
 import TailwindCSS from 'npm:tailwindcss@3.4.1';
@@ -38,19 +38,4 @@ export { cssnano };
 import autoprefixer from 'npm:autoprefixer@10.4.17';
 export { autoprefixer };
 
-export * as PreactRenderToString from 'https://esm.sh/*preact-render-to-string@6.4.1/';
-
-export { AzureChatOpenAI, AzureOpenAIEmbeddings } from 'npm:@langchain/azure-openai';
-export { WatsonxAI } from 'npm:@langchain/community/llms/watsonx_ai';
-export {
-  AzureAISearchQueryType,
-  AzureAISearchVectorStore,
-} from 'npm:@langchain/community/vectorstores/azure_aisearch';
-export { Embeddings } from 'npm:@langchain/core/embeddings';
-export { RecordManager } from 'npm:@langchain/core/indexing';
-export {
-  BaseLanguageModel,
-  type BaseLanguageModelCallOptions,
-} from 'npm:@langchain/core/language_models/base';
-export { BaseChatModel } from 'npm:@langchain/core/language_models/chat_models';
-export { VectorStore } from 'npm:@langchain/core/vectorstores';
+export * as PreactRenderToString from 'npm:preact-render-to-string@6.5.8';

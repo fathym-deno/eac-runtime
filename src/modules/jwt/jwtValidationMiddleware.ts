@@ -1,4 +1,4 @@
-import { JWTConfig, respond, STATUS_CODE } from '../../src.deps.ts';
+import { JWTConfig, STATUS_CODE } from '../../src.deps.ts';
 import { EaCRuntimeHandler } from '../../runtime/EaCRuntimeHandler.ts';
 
 export function establishJwtValidationMiddleware(
@@ -32,7 +32,7 @@ export function establishJwtValidationMiddleware(
       }
 
       if (failureRespBody.HasError) {
-        return respond(failureRespBody, {
+        return Response.json(failureRespBody, {
           status: STATUS_CODE.Unauthorized,
         });
       }

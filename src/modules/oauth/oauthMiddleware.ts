@@ -17,7 +17,9 @@ import {
 import { EaCRuntimeContext } from '../../runtime/EaCRuntimeContext.ts';
 import { EaCRuntimeHandler } from '../../runtime/EaCRuntimeHandler.ts';
 
-export function loadOAuth2ClientConfig(provider: EaCProviderAsCode) {
+export function loadOAuth2ClientConfig(
+  provider: EaCProviderAsCode,
+): DenoKVOAuth.OAuth2ClientConfig | undefined {
   let oAuthConfig: DenoKVOAuth.OAuth2ClientConfig | undefined = undefined;
 
   if (isEaCAzureADB2CProviderDetails(provider.Details)) {

@@ -3,7 +3,7 @@ export * from './config/_exports.ts';
 export * from './dfs/_exports.ts';
 export * from './modifiers/_exports.ts';
 export * from './plugins/_exports.ts';
-export * from './processors/_exports.ts';
+export * from './processors/.exports.ts';
 export * from './buildURLMatch.ts';
 export * from './DefaultEaCRuntime.ts';
 export * from './EaCRuntime.ts';

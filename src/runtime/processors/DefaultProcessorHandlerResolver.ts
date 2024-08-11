@@ -14,13 +14,14 @@ import {
 import { EaCApplicationProcessorConfig } from './EaCApplicationProcessorConfig.ts';
 import { EaCRuntimeEaC } from '../EaCRuntimeEaC.ts';
 import { ProcessorHandlerResolver } from './ProcessorHandlerResolver.ts';
+import { EaCRuntimeHandler } from '../EaCRuntimeHandler.ts';
 
 export class DefaultProcessorHandlerResolver implements ProcessorHandlerResolver {
   public async Resolve(
     ioc: IoCContainer,
     appProcCfg: EaCApplicationProcessorConfig,
     eac: EaCRuntimeEaC,
-  ) {
+  ): Promise<EaCRuntimeHandler | undefined> {
     let toResolveName: string = '';
 
     if (isEaCRedirectProcessor(appProcCfg.Application.Processor)) {

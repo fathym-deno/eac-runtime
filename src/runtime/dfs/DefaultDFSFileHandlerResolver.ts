@@ -8,9 +8,13 @@ import {
   isEaCRemoteDistributedFileSystem,
 } from '../../src.deps.ts';
 import { DFSFileHandlerResolver } from './DFSFileHandlerResolver.ts';
+import { DFSFileHandler } from './DFSFileHandler.ts';
 
 export class DefaultDFSFileHandlerResolver implements DFSFileHandlerResolver {
-  public async Resolve(ioc: IoCContainer, dfs: EaCDistributedFileSystem) {
+  public async Resolve(
+    ioc: IoCContainer,
+    dfs: EaCDistributedFileSystem,
+  ): Promise<DFSFileHandler | undefined> {
     let toResolveName: string = '';
 
     if (dfs.WorkerPath) {

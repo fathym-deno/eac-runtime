@@ -1,6 +1,7 @@
 // deno-lint-ignore-file no-explicit-any
+import { JSX } from 'preact';
 import { ComponentType, PreactRenderToString, RenderableProps } from '../../../src.deps.ts';
-import { buildIslandData } from './IslandData.tsx';
+import { buildIslandData, IslandDataProps } from './IslandData.tsx';
 
 export type IslandDataStoreType = {
   Name: string;
@@ -27,7 +28,9 @@ export class IslandDataStore {
     return Array.from(this.data).length > 0;
   }
 
-  public PrepareRender(_clientModulePath: string) {
+  public PrepareRender(
+    _clientModulePath: string,
+  ): (props: IslandDataProps) => JSX.Element {
     const IslandData = buildIslandData(this.GetData());
 
     return IslandData;
@@ -59,7 +62,7 @@ export class IslandDataStore {
   public Store(
     component: ComponentType<RenderableProps<any>>,
     props: RenderableProps<any>,
-  ) {
+  ): string {
     const islandId = Array.from(this.data.keys()).length.toString();
 
     this.data.set(islandId, {

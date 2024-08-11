@@ -1,11 +1,5 @@
 // deno-lint-ignore-file no-explicit-any
-import {
-  ComponentType,
-  EaCDistributedFileSystem,
-  ESBuild,
-  merge,
-  respond,
-} from '../../src.deps.ts';
+import { ComponentType, EaCDistributedFileSystem, ESBuild, merge } from '../../src.deps.ts';
 import { DFSFileHandler } from '../dfs/DFSFileHandler.ts';
 import { EaCRuntimeHandler } from '../EaCRuntimeHandler.ts';
 import { EaCRuntimeHandlerPipeline } from '../EaCRuntimeHandlerPipeline.ts';
@@ -65,7 +59,11 @@ export async function loadPreactAppHandler(
 
       const html = await renderHandler.RenderPage(renderStack, ctx);
 
-      return respond(html);
+      return new Response(html, {
+        headers: {
+          'Content-Type': 'text/html',
+        },
+      });
     };
 
     return ctx.Next();

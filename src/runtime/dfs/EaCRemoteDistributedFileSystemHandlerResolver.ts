@@ -1,9 +1,10 @@
 import { isEaCRemoteDistributedFileSystem } from '../../src.deps.ts';
 import { DFSFileHandlerResolver } from './DFSFileHandlerResolver.ts';
 import { buildFetchDFSFileHandler } from './buildFetchDFSFileHandler.ts';
+import { DFSFileHandler } from './DFSFileHandler.ts';
 
 export const EaCRemoteDistributedFileSystemHandlerResolver: DFSFileHandlerResolver = {
-  Resolve(_ioc, dfs) {
+  Resolve(_ioc, dfs): Promise<DFSFileHandler | undefined> {
     if (!isEaCRemoteDistributedFileSystem(dfs)) {
       throw new Deno.errors.NotSupported(
         'The provided dfs is not supported for the EaCRemoteDistributedFileSystemHandlerResolver.',

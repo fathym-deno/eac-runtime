@@ -1,9 +1,10 @@
 import { isEaCLocalDistributedFileSystem } from '../../src.deps.ts';
 import { DFSFileHandlerResolver } from './DFSFileHandlerResolver.ts';
 import { buildLocalDFSFileHandler } from './buildLocalDFSFileHandler.ts';
+import { DFSFileHandler } from './DFSFileHandler.ts';
 
 export const EaCLocalDistributedFileSystemHandlerResolver: DFSFileHandlerResolver = {
-  Resolve(_ioc, dfs) {
+  Resolve(_ioc, dfs): Promise<DFSFileHandler | undefined> {
     if (!isEaCLocalDistributedFileSystem(dfs)) {
       throw new Deno.errors.NotSupported(
         'The provided dfs is not supported for the EaCLocalDistributedFileSystemHandlerResolver.',

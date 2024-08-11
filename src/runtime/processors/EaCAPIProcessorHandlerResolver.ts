@@ -16,7 +16,7 @@ export const EaCAPIProcessorHandlerResolver: ProcessorHandlerResolver = {
 
     const processor = appProcCfg.Application.Processor as EaCAPIProcessor;
 
-    const dfs = eac.DFS![processor.DFSLookup];
+    const dfs = eac.DFS![processor.DFSLookup]!;
 
     const esbuild = await ioc.Resolve<ESBuild>(ioc.Symbol('ESBuild'));
 

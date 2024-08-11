@@ -9,15 +9,16 @@ import { PreactRenderHandler } from '../runtime/apps/preact/PreactRenderHandler.
 import { DFSFileHandler } from '../runtime/dfs/DFSFileHandler.ts';
 import {
   ComponentType,
+  DenoConfig,
   denoPlugins,
   EaCDistributedFileSystem,
   EaCPreactAppProcessor,
   ESBuild,
   esbuild,
   IoCContainer,
+  loadDenoConfigSync,
   path,
 } from '../src.deps.ts';
-import { DenoConfig } from './DenoConfig.ts';
 import { EaCComponentDFSHandler } from './EaCComponentDFSHandler.ts';
 import { PathMatch } from './dfs/PathMatch.ts';
 import { executePathMatch } from './dfs/executePathMatch.ts';
@@ -25,7 +26,6 @@ import { importDFSTypescriptModule } from './dfs/importDFSTypescriptModule.ts';
 import { loadFileHandler } from './dfs/loadFileHandler.ts';
 import { loadMiddleware } from './dfs/loadMiddleware.ts';
 import { loadRequestPathPatterns } from './dfs/loadRequestPathPatterns.ts';
-import { loadDenoConfigSync } from '../utils/loadDenoConfig.ts';
 
 export class EaCPreactAppHandler {
   //#region Fields
@@ -117,7 +117,7 @@ export class EaCPreactAppHandler {
 
   public async Configure(
     processor: EaCPreactAppProcessor,
-    dfss: Record<string, EaCDistributedFileSystem>,
+    dfss: Record<string, EaCDistributedFileSystem | null>,
     revision: number,
   ): Promise<void> {
     const matches = await this.loadPathMatches(processor, dfss, revision);
@@ -403,7 +403,7 @@ export class EaCPreactAppHandler {
 
   protected async loadAppDFSHandler(
     processor: EaCPreactAppProcessor,
-    dfss: Record<string, EaCDistributedFileSystem>,
+    dfss: Record<string, EaCDistributedFileSystem | null>,
   ): Promise<{ DFS: EaCDistributedFileSystem; Handler: DFSFileHandler }> {
     const appDFS = dfss[processor.AppDFSLookup];
 
@@ -447,7 +447,7 @@ export class EaCPreactAppHandler {
 
   protected async loadComponentDFSHandlers(
     processor: EaCPreactAppProcessor,
-    dfss: Record<string, EaCDistributedFileSystem>,
+    dfss: Record<string, EaCDistributedFileSystem | null>,
   ): Promise<(EaCComponentDFSHandler | undefined)[] | undefined> {
     if (!processor.ComponentDFSLookups) {
       return undefined;
@@ -568,7 +568,7 @@ export class EaCPreactAppHandler {
 
   protected async loadPathMatches(
     processor: EaCPreactAppProcessor,
-    dfss: Record<string, EaCDistributedFileSystem>,
+    dfss: Record<string, EaCDistributedFileSystem | null>,
     revision: number,
   ): Promise<PathMatch[]> {
     const esbuild = await this.ioc.Resolve<ESBuild>(this.ioc.Symbol('ESBuild'));

@@ -1,18 +1,19 @@
 // deno-lint-ignore-file no-explicit-any
 import {
+  Attributes,
   Component,
   ComponentChildren,
   ComponentType,
+  DenoConfig,
   Fragment,
   h,
   isValidElement,
   jsonClone,
+  loadDenoConfigSync,
   PreactRenderToString,
   type VNode,
 } from '../../../src.deps.ts';
 import { AdvancedPreactOptions } from './AdvancedPreactOptions.ts';
-import { DenoConfig } from '../../../utils/DenoConfig.ts';
-import { loadDenoConfigSync } from '../../../utils/loadDenoConfig.ts';
 import { Island } from '../islands/Island.ts';
 import { IslandDataStore } from '../islands/IslandDataStore.tsx';
 import { PageProps } from '../PageProps.ts';
@@ -31,15 +32,15 @@ export class PreactRenderHandler {
 
   protected islandsTypeMap: Map<string, ComponentType>;
 
-  protected origBeforeDiff;
+  protected origBeforeDiff: any;
 
-  protected origBeforeRender;
+  protected origBeforeRender: any;
 
-  protected origDiffed;
+  protected origDiffed: any;
 
-  protected origHook;
+  protected origHook: any;
 
-  protected origVNodeHook;
+  protected origVNodeHook: any;
 
   protected ContainerTracker = (props: {
     id: string;
@@ -336,7 +337,7 @@ export class PreactRenderHandler {
     id: string,
     markerType: 'island' | 'container' | 'key' = 'island',
     key?: string,
-  ) {
+  ): VNode<Attributes> {
     // return h(
     //   Fragment,
     //   {},

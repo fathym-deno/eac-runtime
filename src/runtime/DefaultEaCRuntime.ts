@@ -85,11 +85,11 @@ export class DefaultEaCRuntime<TEaC = EaCRuntimeEaC> implements EaCRuntime<TEaC>
 
     if (!esbuild) {
       if (IS_DENO_DEPLOY()) {
-        esbuild = await import('https://deno.land/x/esbuild@v0.20.1/wasm.js');
+        esbuild = await import('npm:esbuild-wasm@0.23.0');
 
         console.log('Initialized esbuild with portable WASM.');
       } else {
-        esbuild = await import('https://deno.land/x/esbuild@v0.20.1/mod.js');
+        esbuild = await import('npm:esbuild@0.23.0');
 
         console.log('Initialized esbuild with standard build.');
       }
@@ -97,7 +97,7 @@ export class DefaultEaCRuntime<TEaC = EaCRuntimeEaC> implements EaCRuntime<TEaC>
       try {
         const worker = IS_DENO_DEPLOY() ? false : undefined;
 
-        await esbuild.initialize({
+        await esbuild!.initialize({
           worker,
         });
       } catch (err) {
@@ -145,7 +145,7 @@ export class DefaultEaCRuntime<TEaC = EaCRuntimeEaC> implements EaCRuntime<TEaC>
 
     console.timeEnd('appGraph');
 
-    esbuild.stop();
+    esbuild!.stop();
   }
 
   public Handle(
@@ -261,7 +261,7 @@ export class DefaultEaCRuntime<TEaC = EaCRuntimeEaC> implements EaCRuntime<TEaC>
             throw new Error();
           }
 
-          const proj = this.EaC!.Projects![projLookup];
+          const proj = this.EaC!.Projects![projLookup]!;
 
           const resolverKeys = Object.keys(proj.ResolverConfigs);
 
@@ -337,7 +337,7 @@ export class DefaultEaCRuntime<TEaC = EaCRuntimeEaC> implements EaCRuntime<TEaC>
   protected async constructPipeline(
     project: EaCProjectAsCode,
     application: EaCApplicationAsCode,
-    modifiers: Record<string, EaCModifierAsCode>,
+    modifiers: Record<string, EaCModifierAsCode | null>,
   ): Promise<EaCRuntimeHandlerPipeline> {
     let pipelineModifierResolvers: Record<
       string,
@@ -373,7 +373,7 @@ export class DefaultEaCRuntime<TEaC = EaCRuntimeEaC> implements EaCRuntime<TEaC>
       .sort((a, b) => b.Config.Priority - a.Config.Priority)
       .forEach((ml) => {
         if (ml.Lookup in modifiers) {
-          pipelineModifiers.push(modifiers[ml.Lookup]);
+          pipelineModifiers.push(modifiers[ml.Lookup]!);
         }
       });
 

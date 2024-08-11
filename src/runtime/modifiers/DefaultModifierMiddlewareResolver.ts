@@ -11,9 +11,13 @@ import {
   isEaCTracingModifierDetails,
 } from '../../src.deps.ts';
 import { ModifierHandlerResolver } from './ModifierHandlerResolver.ts';
+import { EaCRuntimeHandler } from '../EaCRuntimeHandler.ts';
 
 export class DefaultModifierMiddlewareResolver implements ModifierHandlerResolver {
-  public async Resolve(ioc: IoCContainer, modifier: EaCModifierAsCode) {
+  public async Resolve(
+    ioc: IoCContainer,
+    modifier: EaCModifierAsCode,
+  ): Promise<EaCRuntimeHandler | undefined> {
     let toResolveName: string = '';
 
     if (isEaCBaseHREFModifierDetails(modifier.Details)) {

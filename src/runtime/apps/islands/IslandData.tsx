@@ -2,11 +2,13 @@
 import { isValidElement, JSX, VNode } from 'preact';
 import { IslandDataStoreType } from './IslandDataStore.tsx';
 
-type IslandDataProps = {
+export type IslandDataProps = {
   clientModulePath: string;
 };
 
-export function buildIslandData(islandsData: Map<string, IslandDataStoreType>) {
+export function buildIslandData(
+  islandsData: Map<string, IslandDataStoreType>,
+): (props: IslandDataProps) => JSX.Element {
   return function IslandData(props: IslandDataProps): JSX.Element {
     const data = Array.from(islandsData.entries());
 

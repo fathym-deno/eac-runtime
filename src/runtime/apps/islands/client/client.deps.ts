@@ -43,7 +43,7 @@ export function loadTemplateVNode(
   kind: MarkerKind,
   id: string,
   target: string,
-) {
+): Node | undefined {
   const sel = `#${tool}-${kind}-${id}-${target}`;
 
   console.log(sel);

@@ -1,8 +1,4 @@
-import {
-  EaCPreactAppProcessor,
-  isEaCPreactAppProcessor,
-  options as preactOptions,
-} from '../../src.deps.ts';
+import { EaCPreactAppProcessor, isEaCPreactAppProcessor, preactOptions } from '../../src.deps.ts';
 import { ProcessorHandlerResolver } from './ProcessorHandlerResolver.ts';
 import { PreactRenderHandler } from '../apps/preact/PreactRenderHandler.ts';
 import { EaCPreactAppHandler } from '../../utils/EaCPreactAppHandler.ts';
