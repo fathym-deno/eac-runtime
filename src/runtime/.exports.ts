@@ -1,6 +1,6 @@
 export * from './apps/_exports.ts';
 export * from './config/_exports.ts';
-export * from './dfs/_exports.ts';
+export * from './dfs/.exports.ts';
 export * from './modifiers/_exports.ts';
 export * from './plugins/_exports.ts';
 export * from './processors/.exports.ts';

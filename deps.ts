@@ -26,11 +26,11 @@ export * from 'jsr:@fathym/common@0.0.211';
 // export * from '../reference-architecture/oauth.ts';
 export * from 'jsr:@fathym/common@0.0.211/oauth';
 // export * from '../everything-as-code/deno.ts';
-export * from 'jsr:@fathym/eac@0.0.433/deno';
+export * from 'jsr:@fathym/eac@0.0.435/deno';
 // export * from '../everything-as-code/mod.ts';
-export * from 'jsr:@fathym/eac@0.0.433';
-export * from 'jsr:@fathym/eac@0.0.433/oauth';
-export * from 'jsr:@fathym/eac@0.0.433/octokit';
+export * from 'jsr:@fathym/eac@0.0.435';
+export * from 'jsr:@fathym/eac@0.0.435/oauth';
+export * from 'jsr:@fathym/eac@0.0.435/octokit';
 // export * from '../everything-as-code-api/mod.ts';
 export * from 'jsr:@fathym/eac-api@0.0.51';
 
