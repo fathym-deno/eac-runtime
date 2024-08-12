@@ -49,16 +49,13 @@ export async function importDFSTypescriptModule(
     //   // const apiUrl = `data:application/typescript;base64,${enc}`;
     //   apiUrl = `data:application/javascript;base64,${enc}`;
     // } else {
-    if (
-      filePath.startsWith('http://') ||
-      filePath.startsWith('https://')
-    ) {
+    if (filePath.startsWith('http://') || filePath.startsWith('https://')) {
       apiUrl = filePath;
     } else if (
       fileHandler.Root.startsWith('http://') ||
       fileHandler.Root.startsWith('https://')
     ) {
-      apiUrl = new URL(filePath, fileHandler.Root).href;
+      apiUrl = new URL(`.${filePath}`, fileHandler.Root).href;
     } else {
       if (filePath.startsWith('file:')) {
         apiUrl = filePath;

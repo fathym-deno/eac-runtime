@@ -21,6 +21,8 @@ export const EaCTailwindProcessorHandlerResolver: ProcessorHandlerResolver = {
       const allPaths = await fileHandler!.LoadAllPaths(appProcCfg.Revision);
 
       const pathLoaderCalls = allPaths.map((path) => {
+        console.log('getfileinfo');
+        console.log(path);
         return fileHandler!.GetFileInfo(path, appProcCfg.Revision);
       });
 

@@ -30,17 +30,23 @@ export const EaCJSRDistributedFileSystemHandlerResolver: DFSFileHandlerResolver 
     const handler = buildFetchDFSFileHandler(fileRoot.href);
 
     handler.LoadAllPaths = async (_revision: number) => {
-      const metaPath = `${fileRoot.href}__meta.json`;
+      const metaPath = `${fileRoot.href.slice(0, -1)}_meta.json`;
 
       const metaResp = await fetch(metaPath);
 
-      const meta = (await metaResp.json()) as {
-        manifest: { [filePath: string]: unknown };
-      };
+      try {
+        const meta = (await metaResp.clone().json()) as {
+          manifest: { [filePath: string]: unknown };
+        };
 
-      const filePaths = Object.keys(meta.manifest);
+        const filePaths = Object.keys(meta.manifest);
 
-      return filePaths;
+        return filePaths;
+      } catch (err) {
+        console.log(await metaResp.clone().text());
+
+        throw err;
+      }
     };
 
     return handler;

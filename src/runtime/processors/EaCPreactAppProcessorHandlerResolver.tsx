@@ -18,7 +18,10 @@ export const EaCPreactAppProcessorHandlerResolver: ProcessorHandlerResolver = {
       new PreactRenderHandler(preactOptions),
       `./islands/client/eacIslandsClient.ts`,
       `./islands/client/client.deps.ts`,
-      undefined,
+      {
+        preact: 'https://esm.sh/preact@10.20.1',
+        'preact/': 'https://esm.sh/preact@10.20.1/',
+      },
       {
         outdir: Deno.cwd(),
       },
