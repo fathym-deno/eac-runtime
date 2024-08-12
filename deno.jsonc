@@ -3,7 +3,11 @@
   "version": "0.0.0",
   "exports": {
     ".": "./mod.ts",
-    "./browser": "./browser.ts"
+    "./browser": "./browser.ts",
+    "./workers": "./workers.ts",
+    "./workers/esm": "./src/runtime/dfs/workers/EaCESMDistributedFileSystemWorker.ts",
+    "./workers/jsr": "./src/runtime/dfs/workers/EaCJSRDistributedFileSystemWorker.ts",
+    "./workers/local": "./src/runtime/dfs/workers/EaCLocalDistributedFileSystemWorker.ts"
   },
   "tasks": {
     "build": "deno task build:fmt && deno task build:lint && deno task publish:check && deno task build:mod",

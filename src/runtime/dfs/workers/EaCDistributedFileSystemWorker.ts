@@ -36,7 +36,12 @@ export abstract class EaCDistributedFileSystemWorker extends FathymWorker<
     >
   >;
 
-  protected async handleInitConfig() {
+  protected async handleInitConfig(): Promise<
+    | {
+      Root: string;
+    }
+    | undefined
+  > {
     this.fileGetters = {};
 
     const resolver = this.loadDFSHandlerResolver();
