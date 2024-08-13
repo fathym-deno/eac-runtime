@@ -18,10 +18,7 @@ export const EaCPreactAppProcessorHandlerResolver: ProcessorHandlerResolver = {
       new PreactRenderHandler(preactOptions),
       `./islands/client/eacIslandsClient.ts`,
       `./islands/client/client.deps.ts`,
-      {
-        preact: 'https://esm.sh/preact@10.20.1',
-        'preact/': 'https://esm.sh/preact@10.20.1/',
-      },
+      undefined,
       {
         outdir: Deno.cwd(),
       },
@@ -29,7 +26,14 @@ export const EaCPreactAppProcessorHandlerResolver: ProcessorHandlerResolver = {
 
     await handler.Configure(processor, eac.DFS || {}, Date.now());
 
-    await handler.Build(processor, undefined, {});
+    await handler.Build(
+      processor,
+      {
+        // preact: 'https://esm.sh/preact@10.20.1',
+        // 'preact/': 'https://esm.sh/preact@10.20.1/',
+      },
+      {},
+    );
 
     return (req, ctx) => {
       // return pipeline.Execute(req, ctx);

@@ -17,12 +17,16 @@
     "check": "deno fmt --check && deno lint && deno check **/*.ts && deno check **/*.tsx",
     "deploy": "deno task build && deno task test && ftm git",
     "publish:check": "deno publish --dry-run --allow-dirty",
-    "test": "deno test -A tests/tests.ts --parallel --coverage=cov",
+    "test": "deno test -A tests/tests.ts --parallel --coverage=cov --trace-leaks",
     "version": "deno run -A jsr:@fathym/common@0.0.211/version"
   },
   "imports": {
     "preact": "npm:preact@10.20.1",
-    "preact/jsx-runtime": "npm:preact@10.20.1/jsx-runtime"
+    "preact/jsx-runtime": "npm:preact@10.20.1/jsx-runtime",
+
+    "@fathym/atomic": "jsr:@fathym/atomic-design-kit@0",
+    "@fathym/eac-runtime": "./mod.ts",
+    "preact/hooks": "npm:preact@10.20.1/hooks"
   },
   "lint": {
     "include": ["src/"],

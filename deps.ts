@@ -34,9 +34,13 @@ export * from 'jsr:@fathym/eac@0.0.435/octokit';
 // export * from '../everything-as-code-api/mod.ts';
 export * from 'jsr:@fathym/eac-api@0.0.51';
 
-import * as esbuild from 'npm:esbuild@0.23.0';
+import * as esbuild from 'npm:esbuild@0.20.1';
 export { esbuild };
-export { denoPlugins } from 'jsr:@luca/esbuild-deno-loader@0.10.3';
+export {
+  denoPlugins,
+  denoLoaderPlugin,
+  urlToEsbuildResolution,
+} from 'jsr:@luca/esbuild-deno-loader@0.10.3';
 export type ESBuild = {
   context: typeof esbuild.context;
   build: typeof esbuild.build;

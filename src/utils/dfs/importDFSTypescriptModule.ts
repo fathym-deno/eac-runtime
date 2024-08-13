@@ -55,7 +55,11 @@ export async function importDFSTypescriptModule(
       fileHandler.Root.startsWith('http://') ||
       fileHandler.Root.startsWith('https://')
     ) {
-      apiUrl = new URL(`.${filePath}`, fileHandler.Root).href;
+      if (filePath.startsWith('/')) {
+        filePath = `.${filePath}`;
+      }
+
+      apiUrl = new URL(`${filePath}`, fileHandler.Root).href;
     } else {
       if (filePath.startsWith('file:')) {
         apiUrl = filePath;

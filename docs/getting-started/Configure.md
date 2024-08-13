@@ -46,7 +46,7 @@ import {
   EaCRuntimeConfig,
   EaCRuntimePluginConfig,
   EaCRuntimePlugin,
-} from '@fathym/eac/runtime';
+} from '@fathym/eac-runtime';
 
 export default class MyDemoPlugin implements EaCRuntimePlugin {
   constructor() {}
@@ -68,7 +68,7 @@ There is a Build method, which takes the `EaCRuntimeConfig` for the current runt
 Now we need to configure this plugin to be used by the runtime. To do this, open the `configs/eac-runtime.config.ts` file and update the plugins to use the new plugin, instead of the FathymDemoPlugin:
 
 ```typescript ./configs/eac-runtime.config.ts
-import { DefaultEaCConfig, defineEaCConfig } from '@fathym/eac/runtime';
+import { DefaultEaCConfig, defineEaCConfig } from '@fathym/eac-runtime';
 import MyDemoPlugin from '../src/plugins/MyDemoPlugin.ts';
 
 export default defineEaCConfig({
@@ -464,7 +464,7 @@ import {
   EaCRuntimeConfig,
   EaCRuntimePluginConfig,
   EaCRuntimePlugin,
-} from '@fathym/eac/runtime';
+} from '@fathym/eac-runtime';
 import {
   EaCDFSProcessor,
   EaCDenoKVCacheModifierDetails,

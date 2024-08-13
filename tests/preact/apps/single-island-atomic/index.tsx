@@ -1,5 +1,5 @@
-import { EaCRuntimeHandlerResult, PageProps } from '@fathym/eac/runtime';
-import { Action } from '@fathym/atomic';
+import { EaCRuntimeHandlerResult, PageProps } from '@fathym/eac-runtime';
+import { ClickOnceAction } from '@fathym/atomic';
 
 export const handler: EaCRuntimeHandlerResult = {
   GET: (_req, ctx) => {
@@ -21,7 +21,7 @@ export default function Index({ Data }: PageProps) {
           </p>
 
           <div class="flex flex-row py-8">
-            <Action href="http://www.google.com" target="_blank" />
+            <ClickOnceAction href="http://www.google.com" target="_blank" />
           </div>
         </div>
       </div>

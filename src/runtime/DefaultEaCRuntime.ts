@@ -85,11 +85,11 @@ export class DefaultEaCRuntime<TEaC = EaCRuntimeEaC> implements EaCRuntime<TEaC>
 
     if (!esbuild) {
       if (IS_DENO_DEPLOY()) {
-        esbuild = await import('npm:esbuild-wasm@0.23.0');
+        esbuild = await import('npm:esbuild-wasm@0.20.1');
 
         console.log('Initialized esbuild with portable WASM.');
       } else {
-        esbuild = await import('npm:esbuild@0.23.0');
+        esbuild = await import('npm:esbuild@0.20.1');
 
         console.log('Initialized esbuild with standard build.');
       }

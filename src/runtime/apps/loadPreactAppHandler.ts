@@ -55,7 +55,7 @@ export async function loadPreactAppHandler(
 
   const renderSetupHandler: EaCRuntimeHandler = (_req, ctx) => {
     ctx.Render = async (data = {}) => {
-      ctx.Data = merge(ctx.Data, data ?? {});
+      ctx.Data = merge(ctx.Data || {}, data ?? {});
 
       const html = await renderHandler.RenderPage(renderStack, ctx);
 

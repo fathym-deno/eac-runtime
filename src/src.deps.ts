@@ -20,7 +20,7 @@ export type {
   OnResolveArgs as ESBuildOnResolveArgs,
   OnResolveResult as ESBuildOnResolveResult,
   Plugin as ESBuildPlugin,
-} from 'npm:esbuild@0.23.0';
+} from 'npm:esbuild@0.20.1';
 
 import Mime from 'npm:mime@4.0.4';
 export const mime = Mime;

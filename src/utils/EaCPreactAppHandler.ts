@@ -99,6 +99,8 @@ export class EaCPreactAppHandler {
       );
     }
 
+    importMap = this.loadImportMap(importMap);
+
     // const islandFiles = await this.buildCompIslandsLibrary({}, importMap);
 
     // Object.keys(islandFiles).forEach(key => console.log(islandFiles[key]))
@@ -741,6 +743,14 @@ export class EaCPreactAppHandler {
     return {
       name: 'EaCPreactAppHandler',
       setup(build) {
+        // build.onLoad({ filter: /.*/ }, (args) => {
+        //   return null;
+        // });
+
+        // build.onResolve({ filter: /.*/ }, (args) => {
+        //   return null;
+        // });
+
         build.onLoad({ filter: /^(http|https|file)\:\/\/.+/ }, (args) => {
           return builder.LoadFetchFile(args);
         });
@@ -749,13 +759,25 @@ export class EaCPreactAppHandler {
           return builder.LoadVirtualFile(args, files);
         });
 
+        build.onResolve({ filter: /.*/, namespace: '$' }, (args) => {
+          return builder.ResolveImportMapFile(
+            () => build,
+            args,
+            preserveRemotes,
+            importMap,
+          );
+        });
+
         build.onResolve({ filter: /.*/ }, (args) => {
           return builder.ResolveVirtualFile(args, files);
         });
 
-        build.onResolve({ filter: /.*/ }, (args) => {
-          return builder.ResolveImportMapFile(args, preserveRemotes, importMap);
-        });
+        build.onResolve(
+          { filter: /^(jsr:|npm:|node:).*/, namespace: '$' },
+          (args) => {
+            return builder.ResolveSpecifierFile(() => build, args);
+          },
+        );
 
         build.onResolve({ filter: /^(http|https)\:\/\/.+/ }, (args) => {
           return builder.ResolveRemoteFile(args, preserveRemotes);
@@ -815,11 +837,12 @@ export class EaCPreactAppHandler {
     return null;
   }
 
-  public ResolveImportMapFile(
+  public async ResolveImportMapFile(
+    build: () => esbuild.PluginBuild,
     args: esbuild.OnResolveArgs,
     preserveRemotes: boolean,
     importMap?: Record<string, string>,
-  ): esbuild.OnResolveResult | null {
+  ): Promise<esbuild.OnResolveResult | null> {
     let filePath: string | undefined;
 
     const fullImportMap = this.loadImportMap(importMap);
@@ -845,43 +868,36 @@ export class EaCPreactAppHandler {
     if (filePath) {
       // console.debug(`Resolving import map file: ${args.path}`);
 
-      if (filePath.startsWith('npm:')) {
-        // const pckg = filePath.split(':')[1];
+      if (
+        filePath.startsWith('npm:') ||
+        filePath.startsWith('jsr:') ||
+        filePath.startsWith('node:')
+      ) {
+        return await this.ResolveSpecifierFile(build, {
+          kind: args.kind,
+          path: filePath,
+          importer: args.importer,
+          // resolveDir: args.resolveDir,
+        } as esbuild.OnResolveArgs);
+      } else {
+        try {
+          if (filePath) {
+            const [type, pkg] = filePath.split(':');
 
-        // filePath = new URL(`${pckg}/`, 'https://cdn.skypack.dev/').href;
-        filePath = '';
-      } else if (filePath.startsWith('jsr:')) {
-        // const pckg = filePath.split(':')[1];
+            if (type === 'file') {
+              filePath = new URL(path.join(Deno.cwd(), filePath)).href;
+            }
 
-        // filePath = new URL(`${pckg}/`, 'https://cdn.skypack.dev/').href;
-        filePath = '';
-      } else if (filePath.startsWith('node:')) {
-        // const pckg = filePath.split(':')[1];
-
-        // filePath = new URL(`${pckg}/`, 'https://cdn.skypack.dev/').href;
-        filePath = '';
-      }
-
-      try {
-        if (filePath) {
-          if (!filePath.includes(':')) {
-            filePath = `file:///${new URL(path.join(Deno.cwd(), filePath)).href}`;
+            return {
+              path: (preserveRemotes || type === 'file' ? filePath : pkg).replace('//', '/'),
+              namespace: type,
+              external: preserveRemotes,
+            };
           }
-
-          const [type, pkg] = filePath.split(':');
-
-          return {
-            path: (preserveRemotes || type === 'file' ? filePath : pkg).replace(
-              '//',
-              '/',
-            ),
-            namespace: type === 'file' ? 'remote' : type,
-            external: preserveRemotes,
-          };
-        }
-      } finally {
-        if (filePath) {
-          // console.debug(`\t${filePath}`);
+        } finally {
+          if (filePath) {
+            // console.debug(`\t${filePath}`);
+          }
         }
       }
     }
@@ -959,6 +975,26 @@ export class EaCPreactAppHandler {
     }
 
     return null;
+  }
+
+  public async ResolveSpecifierFile(
+    build: () => esbuild.PluginBuild,
+    args: esbuild.OnResolveArgs,
+  ): Promise<esbuild.OnResolveResult | null> {
+    const [namespace, ...path] = args.path.split(':');
+
+    return await build().resolve(path.join(':'), {
+      namespace,
+      kind: args.kind,
+      // importer: args.importer,
+      // resolveDir: args.resolveDir,
+    });
+
+    // return {
+    //   // path: args.path,
+    //   path: path.join(':'),
+    //   namespace,
+    // } as esbuild.OnResolveResult;
   }
 
   public ResolveVirtualFile(
