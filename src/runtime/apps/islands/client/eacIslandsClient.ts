@@ -1,4 +1,5 @@
 // deno-lint-ignore-file no-explicit-any
+import 'preact/debug';
 import {
   ClientIslandsData,
   ComponentChildren,

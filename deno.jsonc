@@ -26,6 +26,7 @@
 
     "@fathym/atomic": "jsr:@fathym/atomic-design-kit@0",
     "@fathym/eac-runtime": "./mod.ts",
+    "preact/debug": "npm:preact@10.20.1/debug",
     "preact/hooks": "npm:preact@10.20.1/hooks"
   },
   "lint": {

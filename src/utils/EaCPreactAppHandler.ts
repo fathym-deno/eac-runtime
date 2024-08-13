@@ -533,6 +533,8 @@ export class EaCPreactAppHandler {
       bundle: true,
       splitting: !this.isDev,
       treeShaking: true,
+      // TODO(mcgear): Need to make this configurable per Preact App Processor: processor.Externals
+      // external: ['path'],
       jsx: jsx === 'react'
         ? 'transform'
         : jsx === 'react-native' || jsx === 'preserve'
