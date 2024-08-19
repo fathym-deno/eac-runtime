@@ -1,4 +1,4 @@
-import { FathymWorkerMessageTypes } from '../../../workers/FathymWorkerMessageTypes.ts';
+import { FathymWorkerMessageTypes } from '../../../src.deps.ts';
 
 export const EaCDistributedFileSystemWorkerMessageTypes = {
   ...FathymWorkerMessageTypes,

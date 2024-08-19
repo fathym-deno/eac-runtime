@@ -1,6 +1,4 @@
-import { IoCContainer, toArrayBuffer } from '../../../src.deps.ts';
-import { FathymWorker } from '../../../workers/FathymWorker.ts';
-import { correlateResult } from '../../../workers/waitForCorrelation.ts';
+import { correlateResult, FathymWorker, IoCContainer, toArrayBuffer } from '../../../src.deps.ts';
 import { DFSFileHandler } from '../DFSFileHandler.ts';
 import { DFSFileHandlerResolver } from '../DFSFileHandlerResolver.ts';
 import { EaCDistributedFileSystemWorkerMessageTypes } from './EaCDistributedFileSystemWorkerMessageTypes.ts';

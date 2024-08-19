@@ -1,6 +1,8 @@
-import { EaCDistributedFileSystem } from '../../../src.deps.ts';
-import { FathymWorkerConfig } from '../../../workers/FathymWorkerConfig.ts';
-import { FathymWorkerMessage } from '../../../workers/FathymWorkerMessage.ts';
+import {
+  EaCDistributedFileSystem,
+  FathymWorkerConfig,
+  FathymWorkerMessage,
+} from '../../../src.deps.ts';
 
 export type EaCDistributedFileSystemWorkerConfig = {
   DFS: EaCDistributedFileSystem;

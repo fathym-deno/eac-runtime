@@ -13,7 +13,7 @@ export const EaCESMDistributedFileSystemHandlerResolver: DFSFileHandlerResolver 
 
     let root = dfs.Root;
 
-    const denoCfg = await loadDenoConfig();
+    const { Config: denoCfg } = await loadDenoConfig();
 
     const importKeys = Object.keys(denoCfg.imports || {});
 

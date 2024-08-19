@@ -4,7 +4,7 @@
   "exports": {
     ".": "./mod.ts",
     "./browser": "./browser.ts",
-    "./workers": "./workers.ts",
+    "./workers": "./src/runtime/dfs/workers/.exports.ts",
     "./workers/denokv": "./src/runtime/dfs/workers/EaCDenoKVDistributedFileSystemWorker.ts",
     "./workers/esm": "./src/runtime/dfs/workers/EaCESMDistributedFileSystemWorker.ts",
     "./workers/jsr": "./src/runtime/dfs/workers/EaCJSRDistributedFileSystemWorker.ts",
@@ -19,7 +19,7 @@
     "deploy": "deno task build && deno task test && ftm git",
     "publish:check": "deno publish --dry-run --allow-dirty",
     "test": "deno test -A tests/tests.ts --parallel --coverage=cov --trace-leaks",
-    "version": "deno run -A jsr:@fathym/common@0/version"
+    "version": "deno run -A jsr:@fathym/common@0/build/version"
   },
   "imports": {
     "preact": "npm:preact@10.20.1",

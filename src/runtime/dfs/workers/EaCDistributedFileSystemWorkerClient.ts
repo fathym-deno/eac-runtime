@@ -1,4 +1,4 @@
-import { FathymWorkerClient } from '../../../workers/FathymWorkerClient.ts';
+import { FathymWorkerClient } from '../../../src.deps.ts';
 import {
   EaCDistributedFileSystemWorkerConfig,
   EaCDistributedFileSystemWorkerMessage,

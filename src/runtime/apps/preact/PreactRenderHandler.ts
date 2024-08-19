@@ -8,7 +8,7 @@ import {
   Fragment,
   h,
   isValidElement,
-  jsonClone,
+  jsonMapSetClone,
   loadDenoConfigSync,
   PreactRenderToString,
   type VNode,
@@ -97,7 +97,9 @@ export class PreactRenderHandler {
 
     this.tracking = this.refreshTracking();
 
-    this.denoCfg = loadDenoConfigSync();
+    const { Config } = loadDenoConfigSync();
+
+    this.denoCfg = Config;
 
     this.origBeforeDiff = options.__b;
 
@@ -189,7 +191,7 @@ export class PreactRenderHandler {
     const baseUrl = new URL(path, base);
 
     const pageProps: PageProps = {
-      Data: jsonClone(ctx.Data),
+      Data: jsonMapSetClone(ctx.Data),
       Params: ctx.Params,
       Revision: ctx.Runtime.Revision,
       Component: () => null,
