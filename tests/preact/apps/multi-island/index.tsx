@@ -1,4 +1,6 @@
 import { EaCRuntimeHandlerResult, PageProps } from '@fathym/eac-runtime';
+import { ClickOnceAction } from '@fathym/atomic';
+import Counter from '../components/Counter.tsx';
 
 export const handler: EaCRuntimeHandlerResult = {
   GET: (_req, ctx) => {
@@ -18,6 +20,14 @@ export default function Index({ Data }: PageProps) {
           <p class="text-lg">
             Bring your applications and ideas to life with ease.
           </p>
+
+          <div class="flex flex-row py-8">
+            <ClickOnceAction href="http://www.google.com" target="_blank" />
+          </div>
+
+          <div class="flex flex-row py-8">
+            <Counter />
+          </div>
         </div>
       </div>
 

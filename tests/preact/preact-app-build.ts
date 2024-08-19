@@ -64,10 +64,7 @@ async function createEaCPreactAppHandler() {
     new PreactRenderHandler(preactOptions),
     `./islands/client/eacIslandsClient.ts`,
     `./islands/client/client.deps.ts`,
-    {
-      // preact: 'https://esm.sh/preact@10.20.1',
-      // 'preact/': 'https://esm.sh/preact@10.20.1/',
-    },
+    {},
     {
       outdir: Deno.cwd(),
     }
@@ -83,6 +80,15 @@ Deno.test('Preact App Build Tests', async (t) => {
     'local:apps/components': {
       Type: 'Local',
       FileRoot: './tests/preact/apps/components/',
+      DefaultFile: 'index.tsx',
+      Extensions: ['tsx'],
+      WorkerPath: import.meta.resolve(
+        '../../src/runtime/dfs/workers/EaCLocalDistributedFileSystemWorker.ts'
+      ),
+    } as EaCLocalDistributedFileSystem,
+    'local:apps/multi-island': {
+      Type: 'Local',
+      FileRoot: './tests/preact/apps/multi-island/',
       DefaultFile: 'index.tsx',
       Extensions: ['tsx'],
       WorkerPath: import.meta.resolve(
@@ -487,7 +493,7 @@ Deno.test('Preact App Build Tests', async (t) => {
   await t.step('Handle Preact App - Local & JSR', async (t) => {
     const processor: EaCPreactAppProcessor = {
       Type: 'PreactApp',
-      AppDFSLookup: 'local:apps/simple',
+      AppDFSLookup: 'local:apps/multi-island',
       ComponentDFSLookups: [
         ['local:apps/components', ['tsx']],
         ['jsr:@fathym/atomic', ['tsx']],

@@ -28,10 +28,7 @@ export const EaCPreactAppProcessorHandlerResolver: ProcessorHandlerResolver = {
 
     await handler.Build(
       processor,
-      {
-        // preact: 'https://esm.sh/preact@10.20.1',
-        // 'preact/': 'https://esm.sh/preact@10.20.1/',
-      },
+      {},
       {},
     );
 
