@@ -74,13 +74,13 @@ export class EaCPreactAppHandler {
 
     this.pipelines = new Map();
 
-    // this.denoJsonPath = path.join(Deno.cwd(), './deno.jsonc');
+    this.denoJsonPath = path.join(Deno.cwd(), './deno.jsonc');
 
-    const { Config, DenoConfigPath } = loadDenoConfigSync();
+    const { Config } = loadDenoConfigSync();
 
     this.denoCfg = Config;
 
-    this.denoJsonPath = DenoConfigPath;
+    // this.denoJsonPath = DenoConfigPath;
 
     this.isDev = EAC_RUNTIME_DEV();
   }
