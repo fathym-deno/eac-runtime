@@ -23,7 +23,6 @@
   },
   "imports": {
     "preact": "npm:preact@10.20.1",
-    "preact/jsx-runtime": "npm:preact@10.20.1/jsx-runtime",
 
     "@fathym/atomic": "jsr:@fathym/atomic-design-kit@0",
     "@fathym/eac-runtime": "./mod.ts",
