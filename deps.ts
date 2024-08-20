@@ -12,7 +12,7 @@ export {
   isValidElement,
   type JSX,
   Component,
-} from 'npm:preact@10.23.2';
+} from 'npm:preact@10.20.1';
 export { delay } from 'jsr:@std/async@1/delay';
 export * as colors from 'jsr:@std/fmt@1/colors';
 export * as base64 from 'jsr:@std/encoding@1/base64';

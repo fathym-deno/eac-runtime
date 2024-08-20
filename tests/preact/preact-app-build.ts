@@ -82,62 +82,62 @@ Deno.test('Preact App Build Tests', async (t) => {
       FileRoot: './tests/preact/apps/components/',
       DefaultFile: 'index.tsx',
       Extensions: ['tsx'],
-      WorkerPath: import.meta.resolve(
-        '../../src/runtime/dfs/workers/EaCLocalDistributedFileSystemWorker.ts'
-      ),
+      // WorkerPath: import.meta.resolve(
+      //   '../../src/runtime/dfs/workers/EaCLocalDistributedFileSystemWorker.ts'
+      // ),
     } as EaCLocalDistributedFileSystem,
     'local:apps/multi-island': {
       Type: 'Local',
       FileRoot: './tests/preact/apps/multi-island/',
       DefaultFile: 'index.tsx',
       Extensions: ['tsx'],
-      WorkerPath: import.meta.resolve(
-        '../../src/runtime/dfs/workers/EaCLocalDistributedFileSystemWorker.ts'
-      ),
+      // WorkerPath: import.meta.resolve(
+      //   '../../src/runtime/dfs/workers/EaCLocalDistributedFileSystemWorker.ts'
+      // ),
     } as EaCLocalDistributedFileSystem,
     'local:apps/simple': {
       Type: 'Local',
       FileRoot: './tests/preact/apps/simple/',
       DefaultFile: 'index.tsx',
       Extensions: ['tsx'],
-      WorkerPath: import.meta.resolve(
-        '../../src/runtime/dfs/workers/EaCLocalDistributedFileSystemWorker.ts'
-      ),
+      // WorkerPath: import.meta.resolve(
+      //   '../../src/runtime/dfs/workers/EaCLocalDistributedFileSystemWorker.ts'
+      // ),
     } as EaCLocalDistributedFileSystem,
     'local:apps/single-island-atomic': {
       Type: 'Local',
       FileRoot: './tests/preact/apps/single-island-atomic/',
       DefaultFile: 'index.tsx',
       Extensions: ['tsx'],
-      WorkerPath: import.meta.resolve(
-        '../../src/runtime/dfs/workers/EaCLocalDistributedFileSystemWorker.ts'
-      ),
+      // WorkerPath: import.meta.resolve(
+      //   '../../src/runtime/dfs/workers/EaCLocalDistributedFileSystemWorker.ts'
+      // ),
     } as EaCLocalDistributedFileSystem,
     'local:apps/single-island-local': {
       Type: 'Local',
       FileRoot: './tests/preact/apps/single-island-local/',
       DefaultFile: 'index.tsx',
       Extensions: ['tsx'],
-      WorkerPath: import.meta.resolve(
-        '../../src/runtime/dfs/workers/EaCLocalDistributedFileSystemWorker.ts'
-      ),
+      // WorkerPath: import.meta.resolve(
+      //   '../../src/runtime/dfs/workers/EaCLocalDistributedFileSystemWorker.ts'
+      // ),
     } as EaCLocalDistributedFileSystem,
     'esm:fathym_atomic': {
       Type: 'ESM',
       Root: 'https://deno.land/x/fathym_atomic@v0.0.156/',
       EntryPoints: ['mod.ts'],
       IncludeDependencies: true,
-      WorkerPath: import.meta.resolve(
-        '../../src/runtime/dfs/workers/EaCESMDistributedFileSystemWorker.ts'
-      ),
+      // WorkerPath: import.meta.resolve(
+      //   '../../src/runtime/dfs/workers/EaCESMDistributedFileSystemWorker.ts'
+      // ),
     } as EaCESMDistributedFileSystem,
     'jsr:@fathym/atomic': {
       Type: 'JSR',
       Package: '@fathym/atomic',
       Version: '',
-      WorkerPath: import.meta.resolve(
-        '../../src/runtime/dfs/workers/EaCJSRDistributedFileSystemWorker.ts'
-      ),
+      // WorkerPath: import.meta.resolve(
+      //   '../../src/runtime/dfs/workers/EaCJSRDistributedFileSystemWorker.ts'
+      // ),
     } as EaCJSRDistributedFileSystem,
   };
 
