@@ -43,9 +43,9 @@ export * from 'jsr:@fathym/eac@0.1.18/sources';
 export * from 'jsr:@fathym/eac@0.1.18/utils/azure';
 
 // export * from '../everything-as-code-api/mod.ts';
-export * from 'jsr:@fathym/eac-api@0.1.6';
-export * from 'jsr:@fathym/eac-api@0.1.6/client';
-export * from 'jsr:@fathym/eac-api@0.1.6/status';
+export * from 'jsr:@fathym/eac-api@0.1.7';
+export * from 'jsr:@fathym/eac-api@0.1.7/client';
+export * from 'jsr:@fathym/eac-api@0.1.7/status';
 
 import * as esbuild from 'npm:esbuild@0.23.1';
 export { esbuild };
