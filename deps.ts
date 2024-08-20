@@ -13,39 +13,39 @@ export {
   type JSX,
   Component,
 } from 'npm:preact@10.20.1';
-export { delay } from 'jsr:@std/async@1/delay';
-export * as colors from 'jsr:@std/fmt@1/colors';
-export * as base64 from 'jsr:@std/encoding@1/base64';
-export * as path from 'jsr:@std/path@1';
-export * as denoGraph from 'jsr:@deno/graph@^0.69.7';
+export { delay } from 'jsr:@std/async@1.0.3/delay';
+export * as colors from 'jsr:@std/fmt@1.0.0/colors';
+export * as base64 from 'jsr:@std/encoding@1.0.2/base64';
+export * as path from 'jsr:@std/path@1.0.2';
+export * as denoGraph from 'jsr:@deno/graph@0.81.2';
 
-export * from 'jsr:@fathym/ioc@0';
+export * from 'jsr:@fathym/ioc@0.0.12';
 
 // export * from '../reference-architecture/mod.ts';
-export * from 'jsr:@fathym/common@0';
-export * from 'jsr:@fathym/common@0/build';
-export * from 'jsr:@fathym/common@0/deno-kv';
-export * from 'jsr:@fathym/common@0/oauth';
-export * from 'jsr:@fathym/common@0/workers';
+export * from 'jsr:@fathym/common@0.2.22';
+export * from 'jsr:@fathym/common@0.2.22/build';
+export * from 'jsr:@fathym/common@0.2.22/deno-kv';
+export * from 'jsr:@fathym/common@0.2.22/oauth';
+export * from 'jsr:@fathym/common@0.2.22/workers';
 
 // export * from '../everything-as-code/src/eac/.exports.ts';
-export * from 'jsr:@fathym/eac@0';
-export * from 'jsr:@fathym/eac@0/applications';
-export * from 'jsr:@fathym/eac@0/clouds';
-export * from 'jsr:@fathym/eac@0/databases';
-export * from 'jsr:@fathym/eac@0/dfs';
-export * from 'jsr:@fathym/eac@0/github';
-export * from 'jsr:@fathym/eac@0/identity';
-export * from 'jsr:@fathym/eac@0/iot';
-export * from 'jsr:@fathym/eac@0/licensing';
-export * from 'jsr:@fathym/eac@0/octokit';
-export * from 'jsr:@fathym/eac@0/sources';
-export * from 'jsr:@fathym/eac@0/utils/azure';
+export * from 'jsr:@fathym/eac@0.1.18';
+export * from 'jsr:@fathym/eac@0.1.18/applications';
+export * from 'jsr:@fathym/eac@0.1.18/clouds';
+export * from 'jsr:@fathym/eac@0.1.18/databases';
+export * from 'jsr:@fathym/eac@0.1.18/dfs';
+export * from 'jsr:@fathym/eac@0.1.18/github';
+export * from 'jsr:@fathym/eac@0.1.18/identity';
+export * from 'jsr:@fathym/eac@0.1.18/iot';
+export * from 'jsr:@fathym/eac@0.1.18/licensing';
+export * from 'jsr:@fathym/eac@0.1.18/octokit';
+export * from 'jsr:@fathym/eac@0.1.18/sources';
+export * from 'jsr:@fathym/eac@0.1.18/utils/azure';
 
 // export * from '../everything-as-code-api/mod.ts';
-export * from 'jsr:@fathym/eac-api@0';
-export * from 'jsr:@fathym/eac-api@0/client';
-export * from 'jsr:@fathym/eac-api@0/status';
+export * from 'jsr:@fathym/eac-api@0.1.6';
+export * from 'jsr:@fathym/eac-api@0.1.6/client';
+export * from 'jsr:@fathym/eac-api@0.1.6/status';
 
 import * as esbuild from 'npm:esbuild@0.23.1';
 export { esbuild };
