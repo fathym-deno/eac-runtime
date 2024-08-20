@@ -22,12 +22,12 @@
     "version": "deno run -A jsr:@fathym/common@0/build/version"
   },
   "imports": {
-    "preact": "npm:preact@10.20.1",
+    "preact": "npm:preact@10.23.2",
 
     "@fathym/atomic": "jsr:@fathym/atomic-design-kit@0",
     "@fathym/eac-runtime": "./mod.ts",
-    "preact/debug": "npm:preact@10.20.1/debug",
-    "preact/hooks": "npm:preact@10.20.1/hooks"
+    "preact/debug": "npm:preact@10.23.2/debug",
+    "preact/hooks": "npm:preact@10.23.2/hooks"
   },
   "lint": {
     "include": ["src/"],

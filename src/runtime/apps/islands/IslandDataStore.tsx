@@ -1,5 +1,5 @@
 // deno-lint-ignore-file no-explicit-any
-import { JSX } from 'preact';
+import { type JSX } from '../../../src.deps.ts';
 import { ComponentType, PreactRenderToString, RenderableProps } from '../../../src.deps.ts';
 import { buildIslandData, IslandDataProps } from './IslandData.tsx';
 

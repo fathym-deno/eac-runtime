@@ -5,12 +5,14 @@ export {
   type RenderableProps,
   type VNode,
   type Attributes,
+  type Options as PreactOptions,
   options as preactOptions,
-  isValidElement,
-  h,
   Fragment,
+  h,
+  isValidElement,
+  type JSX,
   Component,
-} from 'npm:preact@10.20.1';
+} from 'npm:preact@10.23.2';
 export { delay } from 'jsr:@std/async@1/delay';
 export * as colors from 'jsr:@std/fmt@1/colors';
 export * as base64 from 'jsr:@std/encoding@1/base64';
@@ -45,7 +47,7 @@ export * from 'jsr:@fathym/eac-api@0';
 export * from 'jsr:@fathym/eac-api@0/client';
 export * from 'jsr:@fathym/eac-api@0/status';
 
-import * as esbuild from 'npm:esbuild@0.20.1';
+import * as esbuild from 'npm:esbuild@0.23.1';
 export { esbuild };
 export {
   denoPlugins,

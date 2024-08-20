@@ -1,4 +1,4 @@
-import { Component, type Options as PreactOptions, type VNode } from 'preact';
+import { Component, PreactOptions, type VNode } from '../../../src.deps.ts';
 import { PreactHookTypes } from './PreactHookTypes.ts';
 
 export interface AdvancedPreactOptions extends PreactOptions {

@@ -21,7 +21,7 @@ export type {
   OnResolveArgs as ESBuildOnResolveArgs,
   OnResolveResult as ESBuildOnResolveResult,
   Plugin as ESBuildPlugin,
-} from 'npm:esbuild@0.20.1';
+} from 'npm:esbuild@0.23.1';
 
 import Mime from 'npm:mime@4.0.4';
 export const mime = Mime;
@@ -39,4 +39,4 @@ export { cssnano };
 import autoprefixer from 'npm:autoprefixer@10.4.17';
 export { autoprefixer };
 
-export * as PreactRenderToString from 'npm:preact-render-to-string@6.5.8';
+export * as PreactRenderToString from 'npm:preact-render-to-string@6.5.9';

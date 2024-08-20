@@ -27,7 +27,7 @@ import {
 import { EaCPreactAppHandler } from '../../src/utils/EaCPreactAppHandler.ts';
 
 async function createEaCPreactAppHandler() {
-  const esbuildInstance: ESBuild = await import('npm:esbuild@0.20.1');
+  const esbuildInstance: ESBuild = await import('npm:esbuild@0.23.1');
 
   const ioc = new IoCContainer();
 

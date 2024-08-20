@@ -1,5 +1,5 @@
 // deno-lint-ignore-file no-explicit-any
-import { isValidElement, JSX, VNode } from 'preact';
+import { isValidElement, JSX, VNode } from '../../../src.deps.ts';
 import { IslandDataStoreType } from './IslandDataStore.tsx';
 
 export type IslandDataProps = {
