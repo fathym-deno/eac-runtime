@@ -19,6 +19,7 @@ export async function loadPreactAppHandler(
     boolean,
     string,
     EaCRuntimeHandlerResult,
+    string[] | undefined,
   ][],
   renderHandler: PreactRenderHandler,
 ): Promise<EaCRuntimeHandlerResult> {
@@ -33,23 +34,34 @@ export async function loadPreactAppHandler(
     renderHandler.AddIsland(component, filePath, contents);
   }
 
-  const pageLayouts = layouts
-    .filter(([root]) => {
+  const parentLayoutFilter = layouts.findLast(
+    (l) => filePath.startsWith(l[0]) && l[5] !== undefined,
+  )?.[5];
+
+  const filteredLayouts = layouts.filter(
+    ([root, _, __, ___, ____, parentLayouts]) => {
+      if (parentLayoutFilter !== undefined) {
+        return (
+          parentLayoutFilter.some((pl) => filePath.startsWith(pl)) ||
+          (parentLayouts === parentLayoutFilter && filePath.startsWith(root))
+        );
+      }
+
       return filePath.startsWith(root);
-    })
-    .map(([_root, layout]) => {
-      return layout;
-    });
+    },
+  );
+
+  const pageLayouts = filteredLayouts.map(([_root, layout]) => {
+    return layout;
+  });
 
   let pageLayoutHandlers:
     | EaCRuntimeHandlerResult[]
-    | (EaCRuntimeHandler | EaCRuntimeHandlers)[] = layouts
-      .filter(([root]) => {
-        return filePath.startsWith(root);
-      })
-      .map(([_root, _layout, _isIsland, _contents, layoutHandler]) => {
+    | (EaCRuntimeHandler | EaCRuntimeHandlers)[] = filteredLayouts.map(
+      ([_root, _layout, _isIsland, _contents, layoutHandler]) => {
         return layoutHandler;
-      });
+      },
+    );
 
   const renderStack: ComponentType<any>[] = [...pageLayouts, component];
 

@@ -9,7 +9,9 @@ export async function loadPreactAppPageHandler(
   fileHandler: DFSFileHandler,
   filePath: string,
   dfs: EaCDistributedFileSystem,
-): Promise<[EaCRuntimeHandlerResult, ComponentType<any>, boolean, string]> {
+): Promise<
+  [EaCRuntimeHandlerResult, ComponentType<any>, boolean, string, string[]]
+> {
   const loader = filePath.endsWith('.ts') ? 'ts' : 'tsx';
 
   const { module, contents } = (await importDFSTypescriptModule(
@@ -38,5 +40,5 @@ export async function loadPreactAppPageHandler(
     };
   }
 
-  return [handler, component!, isIsland, contents];
+  return [handler, component!, isIsland, contents, module.ParentLayouts || []];
 }

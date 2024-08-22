@@ -9,7 +9,16 @@ export async function loadLayout(
   fileHandler: DFSFileHandler,
   filePath: string,
   dfs: EaCDistributedFileSystem,
-): Promise<[string, ComponentType<any>, boolean, string, EaCRuntimeHandlerResult]> {
+): Promise<
+  [
+    string,
+    ComponentType<any>,
+    boolean,
+    string,
+    EaCRuntimeHandlerResult,
+    string[] | undefined,
+  ]
+> {
   const { module: layoutModule, contents } = (await importDFSTypescriptModule(
     esbuild,
     fileHandler,
@@ -38,5 +47,9 @@ export async function loadLayout(
 
   const isIsland = 'IsIsland' in layoutModule ? layoutModule.IsIsland : false;
 
-  return [root, layout, isIsland, contents, handler];
+  const parentLayouts: string[] | undefined = 'ParentLayouts' in layoutModule
+    ? layoutModule.ParentLayouts
+    : undefined;
+
+  return [root, layout, isIsland, contents, handler, parentLayouts];
 }
