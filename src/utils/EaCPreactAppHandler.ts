@@ -754,6 +754,11 @@ export class EaCPreactAppHandler {
         // });
 
         // build.onResolve({ filter: /.*/ }, (args) => {
+        //   if (args.path === '@lezer/highlight' && first) {
+        //     console.log('@lezer/highlight');
+        //     console.log(args);
+        //     first = false;
+        //   }
         //   return null;
         // });
 
@@ -766,6 +771,14 @@ export class EaCPreactAppHandler {
         });
 
         build.onResolve({ filter: /.*/, namespace: '$' }, (args) => {
+          return builder.ResolveImportMapFile(
+            () => build,
+            args,
+            preserveRemotes,
+            importMap,
+          );
+        });
+        build.onResolve({ filter: /.*/, namespace: 'file' }, (args) => {
           return builder.ResolveImportMapFile(
             () => build,
             args,
