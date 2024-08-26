@@ -6,7 +6,7 @@ export async function start(
   config: EaCRuntimeConfig,
   configure?: (rt: EaCRuntime) => Promise<void>,
 ): Promise<void> {
-  console.log(`Starting server with Deno version: ${Deno.version}`);
+  console.log(`Starting server with Deno version: ${Deno.version.deno}`);
 
   const portEnv = Deno.env.get('PORT');
 
