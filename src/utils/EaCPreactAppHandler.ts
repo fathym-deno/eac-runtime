@@ -458,6 +458,8 @@ export class EaCPreactAppHandler {
     processor: EaCPreactAppProcessor,
     dfss: Record<string, EaCDistributedFileSystem | null>,
   ): Promise<(EaCComponentDFSHandler | undefined)[] | undefined> {
+    const logger = await getPackageLogger();
+
     if (!processor.ComponentDFSLookups) {
       return undefined;
     }
@@ -467,7 +469,7 @@ export class EaCPreactAppHandler {
         const compDFS = dfss[compDFSLookup];
 
         if (!compDFS) {
-          console.warn(
+          logger.warn(
             `The DFS configuration for component '${compDFSLookup}' is missing, please make sure to add it to your configuration.`,
           );
 
@@ -477,7 +479,7 @@ export class EaCPreactAppHandler {
         const compFileHandler = await loadFileHandler(this.ioc, compDFS);
 
         if (!compFileHandler) {
-          console.warn(
+          logger.warn(
             `The DFS file handler for component type '${compDFS.Type}' is missing, please make sure to add it to your configuration.`,
           );
 

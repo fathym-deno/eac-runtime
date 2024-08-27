@@ -1,10 +1,12 @@
-import { JWTConfig, STATUS_CODE } from '../../src.deps.ts';
+import { getPackageLogger, JWTConfig, STATUS_CODE } from '../../src.deps.ts';
 import { EaCRuntimeHandler } from '../../runtime/EaCRuntimeHandler.ts';
 
 export function establishJwtValidationMiddleware(
   jwtConfig: JWTConfig,
 ): EaCRuntimeHandler {
   return async (req, ctx) => {
+    const logger = await getPackageLogger();
+
     if (req.method !== 'OPTIONS') {
       const jwtToken = jwtConfig.LoadToken(req);
 
@@ -24,7 +26,7 @@ export function establishJwtValidationMiddleware(
           failureRespBody.HasError = true;
         }
       } catch (err) {
-        console.error(err);
+        logger.error('There was an error validating your JWT', err);
 
         failureRespBody.HasError = true;
 
