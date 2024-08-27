@@ -1,4 +1,4 @@
-import { colors, djwt, loadEaCSvc } from '../../src.deps.ts';
+import { colors, djwt, getPackageLogger, loadEaCSvc } from '../../src.deps.ts';
 import { EaCRuntimeConfig } from '../config/EaCRuntimeConfig.ts';
 import { EaCRuntimePluginConfig } from '../config/EaCRuntimePluginConfig.ts';
 import { EaCRuntimePlugin } from './EaCRuntimePlugin.ts';
@@ -7,6 +7,8 @@ export default class FathymEaCPlugin implements EaCRuntimePlugin {
   public async Setup(
     _config: EaCRuntimeConfig,
   ): Promise<EaCRuntimePluginConfig> {
+    const logger = await getPackageLogger();
+
     const pluginConfig: EaCRuntimePluginConfig = {
       Name: 'FathymEaCPlugin',
     };
@@ -25,7 +27,7 @@ export default class FathymEaCPlugin implements EaCRuntimePlugin {
 
         pluginConfig.EaC = eac;
 
-        console.log(
+        logger.debug(
           `Loaded and merged EaC configuration for: '${
             colors.blue(
               EnterpriseLookup,
@@ -33,7 +35,7 @@ export default class FathymEaCPlugin implements EaCRuntimePlugin {
           }'`,
         );
       } catch (_err) {
-        console.error(
+        logger.error(
           'Unable to connect to the EaC service, falling back to local config.',
         );
       }

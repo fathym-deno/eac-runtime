@@ -1,4 +1,4 @@
-import { colors } from '../../src.deps.ts';
+import { colors, getPackageLoggerSync } from '../../src.deps.ts';
 import { DefaultEaCRuntime } from '../DefaultEaCRuntime.ts';
 import { EaCRuntimeConfig } from './EaCRuntimeConfig.ts';
 import { fathymGreen } from '../../constants.ts';
@@ -11,12 +11,14 @@ export const DefaultEaCConfig: EaCRuntimeConfig = {
   EaC: { EnterpriseLookup: 'default-eac' },
   Server: {
     onListen: (params) => {
+      const logger = getPackageLoggerSync();
+
       const address = colors.green(`http://localhost:${params.port}`);
 
-      console.log();
-      console.log(colors.bgRgb24(' 🐙 EaC Runtime Ready ', fathymGreen));
-      console.log(colors.rgb24(`\t${address}`, fathymGreen));
-      console.log();
+      logger.info('');
+      logger.info(colors.bgRgb24(' 🐙 EaC Runtime Ready ', fathymGreen));
+      logger.info(colors.rgb24(`\t${address}`, fathymGreen));
+      logger.info('');
     },
   },
 };

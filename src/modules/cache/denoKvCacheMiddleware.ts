@@ -1,3 +1,4 @@
+import { getPackageLoggerSync } from '../../src.deps.ts';
 import { EaCRuntimeHandler } from '../../runtime/EaCRuntimeHandler.ts';
 import { DenoKVFileStream } from '../../utils/streams/DenoKVFileStream.ts';
 import { denoKvCacheReadableStream } from './denoKvCacheReadableStream.ts';
@@ -8,7 +9,9 @@ export function establishDenoKvCacheMiddleware(
   cacheSeconds: number,
   pathFilterRegex?: string,
 ): EaCRuntimeHandler {
-  console.log('Configuring cache middleware...');
+  const logger = getPackageLoggerSync();
+
+  logger.debug('Configuring cache middleware...');
 
   return async (_req, ctx) => {
     const reqPath = ctx.Runtime.URLMatch.Path || '/';
@@ -42,7 +45,10 @@ export function establishDenoKvCacheMiddleware(
       //   `Lookuping up item in cache middleware: ${respCacheKey.join('|')}`,
       // );
 
-      const cached = await denoKvReadReadableStreamCache(fileStream, respCacheKey);
+      const cached = await denoKvReadReadableStreamCache(
+        fileStream,
+        respCacheKey,
+      );
 
       if (cached) {
         // console.log(

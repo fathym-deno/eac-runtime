@@ -1,13 +1,15 @@
-import { DOMParser, Element, initParser, transpile } from '../../src.deps.ts';
+import { DOMParser, Element, getPackageLoggerSync, initParser, transpile } from '../../src.deps.ts';
 import { EaCRuntimeHandler } from '../../runtime/EaCRuntimeHandler.ts';
 import { EAC_RUNTIME_DEV } from '../../constants.ts';
 
 export function establishKeepAliveMiddleware(
   keepAlivePath: string,
 ): EaCRuntimeHandler {
+  const logger = getPackageLoggerSync();
+
   const initCheck = new Promise<boolean>((resolve) => {
     if (EAC_RUNTIME_DEV()) {
-      console.log('Configuring keep alive...');
+      logger.debug('Configuring keep alive...');
 
       initParser().then(() => resolve(true));
     } else {

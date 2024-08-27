@@ -1,4 +1,4 @@
-import { EaCAPIProcessor, ESBuild, isEaCAPIProcessor } from '../../src.deps.ts';
+import { EaCAPIProcessor, ESBuild, getPackageLogger, isEaCAPIProcessor } from '../../src.deps.ts';
 import { ProcessorHandlerResolver } from './ProcessorHandlerResolver.ts';
 import { loadFileHandler } from '../../utils/dfs/loadFileHandler.ts';
 import { loadMiddleware } from '../../utils/dfs/loadMiddleware.ts';
@@ -8,6 +8,8 @@ import { executePathMatch } from '../../utils/dfs/executePathMatch.ts';
 
 export const EaCAPIProcessorHandlerResolver: ProcessorHandlerResolver = {
   async Resolve(ioc, appProcCfg, eac) {
+    const logger = await getPackageLogger();
+
     if (!isEaCAPIProcessor(appProcCfg.Application.Processor)) {
       throw new Deno.errors.NotSupported(
         'The provided processor is not supported for the EaCAPIProcessorHandlerResolver.',
@@ -42,9 +44,9 @@ export const EaCAPIProcessorHandlerResolver: ProcessorHandlerResolver = {
 
         const [middleware] = await Promise.all([middlewareLoader()]);
 
-        console.log('Middleware: ');
-        console.log(middleware.map((m) => m));
-        console.log();
+        logger.debug('Middleware: ');
+        logger.debug(middleware.map((m) => m));
+        logger.debug('');
 
         return { middleware };
       },
@@ -67,9 +69,9 @@ export const EaCAPIProcessorHandlerResolver: ProcessorHandlerResolver = {
       },
       appProcCfg.Revision,
     ).then((patterns) => {
-      console.log('APIs: ');
-      console.log(patterns.map((p) => p.PatternText));
-      console.log();
+      logger.debug('APIs: ');
+      logger.debug(patterns.map((p) => p.PatternText));
+      logger.debug('');
 
       return patterns;
     });

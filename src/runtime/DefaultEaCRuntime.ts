@@ -4,6 +4,7 @@ import {
   EaCModifierResolverConfiguration,
   EaCProjectAsCode,
   ESBuild,
+  getPackageLogger,
   IoCContainer,
   isEverythingAsCodeApplications,
   merge,
@@ -65,6 +66,8 @@ export class DefaultEaCRuntime<TEaC = EaCRuntimeEaC> implements EaCRuntime<TEaC>
   public async Configure(
     configure?: (rt: EaCRuntime<TEaC>) => Promise<void>,
   ): Promise<void> {
+    const logger = await getPackageLogger();
+
     this.pluginConfigs = new Map();
 
     this.pluginDefs = new Map();
@@ -87,11 +90,11 @@ export class DefaultEaCRuntime<TEaC = EaCRuntimeEaC> implements EaCRuntime<TEaC>
       if (IS_DENO_DEPLOY()) {
         esbuild = await import('npm:esbuild-wasm@0.23.1');
 
-        console.log('Initialized esbuild with portable WASM.');
+        logger.debug('Initialized esbuild with portable WASM.');
       } else {
         esbuild = await import('npm:esbuild@0.23.1');
 
-        console.log('Initialized esbuild with standard build.');
+        logger.debug('Initialized esbuild with standard build.');
       }
 
       try {
@@ -101,7 +104,7 @@ export class DefaultEaCRuntime<TEaC = EaCRuntimeEaC> implements EaCRuntime<TEaC>
           worker,
         });
       } catch (err) {
-        console.log(err);
+        logger.error('There was an issue initializing esbuild', err);
 
         // throw err;
       }

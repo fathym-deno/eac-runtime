@@ -46,8 +46,6 @@ export function loadTemplateVNode(
 ): Node | undefined {
   const sel = `#${tool}-${kind}-${id}-${target}`;
 
-  console.log(sel);
-
   const template = document.querySelector(sel) as HTMLTemplateElement | null;
 
   if (template !== null) {

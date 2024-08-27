@@ -1,4 +1,4 @@
-import { isEaCJSRDistributedFileSystem } from '../../src.deps.ts';
+import { getPackageLogger, isEaCJSRDistributedFileSystem } from '../../src.deps.ts';
 import { DFSFileHandlerResolver } from './DFSFileHandlerResolver.ts';
 import { buildFetchDFSFileHandler } from './buildFetchDFSFileHandler.ts';
 import { DFSFileHandler } from './DFSFileHandler.ts';
@@ -30,6 +30,8 @@ export const EaCJSRDistributedFileSystemHandlerResolver: DFSFileHandlerResolver 
     const handler = buildFetchDFSFileHandler(fileRoot.href);
 
     handler.LoadAllPaths = async (_revision: number) => {
+      const logger = await getPackageLogger();
+
       const metaPath = `${fileRoot.href.slice(0, -1)}_meta.json`;
 
       const metaResp = await fetch(metaPath);
@@ -43,7 +45,10 @@ export const EaCJSRDistributedFileSystemHandlerResolver: DFSFileHandlerResolver 
 
         return filePaths;
       } catch (err) {
-        console.log(await metaResp.clone().text());
+        logger.error(
+          `There was an error loading paths for: ${metaPath}`,
+          await metaResp.clone().text(),
+        );
 
         throw err;
       }

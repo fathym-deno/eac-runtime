@@ -1,12 +1,15 @@
 import { EaCRuntime } from '../runtime/EaCRuntime.ts';
 import { EaCRuntimeConfig } from '../runtime/config/EaCRuntimeConfig.ts';
+import { getPackageLogger } from '../src.deps.ts';
 import { startServer } from './startServer.ts';
 
 export async function start(
   config: EaCRuntimeConfig,
   configure?: (rt: EaCRuntime) => Promise<void>,
 ): Promise<void> {
-  console.log(`Starting server with Deno version: ${Deno.version.deno}`);
+  const logger = await getPackageLogger();
+
+  logger.info(`Starting server with Deno version: ${Deno.version.deno}`);
 
   const portEnv = Deno.env.get('PORT');
 

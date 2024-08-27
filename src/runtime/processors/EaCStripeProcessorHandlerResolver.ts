@@ -40,8 +40,6 @@ export const EaCStripeProcessorHandlerResolver: ProcessorHandlerResolver = {
           );
         }
 
-        console.log(username);
-
         const parentEaCSvc = await loadEaCSvc();
 
         if (

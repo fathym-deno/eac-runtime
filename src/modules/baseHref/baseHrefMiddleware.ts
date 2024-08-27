@@ -1,9 +1,11 @@
-import { DOMParser, Element, initParser } from '../../src.deps.ts';
+import { DOMParser, Element, getPackageLoggerSync, initParser } from '../../src.deps.ts';
 import { EaCRuntimeHandler } from '../../runtime/EaCRuntimeHandler.ts';
 
 export function establishBaseHrefMiddleware(): EaCRuntimeHandler {
+  const logger = getPackageLoggerSync();
+
   const initCheck = new Promise<boolean>((resolve) => {
-    console.log('Configuring keep alive...');
+    logger.debug('Configuring keep alive...');
 
     initParser().then(() => resolve(true));
   });
