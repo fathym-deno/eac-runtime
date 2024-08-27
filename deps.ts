@@ -30,23 +30,23 @@ export * from 'jsr:@fathym/common@0.2.33/oauth';
 export * from 'jsr:@fathym/common@0.2.33/workers';
 
 // export * from '../everything-as-code/src/eac/.exports.ts';
-export * from 'jsr:@fathym/eac@0.1.20';
-export * from 'jsr:@fathym/eac@0.1.20/applications';
-export * from 'jsr:@fathym/eac@0.1.20/clouds';
-export * from 'jsr:@fathym/eac@0.1.20/databases';
-export * from 'jsr:@fathym/eac@0.1.20/dfs';
-export * from 'jsr:@fathym/eac@0.1.20/github';
-export * from 'jsr:@fathym/eac@0.1.20/identity';
-export * from 'jsr:@fathym/eac@0.1.20/iot';
-export * from 'jsr:@fathym/eac@0.1.20/licensing';
-export * from 'jsr:@fathym/eac@0.1.20/octokit';
-export * from 'jsr:@fathym/eac@0.1.20/sources';
-export * from 'jsr:@fathym/eac@0.1.20/utils/azure';
+export * from 'jsr:@fathym/eac@0.1.21';
+export * from 'jsr:@fathym/eac@0.1.21/applications';
+export * from 'jsr:@fathym/eac@0.1.21/clouds';
+export * from 'jsr:@fathym/eac@0.1.21/databases';
+export * from 'jsr:@fathym/eac@0.1.21/dfs';
+export * from 'jsr:@fathym/eac@0.1.21/github';
+export * from 'jsr:@fathym/eac@0.1.21/identity';
+export * from 'jsr:@fathym/eac@0.1.21/iot';
+export * from 'jsr:@fathym/eac@0.1.21/licensing';
+export * from 'jsr:@fathym/eac@0.1.21/octokit';
+export * from 'jsr:@fathym/eac@0.1.21/sources';
+export * from 'jsr:@fathym/eac@0.1.21/utils/azure';
 
 // export * from '../everything-as-code-api/mod.ts';
-export * from 'jsr:@fathym/eac-api@0.1.8';
-export * from 'jsr:@fathym/eac-api@0.1.8/client';
-export * from 'jsr:@fathym/eac-api@0.1.8/status';
+export * from 'jsr:@fathym/eac-api@0.1.9';
+export * from 'jsr:@fathym/eac-api@0.1.9/client';
+export * from 'jsr:@fathym/eac-api@0.1.9/status';
 
 import * as esbuild from 'npm:esbuild@0.23.1';
 export { esbuild };
