@@ -136,17 +136,9 @@ export class DefaultEaCRuntime<TEaC = EaCRuntimeEaC> implements EaCRuntime<TEaC>
       configure(this);
     }
 
-    console.time('projectGraph');
-
     this.buildProjectGraph();
 
-    console.timeEnd('projectGraph');
-
-    console.time('appGraph');
-
     await this.buildApplicationGraph();
-
-    console.timeEnd('appGraph');
 
     esbuild!.stop();
   }
@@ -190,7 +182,6 @@ export class DefaultEaCRuntime<TEaC = EaCRuntimeEaC> implements EaCRuntime<TEaC>
         const appLookups = Object.keys(
           projProcCfg.Project.ApplicationResolvers || {},
         );
-        console.time(projProcCfg.ProjectLookup);
 
         this.applicationGraph![projProcCfg.ProjectLookup] = appLookups
           .map((appLookup) => {
@@ -224,8 +215,6 @@ export class DefaultEaCRuntime<TEaC = EaCRuntimeEaC> implements EaCRuntime<TEaC>
         const appProcCfgCalls = this.applicationGraph![
           projProcCfg.ProjectLookup
         ].map(async (appProcCfg) => {
-          console.time(appProcCfg.ApplicationLookup);
-
           if (!isEverythingAsCodeApplications(this.EaC)) {
             // This will never happen, check is just to get proper typing
             throw new Error();
@@ -240,13 +229,9 @@ export class DefaultEaCRuntime<TEaC = EaCRuntimeEaC> implements EaCRuntime<TEaC>
           pipeline.Append(await this.establishApplicationHandler(appProcCfg));
 
           appProcCfg.Handlers = pipeline;
-
-          console.timeEnd(appProcCfg.ApplicationLookup);
         });
 
         await Promise.all(appProcCfgCalls);
-
-        console.timeEnd(projProcCfg.ProjectLookup);
       });
 
       await Promise.all(projProcCfgCalls);
