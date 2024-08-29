@@ -13,6 +13,7 @@ export async function loadPreactAppHandler(
   fileHandler: DFSFileHandler,
   filePath: string,
   dfs: EaCDistributedFileSystem,
+  dfsLookup: string,
   layouts: [
     string,
     ComponentType<any>,
@@ -28,6 +29,7 @@ export async function loadPreactAppHandler(
     fileHandler,
     filePath,
     dfs,
+    dfsLookup,
   );
 
   if (isIsland) {

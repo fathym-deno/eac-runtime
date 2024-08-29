@@ -8,12 +8,14 @@ export async function loadEaCRuntimeHandlers(
   fileHandler: DFSFileHandler,
   filePath: string,
   dfs: EaCDistributedFileSystem,
+  dfsLookup: string,
 ): Promise<EaCRuntimeHandlerResult | undefined> {
   const apiModule = await importDFSTypescriptModule(
     esbuild,
     fileHandler,
     filePath,
     dfs,
+    dfsLookup,
     'ts',
   );
 

@@ -9,6 +9,7 @@ export async function loadLayout(
   fileHandler: DFSFileHandler,
   filePath: string,
   dfs: EaCDistributedFileSystem,
+  dfsLookup: string,
 ): Promise<
   [
     string,
@@ -24,6 +25,7 @@ export async function loadLayout(
     fileHandler,
     filePath,
     dfs,
+    dfsLookup,
     'tsx',
   ))!;
 

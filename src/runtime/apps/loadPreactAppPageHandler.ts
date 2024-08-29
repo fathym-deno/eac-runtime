@@ -9,6 +9,7 @@ export async function loadPreactAppPageHandler(
   fileHandler: DFSFileHandler,
   filePath: string,
   dfs: EaCDistributedFileSystem,
+  dfsLookup: string,
 ): Promise<
   [EaCRuntimeHandlerResult, ComponentType<any>, boolean, string, string[]]
 > {
@@ -19,6 +20,7 @@ export async function loadPreactAppPageHandler(
     fileHandler,
     filePath,
     dfs,
+    dfsLookup,
     loader,
   ))!;
 

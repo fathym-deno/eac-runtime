@@ -282,6 +282,7 @@ export class EaCPreactAppHandler {
         async ({ DFS, DFSLookup, Handler, Extensions }) => {
           const compDFS = await this.loadCompDFS(
             DFS,
+            DFSLookup,
             Handler,
             Extensions,
             revision,
@@ -355,6 +356,7 @@ export class EaCPreactAppHandler {
   protected async loadComponent(
     compPath: string,
     compDFS: EaCDistributedFileSystem,
+    compDFSLookup: string,
     componentFileHandler: DFSFileHandler,
   ): Promise<[string, ComponentType, boolean, string] | undefined> {
     const compModule = await importDFSTypescriptModule(
@@ -362,6 +364,7 @@ export class EaCPreactAppHandler {
       componentFileHandler,
       compPath,
       compDFS,
+      compDFSLookup,
       'tsx',
     );
 
@@ -383,6 +386,7 @@ export class EaCPreactAppHandler {
   protected async layoutLoader(
     allPaths: string[],
     appDFS: EaCDistributedFileSystem,
+    appDFSLookup: string,
     appDFSHandler: DFSFileHandler,
   ) {
     const logger = await getPackageLogger();
@@ -392,7 +396,7 @@ export class EaCPreactAppHandler {
       .sort((a, b) => a.split('/').length - b.split('/').length);
 
     const layoutCalls = layoutPaths.map((p) => {
-      return loadLayout(esbuild, appDFSHandler, p, appDFS);
+      return loadLayout(esbuild, appDFSHandler, p, appDFS, appDFSLookup);
     });
 
     const layouts = await Promise.all(layoutCalls);
@@ -437,6 +441,7 @@ export class EaCPreactAppHandler {
 
   protected async loadCompDFS(
     dfs: EaCDistributedFileSystem,
+    dfsLookup: string,
     componentFileHandler: DFSFileHandler,
     extensions: string[],
     revision: number,
@@ -445,7 +450,7 @@ export class EaCPreactAppHandler {
 
     const compCalls = compPaths
       .filter((cp) => extensions.some((ext) => cp.endsWith(`.${ext}`)))
-      .map((compPath) => this.loadComponent(compPath, dfs, componentFileHandler));
+      .map((compPath) => this.loadComponent(compPath, dfs, dfsLookup, componentFileHandler));
 
     const compResults = await Promise.all(compCalls);
 
@@ -598,8 +603,18 @@ export class EaCPreactAppHandler {
       appDFS,
       async (allPaths) => {
         const [middleware, layouts, compDFSs] = await Promise.all([
-          this.middlewareLoader(allPaths, appDFS, appDFSHandler),
-          this.layoutLoader(allPaths, appDFS, appDFSHandler),
+          this.middlewareLoader(
+            allPaths,
+            appDFS,
+            processor.AppDFSLookup,
+            appDFSHandler,
+          ),
+          this.layoutLoader(
+            allPaths,
+            appDFS,
+            processor.AppDFSLookup,
+            appDFSHandler,
+          ),
           compDFSHandlers ? this.componentLoader(compDFSHandlers, revision) : Promise.resolve([]),
         ]);
 
@@ -611,6 +626,7 @@ export class EaCPreactAppHandler {
           appDFSHandler,
           filePath,
           appDFS,
+          processor.AppDFSLookup,
           layouts,
           this.renderHandler,
         );
@@ -639,6 +655,7 @@ export class EaCPreactAppHandler {
   protected async middlewareLoader(
     allPaths: string[],
     appDFS: EaCDistributedFileSystem,
+    appDFSLookup: string,
     appDFSHandler: DFSFileHandler,
   ) {
     const logger = await getPackageLogger();
@@ -648,7 +665,7 @@ export class EaCPreactAppHandler {
       .sort((a, b) => a.split('/').length - b.split('/').length);
 
     const middlewareCalls = middlewarePaths.map((p) => {
-      return loadMiddleware(esbuild, appDFSHandler, p, appDFS);
+      return loadMiddleware(esbuild, appDFSHandler, p, appDFS, appDFSLookup);
     });
 
     const middleware = (await Promise.all(middlewareCalls))

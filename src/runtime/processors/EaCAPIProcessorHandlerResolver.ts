@@ -34,7 +34,13 @@ export const EaCAPIProcessorHandlerResolver: ProcessorHandlerResolver = {
             .sort((a, b) => a.split('/').length - b.split('/').length);
 
           const middlewareCalls = middlewarePaths.map((p) => {
-            return loadMiddleware(esbuild, fileHandler!, p, dfs);
+            return loadMiddleware(
+              esbuild,
+              fileHandler!,
+              p,
+              dfs,
+              processor.DFSLookup,
+            );
           });
 
           return (await Promise.all(middlewareCalls))
@@ -56,6 +62,7 @@ export const EaCAPIProcessorHandlerResolver: ProcessorHandlerResolver = {
           fileHandler!,
           filePath,
           dfs,
+          processor.DFSLookup,
         );
       },
       (filePath, pipeline, { middleware }) => {

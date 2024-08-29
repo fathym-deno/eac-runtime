@@ -16,6 +16,7 @@ export {
 export { delay } from 'jsr:@std/async@1.0.3/delay';
 export * as colors from 'jsr:@std/fmt@1.0.0/colors';
 export * as base64 from 'jsr:@std/encoding@1.0.2/base64';
+export * from 'jsr:@std/log@0.224.6';
 export * as path from 'jsr:@std/path@1.0.2';
 export * as denoGraph from 'jsr:@deno/graph@0.81.2';
 

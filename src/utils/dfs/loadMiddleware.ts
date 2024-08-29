@@ -8,12 +8,14 @@ export async function loadMiddleware(
   fileHandler: DFSFileHandler,
   filePath: string,
   dfs: EaCDistributedFileSystem,
+  dfsLookup: string,
 ): Promise<[string, EaCRuntimeHandlerResult] | undefined> {
   const handler = await loadEaCRuntimeHandlers(
     esbuild,
     fileHandler,
     filePath,
     dfs,
+    dfsLookup,
   );
 
   if (handler) {
