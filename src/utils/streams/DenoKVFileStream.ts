@@ -10,16 +10,12 @@ export class DenoKVFileStream {
   constructor(protected denoKv: Deno.Kv) {}
 
   public async Exists(key: Deno.KvKey): Promise<boolean> {
-    const firstChunk = await this.denoKv.get<DenoKVFileStreamData<Uint8Array>>([
-      ...key,
-      'Chunks',
-      0,
-    ]);
+    const mark = await this.denoKv.get<DenoKVFileStreamData<boolean>>([...key, 'Mark']);
 
-    const { Data: chunk, ExpiresAt: expiresAt } = firstChunk.value || {};
+    const { Data: marked, ExpiresAt: expiresAt } = mark.value || {};
 
     return (
-      !!chunk && (!expiresAt || Date.now() < new Date(expiresAt).getTime())
+      !!marked && (!expiresAt || Date.now() < new Date(expiresAt).getTime())
     );
   }
 
@@ -168,6 +164,16 @@ export class DenoKVFileStream {
           ),
         );
       }
+
+      calls.push(
+        denoKv.set(
+          [...key, 'Mark'],
+          { Data: true, ExpiresAt: expiresAt },
+          {
+            expireIn: ttl,
+          },
+        ),
+      );
     }
 
     return await Promise.all(

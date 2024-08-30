@@ -10,14 +10,19 @@ function getFullFileKey(
   filePath: string,
   segmentPath?: string,
 ) {
-  const fullFileKey = [
-    ...rootKey,
-    'Revision',
-    revision,
-    'Path',
-    ...(segmentPath?.split('/') || []).filter((fp) => fp),
-    ...filePath.split('/').filter((fp) => fp),
-  ];
+  const keyedUrl = new URL(
+    [
+      ...rootKey,
+      'Revision',
+      revision,
+      'Path',
+      ...(segmentPath?.split('/') || []).filter((fp) => fp),
+      ...filePath.split('/').filter((fp) => fp),
+    ].join('/'),
+    new URL('https://notused.com/'),
+  ).pathname.replace('//', '/');
+
+  const fullFileKey = keyedUrl.split('/').filter((fp) => fp);
 
   return fullFileKey;
 }
