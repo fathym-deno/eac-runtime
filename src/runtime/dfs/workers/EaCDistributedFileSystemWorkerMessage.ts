@@ -1,11 +1,11 @@
 import {
-  EaCDistributedFileSystem,
+  EaCDistributedFileSystemDetails,
   FathymWorkerConfig,
   FathymWorkerMessage,
 } from '../../../src.deps.ts';
 
 export type EaCDistributedFileSystemWorkerConfig = {
-  DFS: EaCDistributedFileSystem;
+  DFS: EaCDistributedFileSystemDetails;
 } & FathymWorkerConfig;
 
 export type EaCDistributedFileSystemWorkerMessageGetFileInfoPayload = {

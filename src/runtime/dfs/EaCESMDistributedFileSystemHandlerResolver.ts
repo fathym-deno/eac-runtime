@@ -1,11 +1,16 @@
-import { denoGraph, isEaCESMDistributedFileSystem, loadDenoConfig, path } from '../../src.deps.ts';
+import {
+  denoGraph,
+  isEaCESMDistributedFileSystemDetails,
+  loadDenoConfig,
+  path,
+} from '../../src.deps.ts';
 import { DFSFileHandlerResolver } from './DFSFileHandlerResolver.ts';
 import { buildFetchDFSFileHandler } from './buildFetchDFSFileHandler.ts';
 import { DFSFileHandler } from './DFSFileHandler.ts';
 
 export const EaCESMDistributedFileSystemHandlerResolver: DFSFileHandlerResolver = {
   async Resolve(_ioc, dfs): Promise<DFSFileHandler | undefined> {
-    if (!isEaCESMDistributedFileSystem(dfs)) {
+    if (!isEaCESMDistributedFileSystemDetails(dfs)) {
       throw new Deno.errors.NotSupported(
         'The provided dfs is not supported for the EaCESMDistributedFileSystemHandlerResolver.',
       );

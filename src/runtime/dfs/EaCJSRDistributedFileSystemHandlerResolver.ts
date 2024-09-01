@@ -1,11 +1,11 @@
-import { getPackageLogger, isEaCJSRDistributedFileSystem } from '../../src.deps.ts';
+import { getPackageLogger, isEaCJSRDistributedFileSystemDetails } from '../../src.deps.ts';
 import { DFSFileHandlerResolver } from './DFSFileHandlerResolver.ts';
 import { buildFetchDFSFileHandler } from './buildFetchDFSFileHandler.ts';
 import { DFSFileHandler } from './DFSFileHandler.ts';
 
 export const EaCJSRDistributedFileSystemHandlerResolver: DFSFileHandlerResolver = {
   async Resolve(_ioc, dfs): Promise<DFSFileHandler | undefined> {
-    if (!isEaCJSRDistributedFileSystem(dfs)) {
+    if (!isEaCJSRDistributedFileSystemDetails(dfs)) {
       throw new Deno.errors.NotSupported(
         'The provided dfs is not supported for the EaCJSRDistributedFileSystemHandlerResolver.',
       );

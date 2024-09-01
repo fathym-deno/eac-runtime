@@ -1,11 +1,11 @@
-import { isEaCDenoKVDistributedFileSystem } from '../../src.deps.ts';
+import { isEaCDenoKVDistributedFileSystemDetails } from '../../src.deps.ts';
 import { DFSFileHandlerResolver } from './DFSFileHandlerResolver.ts';
 import { buildDenoKVDFSFileHandler } from './buildDenoKVDFSFileHandler.ts';
 import { DFSFileHandler } from './DFSFileHandler.ts';
 
 export const EaCDenoKVDistributedFileSystemHandlerResolver: DFSFileHandlerResolver = {
   async Resolve(ioc, dfs): Promise<DFSFileHandler | undefined> {
-    if (!isEaCDenoKVDistributedFileSystem(dfs)) {
+    if (!isEaCDenoKVDistributedFileSystemDetails(dfs)) {
       throw new Deno.errors.NotSupported(
         'The provided dfs is not supported for the EaCDenoKVDistributedFileSystemHandlerResolver.',
       );

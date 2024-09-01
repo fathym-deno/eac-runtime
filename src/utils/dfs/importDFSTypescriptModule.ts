@@ -1,7 +1,7 @@
 // deno-lint-ignore-file no-explicit-any
 import {
   // base64,
-  EaCDistributedFileSystem,
+  EaCDistributedFileSystemDetails,
   ESBuild,
   getPackageLogger,
   path,
@@ -14,7 +14,7 @@ export async function importDFSTypescriptModule(
   _esbuild: ESBuild | undefined,
   fileHandler: DFSFileHandler,
   filePath: string,
-  dfs: EaCDistributedFileSystem,
+  dfs: EaCDistributedFileSystemDetails,
   dfsLookup: string,
   loader: 'ts' | 'tsx',
 ): Promise<{ filePath: string; module: any; contents: string } | undefined> {

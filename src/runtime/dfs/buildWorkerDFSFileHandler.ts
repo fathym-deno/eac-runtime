@@ -1,10 +1,10 @@
-import { EaCDistributedFileSystem } from '../../src.deps.ts';
+import { EaCDistributedFileSystemDetails } from '../../src.deps.ts';
 import { DFSFileHandler } from './DFSFileHandler.ts';
 import { DFSFileInfo } from './DFSFileInfo.ts';
 import { EaCDistributedFileSystemWorkerClient } from './workers/EaCDistributedFileSystemWorkerClient.ts';
 
 export const buildWorkerDFSFileHandler = async (
-  dfs: EaCDistributedFileSystem,
+  dfs: EaCDistributedFileSystemDetails,
 ): Promise<DFSFileHandler> => {
   const dfsWorkerClient = new EaCDistributedFileSystemWorkerClient(
     dfs.WorkerPath!,

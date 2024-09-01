@@ -1,12 +1,12 @@
 import {
-  EaCDistributedFileSystem,
+  EaCDistributedFileSystemDetails,
   IoCContainer,
-  isEaCDenoKVDistributedFileSystem,
-  isEaCESMDistributedFileSystem,
-  isEaCJSRDistributedFileSystem,
-  isEaCLocalDistributedFileSystem,
-  isEaCNPMDistributedFileSystem,
-  isEaCRemoteDistributedFileSystem,
+  isEaCDenoKVDistributedFileSystemDetails,
+  isEaCESMDistributedFileSystemDetails,
+  isEaCJSRDistributedFileSystemDetails,
+  isEaCLocalDistributedFileSystemDetails,
+  isEaCNPMDistributedFileSystemDetails,
+  isEaCRemoteDistributedFileSystemDetails,
 } from '../../src.deps.ts';
 import { DFSFileHandlerResolver } from './DFSFileHandlerResolver.ts';
 import { DFSFileHandler } from './DFSFileHandler.ts';
@@ -14,23 +14,23 @@ import { DFSFileHandler } from './DFSFileHandler.ts';
 export class DefaultDFSFileHandlerResolver implements DFSFileHandlerResolver {
   public async Resolve(
     ioc: IoCContainer,
-    dfs: EaCDistributedFileSystem,
+    dfs: EaCDistributedFileSystemDetails,
   ): Promise<DFSFileHandler | undefined> {
     let toResolveName: string = '';
 
     if (dfs.WorkerPath) {
       toResolveName = 'EaCWorkerDistributedFileSystem';
-    } else if (isEaCDenoKVDistributedFileSystem(dfs)) {
+    } else if (isEaCDenoKVDistributedFileSystemDetails(dfs)) {
       toResolveName = 'EaCDenoKVDistributedFileSystem';
-    } else if (isEaCESMDistributedFileSystem(dfs)) {
+    } else if (isEaCESMDistributedFileSystemDetails(dfs)) {
       toResolveName = 'EaCESMDistributedFileSystem';
-    } else if (isEaCJSRDistributedFileSystem(dfs)) {
+    } else if (isEaCJSRDistributedFileSystemDetails(dfs)) {
       toResolveName = 'EaCJSRDistributedFileSystem';
-    } else if (isEaCLocalDistributedFileSystem(dfs)) {
+    } else if (isEaCLocalDistributedFileSystemDetails(dfs)) {
       toResolveName = 'EaCLocalDistributedFileSystem';
-    } else if (isEaCNPMDistributedFileSystem(dfs)) {
+    } else if (isEaCNPMDistributedFileSystemDetails(dfs)) {
       toResolveName = 'EaCNPMDistributedFileSystem';
-    } else if (isEaCRemoteDistributedFileSystem(dfs)) {
+    } else if (isEaCRemoteDistributedFileSystemDetails(dfs)) {
       toResolveName = 'EaCRemoteDistributedFileSystem';
     } else {
       toResolveName = 'UnknownEaCDistributedFileSystem';

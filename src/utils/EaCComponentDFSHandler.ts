@@ -1,8 +1,8 @@
 import { DFSFileHandler } from '../../mod.ts';
-import { EaCDistributedFileSystem } from '../../tests/test.deps.ts';
+import { EaCDistributedFileSystemDetails } from '../../tests/test.deps.ts';
 
 export type EaCComponentDFSHandler = {
-  DFS: EaCDistributedFileSystem;
+  DFS: EaCDistributedFileSystemDetails;
 
   DFSLookup: string;
 

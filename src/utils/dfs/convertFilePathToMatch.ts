@@ -1,4 +1,4 @@
-import { EaCDistributedFileSystem } from '../../src.deps.ts';
+import { EaCDistributedFileSystemDetails } from '../../src.deps.ts';
 import { EaCRuntimeHandlerPipeline } from '../../runtime/EaCRuntimeHandlerPipeline.ts';
 import { EaCRuntimeHandlerResult } from '../../runtime/EaCRuntimeHandlerResult.ts';
 import { PathMatch } from './PathMatch.ts';
@@ -6,7 +6,7 @@ import { convertFilePathToPattern } from './convertFilePathToPattern.ts';
 
 export async function convertFilePathToMatch<TSetup>(
   filePath: string,
-  dfs: EaCDistributedFileSystem,
+  dfs: EaCDistributedFileSystemDetails,
   loadHandlers: (
     filePath: string,
     details: TSetup,

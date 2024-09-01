@@ -11,7 +11,8 @@ import {
   ComponentType,
   DenoConfig,
   denoPlugins,
-  EaCDistributedFileSystem,
+  EaCDistributedFileSystemAsCode,
+  EaCDistributedFileSystemDetails,
   EaCPreactAppProcessor,
   ESBuild,
   esbuild,
@@ -120,7 +121,7 @@ export class EaCPreactAppHandler {
 
   public async Configure(
     processor: EaCPreactAppProcessor,
-    dfss: Record<string, EaCDistributedFileSystem | null>,
+    dfss: Record<string, EaCDistributedFileSystemAsCode>,
     revision: number,
   ): Promise<void> {
     const matches = await this.loadPathMatches(processor, dfss, revision);
@@ -355,7 +356,7 @@ export class EaCPreactAppHandler {
 
   protected async loadComponent(
     compPath: string,
-    compDFS: EaCDistributedFileSystem,
+    compDFS: EaCDistributedFileSystemDetails,
     compDFSLookup: string,
     componentFileHandler: DFSFileHandler,
   ): Promise<[string, ComponentType, boolean, string] | undefined> {
@@ -385,7 +386,7 @@ export class EaCPreactAppHandler {
 
   protected async layoutLoader(
     allPaths: string[],
-    appDFS: EaCDistributedFileSystem,
+    appDFS: EaCDistributedFileSystemDetails,
     appDFSLookup: string,
     appDFSHandler: DFSFileHandler,
   ) {
@@ -416,9 +417,12 @@ export class EaCPreactAppHandler {
 
   protected async loadAppDFSHandler(
     processor: EaCPreactAppProcessor,
-    dfss: Record<string, EaCDistributedFileSystem | null>,
-  ): Promise<{ DFS: EaCDistributedFileSystem; Handler: DFSFileHandler }> {
-    const appDFS = dfss[processor.AppDFSLookup];
+    dfss: Record<string, EaCDistributedFileSystemAsCode>,
+  ): Promise<{
+    DFS: EaCDistributedFileSystemDetails;
+    Handler: DFSFileHandler;
+  }> {
+    const appDFS = dfss[processor.AppDFSLookup]?.Details;
 
     if (!appDFS) {
       throw new Deno.errors.NotFound(
@@ -440,7 +444,7 @@ export class EaCPreactAppHandler {
   }
 
   protected async loadCompDFS(
-    dfs: EaCDistributedFileSystem,
+    dfs: EaCDistributedFileSystemDetails,
     dfsLookup: string,
     componentFileHandler: DFSFileHandler,
     extensions: string[],
@@ -461,7 +465,7 @@ export class EaCPreactAppHandler {
 
   protected async loadComponentDFSHandlers(
     processor: EaCPreactAppProcessor,
-    dfss: Record<string, EaCDistributedFileSystem | null>,
+    dfss: Record<string, EaCDistributedFileSystemAsCode>,
   ): Promise<(EaCComponentDFSHandler | undefined)[] | undefined> {
     const logger = await getPackageLogger();
 
@@ -471,7 +475,7 @@ export class EaCPreactAppHandler {
 
     const componentDFSCalls = processor.ComponentDFSLookups.map(
       async ([compDFSLookup, extensions]) => {
-        const compDFS = dfss[compDFSLookup];
+        const compDFS = dfss[compDFSLookup]?.Details;
 
         if (!compDFS) {
           logger.warn(
@@ -586,7 +590,7 @@ export class EaCPreactAppHandler {
 
   protected async loadPathMatches(
     processor: EaCPreactAppProcessor,
-    dfss: Record<string, EaCDistributedFileSystem | null>,
+    dfss: Record<string, EaCDistributedFileSystemAsCode>,
     revision: number,
   ): Promise<PathMatch[]> {
     const logger = await getPackageLogger();
@@ -654,7 +658,7 @@ export class EaCPreactAppHandler {
 
   protected async middlewareLoader(
     allPaths: string[],
-    appDFS: EaCDistributedFileSystem,
+    appDFS: EaCDistributedFileSystemDetails,
     appDFSLookup: string,
     appDFSHandler: DFSFileHandler,
   ) {

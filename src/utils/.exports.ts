@@ -1,2 +1,2 @@
-export * from './dfs/_exports.ts';
+export * from './dfs/.exports.ts';
 export * from './type-guards/_exports.ts';

@@ -4,10 +4,10 @@ import {
   assertFalse,
   assertStringIncludes,
   delay,
-  EaCDistributedFileSystem,
-  EaCESMDistributedFileSystem,
-  EaCJSRDistributedFileSystem,
-  EaCLocalDistributedFileSystem,
+  EaCDistributedFileSystemDetails,
+  EaCESMDistributedFileSystemDetails,
+  EaCJSRDistributedFileSystemDetails,
+  EaCLocalDistributedFileSystemDetails,
   EaCPreactAppProcessor,
   esbuild,
   ESBuild,
@@ -76,7 +76,7 @@ Deno.test('Preact App Build Tests', async (t) => {
 
   const builder = await createEaCPreactAppHandler();
 
-  const dfss: Record<string, EaCDistributedFileSystem> = {
+  const dfss: Record<string, EaCDistributedFileSystemDetails> = {
     'local:apps/components': {
       Type: 'Local',
       FileRoot: './tests/preact/apps/components/',
@@ -85,7 +85,7 @@ Deno.test('Preact App Build Tests', async (t) => {
       // WorkerPath: import.meta.resolve(
       //   '../../src/runtime/dfs/workers/EaCLocalDistributedFileSystemWorker.ts'
       // ),
-    } as EaCLocalDistributedFileSystem,
+    } as EaCLocalDistributedFileSystemDetails,
     'local:apps/multi-island': {
       Type: 'Local',
       FileRoot: './tests/preact/apps/multi-island/',
@@ -94,7 +94,7 @@ Deno.test('Preact App Build Tests', async (t) => {
       // WorkerPath: import.meta.resolve(
       //   '../../src/runtime/dfs/workers/EaCLocalDistributedFileSystemWorker.ts'
       // ),
-    } as EaCLocalDistributedFileSystem,
+    } as EaCLocalDistributedFileSystemDetails,
     'local:apps/simple': {
       Type: 'Local',
       FileRoot: './tests/preact/apps/simple/',
@@ -103,7 +103,7 @@ Deno.test('Preact App Build Tests', async (t) => {
       // WorkerPath: import.meta.resolve(
       //   '../../src/runtime/dfs/workers/EaCLocalDistributedFileSystemWorker.ts'
       // ),
-    } as EaCLocalDistributedFileSystem,
+    } as EaCLocalDistributedFileSystemDetails,
     'local:apps/single-island-atomic': {
       Type: 'Local',
       FileRoot: './tests/preact/apps/single-island-atomic/',
@@ -112,7 +112,7 @@ Deno.test('Preact App Build Tests', async (t) => {
       // WorkerPath: import.meta.resolve(
       //   '../../src/runtime/dfs/workers/EaCLocalDistributedFileSystemWorker.ts'
       // ),
-    } as EaCLocalDistributedFileSystem,
+    } as EaCLocalDistributedFileSystemDetails,
     'local:apps/single-island-local': {
       Type: 'Local',
       FileRoot: './tests/preact/apps/single-island-local/',
@@ -121,7 +121,7 @@ Deno.test('Preact App Build Tests', async (t) => {
       // WorkerPath: import.meta.resolve(
       //   '../../src/runtime/dfs/workers/EaCLocalDistributedFileSystemWorker.ts'
       // ),
-    } as EaCLocalDistributedFileSystem,
+    } as EaCLocalDistributedFileSystemDetails,
     'esm:fathym_atomic': {
       Type: 'ESM',
       Root: 'https://deno.land/x/fathym_atomic@v0.0.156/',
@@ -130,7 +130,7 @@ Deno.test('Preact App Build Tests', async (t) => {
       // WorkerPath: import.meta.resolve(
       //   '../../src/runtime/dfs/workers/EaCESMDistributedFileSystemWorker.ts'
       // ),
-    } as EaCESMDistributedFileSystem,
+    } as EaCESMDistributedFileSystemDetails,
     'jsr:@fathym/atomic': {
       Type: 'JSR',
       Package: '@fathym/atomic',
@@ -138,7 +138,7 @@ Deno.test('Preact App Build Tests', async (t) => {
       // WorkerPath: import.meta.resolve(
       //   '../../src/runtime/dfs/workers/EaCJSRDistributedFileSystemWorker.ts'
       // ),
-    } as EaCJSRDistributedFileSystem,
+    } as EaCJSRDistributedFileSystemDetails,
   };
 
   await t.step('Handle Preact App - No Islands', async (t) => {

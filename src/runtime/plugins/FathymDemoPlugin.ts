@@ -5,9 +5,9 @@ import {
   EaCDenoKVDatabaseDetails,
   EaCDFSProcessor,
   EaCKeepAliveModifierDetails,
-  EaCLocalDistributedFileSystem,
+  EaCLocalDistributedFileSystemDetails,
   EaCMarkdownToHTMLModifierDetails,
-  EaCNPMDistributedFileSystem,
+  EaCNPMDistributedFileSystemDetails,
   EaCPreactAppProcessor,
   EaCProxyProcessor,
   EaCRedirectProcessor,
@@ -171,29 +171,29 @@ export default class FathymDemoPlugin implements EaCRuntimePlugin {
           'local:$root': {
             Type: 'Local',
             FileRoot: './',
-          } as EaCLocalDistributedFileSystem,
+          } as EaCLocalDistributedFileSystemDetails,
           'npm:@lowcodeunit/public-web-blog': {
             Type: 'NPM',
             DefaultFile: 'index.html',
             Package: '@lowcodeunit/public-web-blog',
             Version: 'latest',
-          } as EaCNPMDistributedFileSystem,
+          } as EaCNPMDistributedFileSystemDetails,
           'local:apps/api': {
             Type: 'Local',
             FileRoot: './apps/api/',
             DefaultFile: 'index.ts',
             Extensions: ['ts'],
-          } as EaCLocalDistributedFileSystem,
+          } as EaCLocalDistributedFileSystemDetails,
           'local:apps/home': {
             Type: 'Local',
             FileRoot: './apps/home/',
             DefaultFile: 'index.tsx',
             Extensions: ['tsx'],
-          } as EaCLocalDistributedFileSystem,
+          } as EaCLocalDistributedFileSystemDetails,
           'local:apps/components': {
             Type: 'Local',
             FileRoot: './apps/components/',
-          } as EaCLocalDistributedFileSystem,
+          } as EaCLocalDistributedFileSystemDetails,
         },
         Modifiers: {
           baseHref: {

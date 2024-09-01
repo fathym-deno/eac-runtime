@@ -24,7 +24,7 @@ export const EaCPreactAppProcessorHandlerResolver: ProcessorHandlerResolver = {
       },
     );
 
-    await handler.Configure(processor, eac.DFS || {}, Date.now());
+    await handler.Configure(processor, eac.DFSs || {}, Date.now());
 
     await handler.Build(
       processor,

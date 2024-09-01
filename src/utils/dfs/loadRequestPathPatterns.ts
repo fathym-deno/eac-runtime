@@ -1,4 +1,4 @@
-import { EaCDistributedFileSystem } from '../../src.deps.ts';
+import { EaCDistributedFileSystemDetails } from '../../src.deps.ts';
 import { DFSFileHandler } from '../../runtime/dfs/DFSFileHandler.ts';
 import { EaCRuntimeHandlerPipeline } from '../../runtime/EaCRuntimeHandlerPipeline.ts';
 import { EaCRuntimeHandlerResult } from '../../runtime/EaCRuntimeHandlerResult.ts';
@@ -8,7 +8,7 @@ import { convertFilePathToMatch } from './convertFilePathToMatch.ts';
 
 export async function loadRequestPathPatterns<TSetup>(
   fileHandler: DFSFileHandler,
-  dfs: EaCDistributedFileSystem,
+  dfs: EaCDistributedFileSystemDetails,
   setup: (allPaths: string[]) => Promise<TSetup>,
   loadHandlers: (
     filePath: string,

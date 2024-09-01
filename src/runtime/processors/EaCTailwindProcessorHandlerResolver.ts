@@ -13,7 +13,7 @@ export const EaCTailwindProcessorHandlerResolver: ProcessorHandlerResolver = {
 
     const processor = appProcCfg.Application.Processor as EaCTailwindProcessor;
 
-    const dfss = processor.DFSLookups.map((dfsLookup) => eac.DFS![dfsLookup]!);
+    const dfss = processor.DFSLookups.map((dfsLookup) => eac.DFSs![dfsLookup]!.Details!);
 
     const dfsCalls = dfss.map(async (dfs) => {
       const fileHandler = await loadFileHandler(ioc, dfs);

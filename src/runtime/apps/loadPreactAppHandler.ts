@@ -1,5 +1,5 @@
 // deno-lint-ignore-file no-explicit-any
-import { ComponentType, EaCDistributedFileSystem, ESBuild, merge } from '../../src.deps.ts';
+import { ComponentType, EaCDistributedFileSystemDetails, ESBuild, merge } from '../../src.deps.ts';
 import { DFSFileHandler } from '../dfs/DFSFileHandler.ts';
 import { EaCRuntimeHandler } from '../EaCRuntimeHandler.ts';
 import { EaCRuntimeHandlerPipeline } from '../EaCRuntimeHandlerPipeline.ts';
@@ -12,7 +12,7 @@ export async function loadPreactAppHandler(
   esbuild: ESBuild,
   fileHandler: DFSFileHandler,
   filePath: string,
-  dfs: EaCDistributedFileSystem,
+  dfs: EaCDistributedFileSystemDetails,
   dfsLookup: string,
   layouts: [
     string,

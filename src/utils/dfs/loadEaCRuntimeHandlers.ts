@@ -1,4 +1,4 @@
-import { EaCDistributedFileSystem, ESBuild } from '../../src.deps.ts';
+import { EaCDistributedFileSystemDetails, ESBuild } from '../../src.deps.ts';
 import { DFSFileHandler } from '../../runtime/dfs/DFSFileHandler.ts';
 import { EaCRuntimeHandlerResult } from '../../runtime/EaCRuntimeHandlerResult.ts';
 import { importDFSTypescriptModule } from './importDFSTypescriptModule.ts';
@@ -7,7 +7,7 @@ export async function loadEaCRuntimeHandlers(
   esbuild: ESBuild,
   fileHandler: DFSFileHandler,
   filePath: string,
-  dfs: EaCDistributedFileSystem,
+  dfs: EaCDistributedFileSystemDetails,
   dfsLookup: string,
 ): Promise<EaCRuntimeHandlerResult | undefined> {
   const apiModule = await importDFSTypescriptModule(
