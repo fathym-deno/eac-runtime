@@ -166,7 +166,7 @@ export class DefaultEaCRuntime<TEaC = EaCRuntimeEaC> implements EaCRuntime<TEaC>
         Revision: this.Revision,
       },
       State: {},
-    } as EaCRuntimeContext);
+    } as unknown as EaCRuntimeContext);
 
     return resp;
   }

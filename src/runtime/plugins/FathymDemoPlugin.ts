@@ -155,10 +155,7 @@ export default class FathymDemoPlugin implements EaCRuntimePlugin {
             ModifierResolvers: {},
             Processor: {
               Type: 'Tailwind',
-              DFSLookups: [
-                'local:apps/home',
-                'local:apps/components',
-              ],
+              DFSLookups: ['local:apps/home', 'local:apps/components'],
               ConfigPath: '/apps/tailwind/tailwind.config.ts',
               StylesTemplatePath: './apps/tailwind/styles.css',
               CacheControl: {
@@ -167,33 +164,43 @@ export default class FathymDemoPlugin implements EaCRuntimePlugin {
             } as EaCTailwindProcessor,
           },
         },
-        DFS: {
+        DFSs: {
           'local:$root': {
-            Type: 'Local',
-            FileRoot: './',
-          } as EaCLocalDistributedFileSystemDetails,
+            Details: {
+              Type: 'Local',
+              FileRoot: './',
+            } as EaCLocalDistributedFileSystemDetails,
+          },
           'npm:@lowcodeunit/public-web-blog': {
-            Type: 'NPM',
-            DefaultFile: 'index.html',
-            Package: '@lowcodeunit/public-web-blog',
-            Version: 'latest',
-          } as EaCNPMDistributedFileSystemDetails,
+            Details: {
+              Type: 'NPM',
+              DefaultFile: 'index.html',
+              Package: '@lowcodeunit/public-web-blog',
+              Version: 'latest',
+            } as EaCNPMDistributedFileSystemDetails,
+          },
           'local:apps/api': {
-            Type: 'Local',
-            FileRoot: './apps/api/',
-            DefaultFile: 'index.ts',
-            Extensions: ['ts'],
-          } as EaCLocalDistributedFileSystemDetails,
+            Details: {
+              Type: 'Local',
+              FileRoot: './apps/api/',
+              DefaultFile: 'index.ts',
+              Extensions: ['ts'],
+            } as EaCLocalDistributedFileSystemDetails,
+          },
           'local:apps/home': {
-            Type: 'Local',
-            FileRoot: './apps/home/',
-            DefaultFile: 'index.tsx',
-            Extensions: ['tsx'],
-          } as EaCLocalDistributedFileSystemDetails,
+            Details: {
+              Type: 'Local',
+              FileRoot: './apps/home/',
+              DefaultFile: 'index.tsx',
+              Extensions: ['tsx'],
+            } as EaCLocalDistributedFileSystemDetails,
+          },
           'local:apps/components': {
-            Type: 'Local',
-            FileRoot: './apps/components/',
-          } as EaCLocalDistributedFileSystemDetails,
+            Details: {
+              Type: 'Local',
+              FileRoot: './apps/components/',
+            } as EaCLocalDistributedFileSystemDetails,
+          },
         },
         Modifiers: {
           baseHref: {
