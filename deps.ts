@@ -30,7 +30,6 @@ export * from 'jsr:@fathym/common@0.2.147/log';
 export * from 'jsr:@fathym/common@0.2.147/oauth';
 export * from 'jsr:@fathym/common@0.2.147/workers';
 
-// export * from '../everything-as-code/src/eac/.exports.ts';
 export * from 'jsr:@fathym/eac@0.1.63';
 export * from 'jsr:@fathym/eac@0.1.63/applications';
 export * from 'jsr:@fathym/eac@0.1.63/clouds';
