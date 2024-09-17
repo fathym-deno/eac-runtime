@@ -13,10 +13,12 @@ params:
 Once you have <a href="https://docs.deno.com/runtime/manual/getting_started/installation" target="_blank">DenoJS installed</a>, the next thing you need to do is install the EaC Runtime in a project. To do that, create/open the directory where you want the project to live (we do most of our development in <a href="https://code.visualstudio.com/download" target="_blank">VSCode</a>), then in a command prompt for that directory run the EaC Runtime install script with Deno:
 
 ```
-deno run -A -r --unstable-kv https://eac-runtime.fathym.com/deno/install
+deno run -A -r --unstable-kv https://https://eac2.fathym.com/deno/install
 ```
 
-This will scaffold a new project with some default configurations already in place. Once installed, start the runtime with the following command:
+This will scaffold a new project with some default configurations already in place. There are multiple templates available to use for scaffolding, pick the one best suited for your needs.
+
+Once installed, start the runtime with the following command:
 
 ```
 deno task dev
