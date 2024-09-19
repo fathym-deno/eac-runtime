@@ -1,6 +1,6 @@
 # Building the Agent: Frontend Chat Interface and Synaptic Circuit
 
-This guide walks through building an agent by connecting a chat interface to circuits. You’ll first integrate a **Thinky** chat interface into your frontend, and then build and enhance a **Synaptic circuit** that processes user input. Finally, we’ll upgrade the circuit to call a **Large Language Model (LLM)** for more advanced functionality.
+This guide outlines the process of building an intelligent agent by integrating a chat interface with backend circuits. The goal is to connect the frontend chat interface, powered by Thinky, to a series of Synaptic circuits that process user inputs. Initially, the circuit will return the input as-is, but we'll enhance this functionality by calling a Large Language Model (LLM) to provide dynamic, intelligent responses. By the end, you'll have a system capable of real-time interaction between the user and an LLM-driven backend.
 
 ## Part 1: Frontend Chat Interface (Web Runtime)
 
@@ -118,7 +118,7 @@ We recommend organizing circuits and neurons into individual plugins. You’ll c
 
 ---
 
-### Step 1: Creating the `MyCircuitsPlugin.ts` File
+#### Step 1: Creating the `MyCircuitsPlugin.ts` File
 
 1. Navigate to `src/circuits/` in your **synaptic-runtime** project.
 2. Create a new file named `MyCircuitsPlugin.ts`.
@@ -174,9 +174,6 @@ export default class MyFirstCircuitPlugin implements EaCRuntimePlugin {
               Type: 'Linear',
               Name: 'My First Circuit',
               Description: 'A simple circuit that processes user input.',
-              InputSchema: z.object({
-                Input: z.string().describe('User input for the circuit'),
-              }),
               Neurons: {
                 '': {
                   Type: 'Tool',
@@ -198,7 +195,7 @@ export default class MyFirstCircuitPlugin implements EaCRuntimePlugin {
 }
 ```
 
-### Step 2: Integrating the Circuit with `MyCoreSynapticPlugin`
+#### Step 2: Integrating the Circuit with `MyCoreSynapticPlugin`
 
 Next, you’ll integrate this circuit into the core Synaptic plugin.
 
@@ -232,40 +229,164 @@ This step ensures the `MyFirstCircuitPlugin` is included in the Synaptic runtime
 
 ---
 
+Here’s the fully updated **Phase 2** section, incorporating the necessary steps to configure the **LLM integration**, update the **AI as Code configuration**, and modify the circuit to use a reusable neuron for calling the LLM. Additionally, it includes instructions for updating the frontend to connect to the new circuit.
+
+---
+
 ### Phase 2: Update the Circuit to Call an LLM
 
-We’ll now enhance the circuit to call a **Large Language Model (LLM)**.
+In this phase, we’ll enhance the circuit to call a **Large Language Model (LLM)**, specifically OpenAI’s GPT-4 model, for more dynamic responses. This involves updating the **AI as Code (EaC)** configuration, adding the LLM to the circuits, and configuring a second circuit to interact with the LLM.
 
-1. Open `MyCircuitsPlugin.ts` and update the circuit:
+#### Step 1: Set Up an OpenAI API Key
+
+Before configuring the circuit, you’ll need an OpenAI API key to enable LLM calls.
+
+1. **Sign Up or Log In to OpenAI**:
+   - Go to [OpenAI](https://openai.com) and either sign up for an account or log in to your existing account.
+2. **Generate an API Key**:
+
+   - Navigate to the **API keys** section and generate a new API key.
+
+3. **Store the API Key**:
+
+   - Add the API key as an environment variable in your local setup by creating an `.env` file in your **synaptic-runtime** directory with the following content:
+
+   ```bash
+   OPENAI_KEY=your_openai_api_key_here
+   ```
+
+#### Step 2: Update the AI as Code (EaC) Configuration
+
+Next, we will update the **AI as Code** configuration to define the OpenAI LLM integration.
+
+1. Open your `MyCircuitsPlugin.ts` file.
+2. Update the **AIs** definition to include the OpenAI configuration:
 
 ```typescript
-import { SynapticCircuit } from '@fathym/synaptic';
-import { callLLM } from '@fathym/llm-client';
-
-export default class MyCircuitsPlugin implements SynapticPlugin {
-  public Setup(): SynapticCircuit[] {
-    return [
-      {
-        Name: 'ReturnUserInputCircuit',
-        Handler: async (req, ctx) => {
-          const userInput = req.Body?.input || 'No input provided';
-          const llmResponse = await callLLM({
-            prompt: `User input: ${userInput}`,
-          });
-          return ctx.Respond({ content: llmResponse });
+EaC: {
+  AIs: {
+    [MyFirstCircuitPlugin.name]: {
+      LLMs: {
+        openai: {
+          Details: {
+            Type: 'OpenAI',
+            Name: 'Open AI LLM',
+            Description: 'A default Open AI LLM configuration.',
+            APIKey: Deno.env.get('OPENAI_KEY')!,
+            ModelName: 'gpt-4',
+            Streaming: true,
+          } as EaCOpenAILLMDetails,
         },
       },
-    ];
-  }
-}
+    },
+  },
+},
 ```
 
-Now, your circuit will call an LLM and return dynamic responses based on the user’s input.
+- **LLM Configuration Details**:
+  - **APIKey**: The OpenAI API key fetched from the `.env` file.
+  - **ModelName**: The GPT-4 model (`gpt-4` or your choice of available models).
+  - **Streaming**: Set to `true` to enable streaming responses.
+
+#### Step 3: Configure the LLM Neuron in the Circuit
+
+Now, we will configure a **Neuron** to wrap the LLM configuration and create a new circuit that calls the LLM.
+
+1. Update your **Circuits** definition to add an LLM neuron:
+
+```typescript
+Circuits: {
+  $neurons: {
+    [`${SYNAPTIC_CORE}:llm`]: {
+      Type: 'LLM',
+      LLMLookup: `${MyFirstCircuitPlugin.name}|openai`,
+    } as EaCLLMNeuron,
+  },
+},
+```
+
+This defines a reusable **LLM neuron** that references the OpenAI LLM configuration.
+
+#### Step 4: Create a Second Circuit to Call the LLM
+
+Now that the LLM is configured, we’ll create a second circuit that calls the LLM with a chat prompt.
+
+1. Add a second circuit to your **MyCircuitsPlugin.ts** file:
+
+```typescript
+Circuits: {
+  'my-second-circuit': {
+    Details: {
+      Type: 'Linear',
+      Name: 'My Second Circuit',
+      Description: 'A circuit that interacts with the LLM using a chat prompt.',
+      Neurons: {
+        '': {
+          Type: 'ChatPrompt',
+          BootstrapInput: ({ Input }: { Input: string }) => ({
+            Messages: [new HumanMessage(Input || 'Hi')],
+          }),
+          SystemMessage: `Greet the user, and offer to assist with any questions.`,
+          NewMessages: [new MessagesPlacehold('Messages')],
+          Neurons: {
+            '': `${MyFirstCircuitPlugin.name}:openai`,
+          },
+          BootstrapOutput: (msg: BaseMessage) => {
+            return {
+              Messages: [msg],
+            } as ThinkyCompanyRagChatGraphStateSchema;
+          },
+        } as EaCChatPromptNeuron,
+      },
+    } as EaCLinearCircuitDetails,
+  },
+},
+```
+
+- **ChatPrompt Configuration**:
+  - **SystemMessage**: The system message that prompts the LLM to interact with the user. This can be customized for your needs.
+  - **Neurons**: The neuron interacts with the OpenAI LLM, passing the user’s input through the configured prompt.
+
+#### Step 5: Update the Frontend to Use the New Circuit
+
+Finally, update your **IndexPage** handler so that it connects the frontend chat interface to the new circuit.
+
+1. Open the `apps/home/index.tsx` file.
+2. Update the **Chats** section in the **IndexPageData** to point to the new circuit:
+
+```typescript
+export const handler: EaCRuntimeHandlerResult<{OrgName}WebState, IndexPageData> = {
+  GET: async (_req, ctx) => {
+    const resp = await fetch(`http://localhost:8100/api`);
+
+    const { Random } = await resp.json() as { Random: string };
+
+    return ctx.Render({
+      Name: `The Random: ${Random}`,
+      Text: `We met the latest Random, ${Random}, at around ${ctx.State.CurrentDate}`,
+      ActiveChat: `${ctx.State.Username}-ur-workflows`,
+      Chats: {
+        [`${ctx.State.Username}-ur-workflows`]: {
+          Name: 'UR Workflows',
+          CircuitLookup: 'my-second-circuit',  // Updated circuit
+        },
+        [`${ctx.State.Username}-explore`]: {
+          Name: 'Explore Proconex',
+          CircuitLookup: 'proconex:rag-chat:company',
+        },
+      },
+      Root: '/api/thinky/circuits/',
+    });
+  },
+};
+```
+
+This change connects the chat interface to the new circuit (`my-second-circuit`), which interacts with the LLM to provide dynamic responses.
 
 ---
 
 ## Conclusion
 
-You’ve set up both the **frontend chat interface** and the **backend circuit**. In **Phase 1**, the circuit returned the user’s input, and in **Phase 2**, you enhanced it to call an LLM for more dynamic responses.
+By following this guide, you have successfully integrated both a frontend chat interface and a backend Synaptic circuit. In Phase 1, you created a basic circuit that simply returned user input. In Phase 2, you enhanced that circuit by integrating an LLM to generate intelligent, context-aware responses.
 
-This setup enables real-time interactions between your chat interface and an intelligent backend powered by LLMs.
+This architecture enables dynamic, real-time interactions between users and the backend via a chat interface. The agent you've built is now capable of leveraging advanced language models to provide more complex, responsive answers, making it a powerful tool for handling user queries and automating interactions. This is just the foundation—you can further extend this setup by adding more circuits, neurons, and other integrations as needed..
