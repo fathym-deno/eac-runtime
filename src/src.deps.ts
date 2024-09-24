@@ -5,6 +5,7 @@ export * as DenoKVOAuth from 'jsr:@deno/kv-oauth@0.11.0';
 export * as colors from 'jsr:@std/fmt@1.0.0/colors';
 export * as frontMatter from 'jsr:@std/front-matter@1.0.1/yaml';
 export * from 'jsr:@std/http@1.0.2';
+export { parse as parseJsonc } from 'jsr:@std/jsonc@1.0.0';
 export * from 'jsr:@std/streams@1.0.1';
 
 export * as djwt from 'jsr:@zaubrik/djwt@3.0.2';

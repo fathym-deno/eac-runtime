@@ -19,6 +19,7 @@ import {
   getPackageLogger,
   IoCContainer,
   loadDenoConfigSync,
+  parseJsonc,
   path,
 } from '../src.deps.ts';
 import { EaCComponentDFSHandler } from './EaCComponentDFSHandler.ts';
@@ -51,8 +52,10 @@ export class EaCPreactAppHandler {
 
   protected pipelines: Map<string, EaCRuntimeHandlerPipeline>;
   //#endregion
+
   //#region Properties
   //#endregion
+
   //#region Constructors
   constructor(
     protected ioc: IoCContainer,
@@ -792,6 +795,41 @@ export class EaCPreactAppHandler {
         //   return null;
         // });
 
+        build.onLoad({ filter: /\.json$/ }, async (args) => {
+          let content: string;
+
+          if (args.path.startsWith('//')) {
+            args.path = args.path.replace('//', 'https://');
+          }
+
+          // Determine if the file is remote or local
+          if (
+            args.path.startsWith('http://') ||
+            args.path.startsWith('https://')
+          ) {
+            // Fetch remote JSONc file
+            const response = await fetch(args.path);
+            if (!response.ok) {
+              throw new Error(
+                `Failed to fetch remote JSONc file: ${response.statusText}`,
+              );
+            }
+            content = await response.text();
+          } else {
+            // Read local JSONc file
+            content = await Deno.readTextFile(args.path);
+          }
+
+          // Parse the content as JSONc (allowing comments)
+          const jsonContent = parseJsonc(content);
+
+          // Return the transformed content as JSON
+          return {
+            contents: JSON.stringify(jsonContent),
+            loader: 'json',
+          };
+        });
+
         build.onLoad({ filter: /^(http|https|file)\:\/\/.+/ }, (args) => {
           return builder.LoadFetchFile(args);
         });
@@ -808,6 +846,7 @@ export class EaCPreactAppHandler {
             importMap,
           );
         });
+
         build.onResolve({ filter: /.*/, namespace: 'file' }, (args) => {
           return builder.ResolveImportMapFile(
             () => build,
