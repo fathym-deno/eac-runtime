@@ -102,49 +102,67 @@ These repositories serve as the building blocks for your agentic workflows, with
 
 ## Setting Up JSR.io Organization
 
-Once the repositories are cloned, you will need to create an **organization** on [JSR.io](https://www.jsr.io). This organization will host your **reference architecture** and **atomic-design-kit** projects, allowing you to manage your package hosting and deployment workflows.
+Once the repositories are cloned, you will need to create an **organization** on [JSR.io](https://www.jsr.io). This organization will host your **reference architecture** and **atomic-design-kit** projects, allowing you to manage your package hosting and deployment workflows. To create an organization, go [here](https://jsr.io/new) and createa a new scope. Try to use the same name you used for your github org-name, though this is not required.
 
 ---
 
 ## Seeding Repositories with EaC Runtime Instances
 
-To align with the **Golden Path**, the next step is to seed your repositories with the correct **EaC runtime instances**. This process will provide the foundational code and structure for each repository. Follow these steps:
+To align with the **Golden Path**, the next step is to seed your repositories with the correct **EaC runtime templates**. This process will provide the foundational code and structure for each repository. Follow these steps:
 
 ### Step 6: Seed the Reference Architecture Repository
 Navigate to the **reference-architecture** directory and run the following command to seed it with the **library template**:
 
 ```bash
-deno run -A -r --unstable-kv https://eac2.fathym.com/deno/install --template=library
+deno run -A -r https://eac2.fathym.com/deno/install --template=library
 ```
 
 After seeding, perform a **find and replace** on the string `aaa_bbb_ccc` with your **organization name** to ensure correct package management in **JSR.io**. For `www_xxx_yyy_zzz`, replace it with your package name, which is typically the same as the repository name. For the **reference-architecture**, we recommend using `common`.
 
+In order to get the package ready to publish, you will want to follow the built in JSR flow.  To do this, run the command:
+
+```bash
+deno publish --allow-dirty
+```
+
+This will open a web browser flow, with fields properly filled out. Simply click create. Then, approve the request and wait for the process to complete. Now that it is completed, go to versions, and 'yank' the only version there (0.0.0). Then we can complete the final settings on the Settings tab. Start by giving a description to your package, then turn on Deno and Browsers for the Runtime Compat (save changes), and finally we can connect our GitHub repository (filling in the appropriate org/repo).
+
+> **Note**: You only need to run the `deno publish` command for the reference-architecture and atomic-design-kit. Skip for all *-runtime repositories
+
+Now you can push your code to generate your first automatic package or runtime build. This will build it, check for any publish errors and then commit the code. Once committed, an automatic build will be kicked off that pushes your package or builds your runtime.
+
+```bash
+deno task deploy
+```
+
+You'll notice that this deploys a version with -integration on the end, which is a pre-release package. To deploy the latest version of the package, merge or PR changes from integration to main.
+
 ### Step 7: Seed the Remaining Repositories
 Repeat the process for the remaining repositories, adjusting the template for each one. Here are the specific templates to use:
 
-- **atomic-design-kit**:
+- **atomic-design-kit** (with publish):
   ```bash
-  deno run -A -r --unstable-kv https://eac2.fathym.com/deno/install --template=atomic
+  deno run -A -r https://eac2.fathym.com/deno/install --template=atomic
   ```
 
 - **core-runtime**:
   ```bash
-  deno run -A -r --unstable-kv https://eac2.fathym.com/deno/install --template=core
+  deno run -A -r https://eac2.fathym.com/deno/install --template=core
   ```
 
 - **web-runtime**:
   ```bash
-  deno run -A -r --unstable-kv https://eac2.fathym.com/deno/install --template=preact
+  deno run -A -r https://eac2.fathym.com/deno/install --template=preact
   ```
 
 - **api-runtime**:
   ```bash
-  deno run -A -r --unstable-kv https://eac2.fathym.com/deno/install --template=api
+  deno run -A -r https://eac2.fathym.com/deno/install --template=api
   ```
 
 - **synaptic-runtime**:
   ```bash
-  deno run -A -r --unstable-kv https://eac2.fathym.com/deno/install --template=synaptic
+  deno run -A -r https://eac2.fathym.com/deno/install --template=synaptic
   ```
 
 Once seeded, follow the same **find and replace** steps for each repository to correctly name your organization and packages.

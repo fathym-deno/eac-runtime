@@ -11,49 +11,115 @@ export const EaCJSRDistributedFileSystemHandlerResolver: DFSFileHandlerResolver 
       );
     }
 
-    const pkgRoot = new URL(`${dfs.Package}/`, 'https://jsr.io/');
+    const loadHandler = async () => {
+      const pkgRoot = new URL(`${dfs.Package}/`, 'https://jsr.io/');
 
-    if (!dfs.Version) {
-      const metaPath = new URL(`meta.json`, pkgRoot);
+      if (!dfs.Version) {
+        const metaPath = new URL(`meta.json`, pkgRoot);
 
-      const metaResp = await fetch(metaPath);
+        const metaResp = await fetch(metaPath);
 
-      const meta = (await metaResp.json()) as {
-        latest: string;
-      };
-
-      dfs.Version = meta.latest;
-    }
-
-    const fileRoot = new URL(`${dfs.Version}/`, pkgRoot);
-
-    const handler = buildFetchDFSFileHandler(fileRoot.href);
-
-    handler.LoadAllPaths = async (_revision: number) => {
-      const logger = await getPackageLogger();
-
-      const metaPath = `${fileRoot.href.slice(0, -1)}_meta.json`;
-
-      const metaResp = await fetch(metaPath);
-
-      try {
-        const meta = (await metaResp.clone().json()) as {
-          manifest: { [filePath: string]: unknown };
+        const meta = (await metaResp.json()) as {
+          latest: string;
         };
 
-        const filePaths = Object.keys(meta.manifest);
-
-        return filePaths;
-      } catch (err) {
-        logger.error(
-          `There was an error loading paths for: ${metaPath}`,
-          await metaResp.clone().text(),
-        );
-
-        throw err;
+        dfs.Version = meta.latest;
       }
+
+      const fileRoot = new URL(`${dfs.Version}/`, pkgRoot);
+
+      const handler = buildFetchDFSFileHandler(fileRoot.href);
+
+      handler.LoadAllPaths = async (_revision: number) => {
+        const logger = await getPackageLogger();
+
+        const metaPath = `${fileRoot.href.slice(0, -1)}_meta.json`;
+
+        const metaResp = await fetch(metaPath);
+
+        try {
+          const meta = (await metaResp.clone().json()) as {
+            manifest: { [filePath: string]: unknown };
+          };
+
+          const filePaths = Object.keys(meta.manifest);
+
+          return filePaths;
+        } catch (err) {
+          logger.error(
+            `There was an error loading paths for: ${metaPath}`,
+            await metaResp.clone().text(),
+          );
+
+          throw err;
+        }
+      };
+
+      return handler;
     };
 
-    return handler;
+    let handler = await loadHandler();
+
+    setInterval(() => {
+      const work = async () => {
+        handler = await loadHandler();
+      };
+
+      work();
+    }, 60 * 1000);
+
+    return {
+      get Root() {
+        return handler.Root;
+      },
+
+      GetFileInfo(
+        filePath: string,
+        revision: number,
+        defaultFileName?: string,
+        extensions?: string[],
+        useCascading?: boolean,
+        cacheDb?: Deno.Kv,
+        cacheSeconds?: number,
+      ) {
+        return handler.GetFileInfo(
+          filePath,
+          revision,
+          defaultFileName,
+          extensions,
+          useCascading,
+          cacheDb,
+          cacheSeconds,
+        );
+      },
+
+      LoadAllPaths(revision: number) {
+        return handler.LoadAllPaths(revision);
+      },
+
+      RemoveFile(filePath: string, revision: number, cacheDb?: Deno.Kv) {
+        return handler.RemoveFile(filePath, revision, cacheDb);
+      },
+
+      WriteFile(
+        filePath: string,
+        revision: number,
+        stream: ReadableStream<Uint8Array>,
+        ttlSeconds?: number,
+        headers?: Headers,
+        maxChunkSize?: number,
+        cacheDb?: Deno.Kv,
+      ) {
+        return handler.WriteFile(
+          filePath,
+          revision,
+          stream,
+          ttlSeconds,
+          headers,
+          maxChunkSize,
+          cacheDb,
+        );
+      },
+    };
   },
 };
