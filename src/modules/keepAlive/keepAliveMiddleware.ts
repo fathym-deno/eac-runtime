@@ -5,7 +5,7 @@ import { EAC_RUNTIME_DEV } from '../../constants.ts';
 export function establishKeepAliveMiddleware(
   keepAlivePath: string,
 ): EaCRuntimeHandler {
-  const logger = getPackageLoggerSync();
+  const logger = getPackageLoggerSync(import.meta);
 
   const initCheck = new Promise<boolean>((resolve) => {
     if (EAC_RUNTIME_DEV()) {

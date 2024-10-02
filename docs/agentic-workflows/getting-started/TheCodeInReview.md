@@ -45,7 +45,7 @@ src/
 In `EverythingAsCode{OrgName}.ts`, define the simple type for your organization:
 
 ```typescript
-import type { EverythingAsCode } from '../../src.deps.ts';
+import type { EverythingAsCode } from '../src.deps.ts';
 
 export type EverythingAsCode{OrgName} = EverythingAsCode;
 ```
@@ -229,14 +229,14 @@ Next, create a new `apps/home/_middleware.ts` file. This middleware will set the
 
 ```typescript
 // apps/home/_middleware.ts
-import { EaCRuntimeHandlers } from '@fathym/eac-runtime';
+import { EaCRuntimeHandler } from '@fathym/eac-runtime';
 import { {OrgName}WebState } from '../../src/state/{OrgName}WebState.ts';
 
-export default (_req, ctx) => {
+export default ((_req, ctx) => {
   ctx.State.CurrentDate = new Date(Date.now());
 
   return ctx.Next();
-} as EaCRuntimeHandlers<{OrgName}WebState>;
+}) as EaCRuntimeHandler<{OrgName}WebState>;
 ```
 
 This middleware runs on every request to the home page and ensures the `CurrentDate` is set.
@@ -368,7 +368,7 @@ Applications: {
     ModifierResolvers: {},
     Processor: {
       Type: 'Proxy',
-      ProxyRoot: Deno.env.get('PROCONEX_API_ROOT')!,
+      ProxyRoot: Deno.env.get('API_ROOT')!,
     } as EaCProxyProcessor,
   },
   thinkyCircuits: {
@@ -379,7 +379,7 @@ Applications: {
     ModifierResolvers: {},
     Processor: {
       Type: 'Proxy',
-      ProxyRoot: Deno.env.get('PROCONEX_SYNAPTIC_ROOT')!,
+      ProxyRoot: Deno.env.get('SYNAPTIC_ROOT')!,
     } as EaCProxyProcessor,
   },
   web: {
@@ -390,7 +390,7 @@ Applications: {
     ModifierResolvers: {},
     Processor: {
       Type: 'Proxy',
-      ProxyRoot: Deno.env.get('PROCONEX_WEB_ROOT')!,
+      ProxyRoot: Deno.env.get('WEB_ROOT')!,
     } as EaCProxyProcessor,
   },
 },
@@ -431,6 +431,7 @@ import {
   EaCRuntimePlugin,
   EaCRuntimePluginConfig,
 } from '@fathym/eac-runtime';
+import { EaCProxyProcessor } from '@fathym/eac/applications';
 
 export default class MyCoreRuntimePlugin implements EaCRuntimePlugin {
   constructor() {}
@@ -483,7 +484,7 @@ export default class MyCoreRuntimePlugin implements EaCRuntimePlugin {
             ModifierResolvers: {},
             Processor: {
               Type: 'Proxy',
-              ProxyRoot: Deno.env.get('PROCONEX_API_ROOT')!,
+              ProxyRoot: Deno.env.get('API_ROOT')!,
             } as EaCProxyProcessor,
           },
           thinkyCircuits: {
@@ -494,7 +495,7 @@ export default class MyCoreRuntimePlugin implements EaCRuntimePlugin {
             ModifierResolvers: {},
             Processor: {
               Type: 'Proxy',
-              ProxyRoot: Deno.env.get('PROCONEX_SYNAPTIC_ROOT')!,
+              ProxyRoot: Deno.env.get('SYNAPTIC_ROOT')!,
             } as EaCProxyProcessor,
           },
           web: {
@@ -505,7 +506,7 @@ export default class MyCoreRuntimePlugin implements EaCRuntimePlugin {
             ModifierResolvers: {},
             Processor: {
               Type: 'Proxy',
-              ProxyRoot: Deno.env.get('PROCONEX_WEB_ROOT')!,
+              ProxyRoot: Deno.env.get('WEB_ROOT')!,
             } as EaCProxyProcessor,
           },
         },
@@ -517,12 +518,15 @@ export default class MyCoreRuntimePlugin implements EaCRuntimePlugin {
 }
 ```
 
-#### Step 5: Configure local port:
+#### Step 5: Environment Configuration
 
-Create a .env file at the root of the project and define the port for this runtime:
+Create a .env file at the root of the project. Define the port for this runtime and we also need to defin the *_ROOT values for our proxy configurations
 
 ```
 PORT=8100
+API_ROOT=http://localhost:8102/api
+WEB_ROOT=http://localhost:8101
+SYNAPTIC_ROOT=http://localhost:8103
 ```
 
 This configuration sets up the **Core Runtime** to act as the secure entry point, proxying requests to the **API**, **Synaptic**, and **Web** runtimes based on the defined path patterns and resolvers.

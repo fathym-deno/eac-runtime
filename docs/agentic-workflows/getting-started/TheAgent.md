@@ -229,10 +229,6 @@ This step ensures the `MyFirstCircuitPlugin` is included in the Synaptic runtime
 
 ---
 
-Here’s the fully updated **Phase 2** section, incorporating the necessary steps to configure the **LLM integration**, update the **AI as Code configuration**, and modify the circuit to use a reusable neuron for calling the LLM. Additionally, it includes instructions for updating the frontend to connect to the new circuit.
-
----
-
 ### Phase 2: Update the Circuit to Call an LLM
 
 In this phase, we’ll enhance the circuit to call a **Large Language Model (LLM)**, specifically OpenAI’s GPT-4 model, for more dynamic responses. This involves updating the **AI as Code (EaC)** configuration, adding the LLM to the circuits, and configuring a second circuit to interact with the LLM.
@@ -243,6 +239,7 @@ Before configuring the circuit, you’ll need an OpenAI API key to enable LLM ca
 
 1. **Sign Up or Log In to OpenAI**:
    - Go to [OpenAI](https://openai.com) and either sign up for an account or log in to your existing account.
+   
 2. **Generate an API Key**:
 
    - Navigate to the **API keys** section and generate a new API key.

@@ -2,7 +2,7 @@ import { DOMParser, Element, getPackageLoggerSync, initParser } from '../../src.
 import { EaCRuntimeHandler } from '../../runtime/EaCRuntimeHandler.ts';
 
 export function establishBaseHrefMiddleware(): EaCRuntimeHandler {
-  const logger = getPackageLoggerSync();
+  const logger = getPackageLoggerSync(import.meta);
 
   const initCheck = new Promise<boolean>((resolve) => {
     logger.debug('Configuring keep alive...');

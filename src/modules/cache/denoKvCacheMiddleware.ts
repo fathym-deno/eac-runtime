@@ -9,7 +9,7 @@ export function establishDenoKvCacheMiddleware(
   cacheSeconds: number,
   pathFilterRegex?: string,
 ): EaCRuntimeHandler {
-  const logger = getPackageLoggerSync();
+  const logger = getPackageLoggerSync(import.meta);
 
   logger.debug('Configuring cache middleware...');
 

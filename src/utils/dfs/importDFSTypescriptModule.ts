@@ -18,7 +18,7 @@ export async function importDFSTypescriptModule(
   dfsLookup: string,
   loader: 'ts' | 'tsx',
 ): Promise<{ filePath: string; module: any; contents: string } | undefined> {
-  const logger = await getPackageLogger();
+  const logger = await getPackageLogger(import.meta);
 
   try {
     const file = await fileHandler.GetFileInfo(

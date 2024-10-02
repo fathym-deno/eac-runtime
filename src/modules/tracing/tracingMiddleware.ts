@@ -6,7 +6,7 @@ export function establishTracingMiddleware(
   traceResp: boolean,
 ): EaCRuntimeHandler {
   return async (req, ctx) => {
-    const logger = await getPackageLogger();
+    const logger = await getPackageLogger(import.meta);
 
     traceReq && logger.info({ req, ctx });
 

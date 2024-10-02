@@ -31,7 +31,7 @@ export const EaCJSRDistributedFileSystemHandlerResolver: DFSFileHandlerResolver 
       const handler = buildFetchDFSFileHandler(fileRoot.href);
 
       handler.LoadAllPaths = async (_revision: number) => {
-        const logger = await getPackageLogger();
+        const logger = await getPackageLogger(import.meta);
 
         const metaPath = `${fileRoot.href.slice(0, -1)}_meta.json`;
 

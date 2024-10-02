@@ -7,7 +7,7 @@ export default class FathymEaCPlugin implements EaCRuntimePlugin {
   public async Setup(
     _config: EaCRuntimeConfig,
   ): Promise<EaCRuntimePluginConfig> {
-    const logger = await getPackageLogger();
+    const logger = await getPackageLogger(import.meta);
 
     const pluginConfig: EaCRuntimePluginConfig = {
       Name: 'FathymEaCPlugin',

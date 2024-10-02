@@ -5,7 +5,7 @@ export function establishJwtValidationMiddleware(
   jwtConfig: JWTConfig,
 ): EaCRuntimeHandler {
   return async (req, ctx) => {
-    const logger = await getPackageLogger();
+    const logger = await getPackageLogger(import.meta);
 
     if (req.method !== 'OPTIONS') {
       const jwtToken = jwtConfig.LoadToken(req);

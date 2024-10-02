@@ -11,7 +11,7 @@ export const DefaultEaCConfig: EaCRuntimeConfig = {
   EaC: { EnterpriseLookup: 'default-eac' },
   Server: {
     onListen: (params) => {
-      const logger = getPackageLoggerSync();
+      const logger = getPackageLoggerSync(import.meta);
 
       const address = colors.green(`http://localhost:${params.port}`);
 

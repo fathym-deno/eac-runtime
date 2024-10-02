@@ -7,7 +7,7 @@ export async function start(
   config: EaCRuntimeConfig,
   configure?: (rt: EaCRuntime) => Promise<void>,
 ): Promise<void> {
-  const logger = await getPackageLogger();
+  const logger = await getPackageLogger(import.meta);
 
   logger.info(`Starting server with Deno version: ${Deno.version.deno}`);
 

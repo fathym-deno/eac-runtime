@@ -8,7 +8,7 @@ import { executePathMatch } from '../../utils/dfs/executePathMatch.ts';
 
 export const EaCAPIProcessorHandlerResolver: ProcessorHandlerResolver = {
   async Resolve(ioc, appProcCfg, eac) {
-    const logger = await getPackageLogger();
+    const logger = await getPackageLogger(import.meta);
 
     if (!isEaCAPIProcessor(appProcCfg.Application.Processor)) {
       throw new Deno.errors.NotSupported(

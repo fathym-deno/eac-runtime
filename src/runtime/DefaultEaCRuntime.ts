@@ -66,7 +66,7 @@ export class DefaultEaCRuntime<TEaC = EaCRuntimeEaC> implements EaCRuntime<TEaC>
   public async Configure(
     configure?: (rt: EaCRuntime<TEaC>) => Promise<void>,
   ): Promise<void> {
-    const logger = await getPackageLogger();
+    const logger = await getPackageLogger(import.meta);
 
     this.pluginConfigs = new Map();
 

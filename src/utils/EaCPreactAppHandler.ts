@@ -222,7 +222,7 @@ export class EaCPreactAppHandler {
     islandLibraryFiles: Record<string, string>,
     importMap?: Record<string, string>,
   ): Promise<esbuild.BuildResult<esbuild.BuildOptions>> {
-    const logger = await getPackageLogger();
+    const logger = await getPackageLogger(import.meta);
 
     const esbuild = await this.ioc.Resolve<ESBuild>(this.ioc.Symbol('ESBuild'));
 
@@ -277,7 +277,7 @@ export class EaCPreactAppHandler {
     handlers: (EaCComponentDFSHandler | undefined)[],
     revision: number,
   ) {
-    const logger = await getPackageLogger();
+    const logger = await getPackageLogger(import.meta);
 
     const compDFSHandlers = handlers.filter((cdh) => cdh).map((cdh) => cdh!);
 
@@ -393,7 +393,7 @@ export class EaCPreactAppHandler {
     appDFSLookup: string,
     appDFSHandler: DFSFileHandler,
   ) {
-    const logger = await getPackageLogger();
+    const logger = await getPackageLogger(import.meta);
 
     const layoutPaths = allPaths
       .filter((p) => p.endsWith('_layout.tsx'))
@@ -470,7 +470,7 @@ export class EaCPreactAppHandler {
     processor: EaCPreactAppProcessor,
     dfss: Record<string, EaCDistributedFileSystemAsCode>,
   ): Promise<(EaCComponentDFSHandler | undefined)[] | undefined> {
-    const logger = await getPackageLogger();
+    const logger = await getPackageLogger(import.meta);
 
     if (!processor.ComponentDFSLookups) {
       return undefined;
@@ -596,7 +596,7 @@ export class EaCPreactAppHandler {
     dfss: Record<string, EaCDistributedFileSystemAsCode>,
     revision: number,
   ): Promise<PathMatch[]> {
-    const logger = await getPackageLogger();
+    const logger = await getPackageLogger(import.meta);
 
     const esbuild = await this.ioc.Resolve<ESBuild>(this.ioc.Symbol('ESBuild'));
 
@@ -665,7 +665,7 @@ export class EaCPreactAppHandler {
     appDFSLookup: string,
     appDFSHandler: DFSFileHandler,
   ) {
-    const logger = await getPackageLogger();
+    const logger = await getPackageLogger(import.meta);
 
     const middlewarePaths = allPaths
       .filter((p) => p.endsWith('_middleware.ts'))
