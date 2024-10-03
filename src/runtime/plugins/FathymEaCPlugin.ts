@@ -46,6 +46,10 @@ export default class FathymEaCPlugin implements EaCRuntimePlugin {
 
         pluginConfig.EaC = eac;
 
+        if (!pluginConfig.EaC?.EnterpriseLookup) {
+          pluginConfig.EaC.EnterpriseLookup = EnterpriseLookup;
+        }
+
         console.log(`-----------CheckingPluginPost-------------`);
         console.log(pluginConfig.EaC.EnterpriseLookup);
 
