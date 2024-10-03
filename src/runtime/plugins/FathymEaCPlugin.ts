@@ -1,4 +1,4 @@
-import { colors, djwt, getPackageLogger, loadEaCSvc } from '../../src.deps.ts';
+import { colors, djwt, getPackageLogger, loadEaCSvc, loadJwtConfig } from '../../src.deps.ts';
 import { EaCRuntimeConfig } from '../config/EaCRuntimeConfig.ts';
 import { EaCRuntimePluginConfig } from '../config/EaCRuntimePluginConfig.ts';
 import { EaCRuntimePlugin } from './EaCRuntimePlugin.ts';
@@ -13,7 +13,23 @@ export default class FathymEaCPlugin implements EaCRuntimePlugin {
       Name: 'FathymEaCPlugin',
     };
 
-    const eacApiKey = Deno.env.get('EAC_API_KEY');
+    let eacApiKey = Deno.env.get('EAC_API_KEY');
+
+    if (!eacApiKey) {
+      const eacApiEntLookup = Deno.env.get('EAC_API_ENTERPRISE_LOOKUP');
+
+      if (eacApiEntLookup) {
+        const eacApiUsername = Deno.env.get('EAC_API_USERNAME');
+
+        eacApiKey = await loadJwtConfig().Create(
+          {
+            EnterpriseLookup: eacApiEntLookup,
+            Username: eacApiUsername,
+          },
+          60 * 60 * 1,
+        );
+      }
+    }
 
     if (eacApiKey) {
       try {
