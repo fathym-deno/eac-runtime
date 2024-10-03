@@ -14,6 +14,8 @@ export default class FathymEaCPlugin implements EaCRuntimePlugin {
     };
 
     let eacApiKey = Deno.env.get('EAC_API_KEY');
+    console.log('EAC_API_KEY');
+    console.log(eacApiKey);
 
     if (!eacApiKey) {
       const eacApiEntLookup = Deno.env.get('EAC_API_ENTERPRISE_LOOKUP');
