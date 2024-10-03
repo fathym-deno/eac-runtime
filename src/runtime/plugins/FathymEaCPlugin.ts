@@ -14,17 +14,12 @@ export default class FathymEaCPlugin implements EaCRuntimePlugin {
     };
 
     let eacApiKey = Deno.env.get('EAC_API_KEY');
-    console.log('EAC_API_KEY');
-    console.log(eacApiKey);
 
     if (!eacApiKey) {
       const eacApiEntLookup = Deno.env.get('EAC_API_ENTERPRISE_LOOKUP');
 
       if (eacApiEntLookup) {
         const eacApiUsername = Deno.env.get('EAC_API_USERNAME');
-        console.log('Loading the EaC API Key for:');
-        console.log(eacApiEntLookup);
-        console.log(eacApiUsername);
 
         eacApiKey = await loadJwtConfig().Create(
           {

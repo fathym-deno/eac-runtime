@@ -23,12 +23,12 @@ export * as denoGraph from 'jsr:@deno/graph@0.81.2';
 export * from 'jsr:@fathym/ioc@0.0.12';
 
 // export * from '../reference-architecture/mod.ts';
-export * from 'jsr:@fathym/common@0.2.159';
-export * from 'jsr:@fathym/common@0.2.159/build';
-export * from 'jsr:@fathym/common@0.2.159/deno-kv';
-export * from 'jsr:@fathym/common@0.2.159/log';
-export * from 'jsr:@fathym/common@0.2.159/oauth';
-export * from 'jsr:@fathym/common@0.2.159/workers';
+export * from 'jsr:@fathym/common@0.2.160';
+export * from 'jsr:@fathym/common@0.2.160/build';
+export * from 'jsr:@fathym/common@0.2.160/deno-kv';
+export * from 'jsr:@fathym/common@0.2.160/log';
+export * from 'jsr:@fathym/common@0.2.160/oauth';
+export * from 'jsr:@fathym/common@0.2.160/workers';
 
 export * from 'jsr:@fathym/eac@0.1.70';
 export * from 'jsr:@fathym/eac@0.1.70/applications';
