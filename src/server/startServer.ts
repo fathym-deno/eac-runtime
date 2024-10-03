@@ -4,12 +4,12 @@ import { EaCRuntimeConfig } from '../runtime/config/EaCRuntimeConfig.ts';
 
 export async function startServer(
   config: EaCRuntimeConfig,
-  configure?: (rt: EaCRuntime) => Promise<void>,
+  options?: Parameters<EaCRuntime['Configure']>[0],
 ): Promise<void> {
   const runtime = config.Runtime(config);
 
   if (!IS_BUILDING) {
-    await runtime.Configure(configure);
+    await runtime.Configure(options);
 
     await Deno.serve(config.Server, (req, info) => runtime.Handle(req, info))
       .finished;

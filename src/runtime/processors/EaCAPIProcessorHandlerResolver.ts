@@ -1,4 +1,4 @@
-import { EaCAPIProcessor, ESBuild, getPackageLogger, isEaCAPIProcessor } from '../../src.deps.ts';
+import { EaCAPIProcessor, ESBuild, isEaCAPIProcessor, LoggingProvider } from '../../src.deps.ts';
 import { ProcessorHandlerResolver } from './ProcessorHandlerResolver.ts';
 import { loadFileHandler } from '../../utils/dfs/loadFileHandler.ts';
 import { loadMiddleware } from '../../utils/dfs/loadMiddleware.ts';
@@ -8,7 +8,7 @@ import { executePathMatch } from '../../utils/dfs/executePathMatch.ts';
 
 export const EaCAPIProcessorHandlerResolver: ProcessorHandlerResolver = {
   async Resolve(ioc, appProcCfg, eac) {
-    const logger = await getPackageLogger(import.meta);
+    const logger = (await ioc.Resolve(LoggingProvider)).Package;
 
     if (!isEaCAPIProcessor(appProcCfg.Application.Processor)) {
       throw new Deno.errors.NotSupported(

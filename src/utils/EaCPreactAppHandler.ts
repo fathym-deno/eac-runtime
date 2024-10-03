@@ -16,9 +16,9 @@ import {
   EaCPreactAppProcessor,
   ESBuild,
   esbuild,
-  getPackageLogger,
   IoCContainer,
   loadDenoConfigSync,
+  Logger,
   parseJsonc,
   path,
 } from '../src.deps.ts';
@@ -59,6 +59,7 @@ export class EaCPreactAppHandler {
   //#region Constructors
   constructor(
     protected ioc: IoCContainer,
+    protected logger: Logger,
     protected renderHandler: PreactRenderHandler,
     protected eacIslandsClientPath: string,
     protected eacIslandsClientDepsPath: string,
@@ -222,8 +223,6 @@ export class EaCPreactAppHandler {
     islandLibraryFiles: Record<string, string>,
     importMap?: Record<string, string>,
   ): Promise<esbuild.BuildResult<esbuild.BuildOptions>> {
-    const logger = await getPackageLogger(import.meta);
-
     const esbuild = await this.ioc.Resolve<ESBuild>(this.ioc.Symbol('ESBuild'));
 
     const appDFSHandler = this.dfsHandlers.get(processor.AppDFSLookup)!;
@@ -233,7 +232,7 @@ export class EaCPreactAppHandler {
       appDFSHandler.Root || '',
     );
 
-    logger.debug(`ESBuild working directory: ${absWorkingDir}`);
+    this.logger.debug(`ESBuild working directory: ${absWorkingDir}`);
 
     const clientSrcPath = `./${this.eacIslandsClientPath.split('/').pop()!}`;
 
@@ -277,8 +276,6 @@ export class EaCPreactAppHandler {
     handlers: (EaCComponentDFSHandler | undefined)[],
     revision: number,
   ) {
-    const logger = await getPackageLogger(import.meta);
-
     const compDFSHandlers = handlers.filter((cdh) => cdh).map((cdh) => cdh!);
 
     if (compDFSHandlers) {
@@ -310,8 +307,8 @@ export class EaCPreactAppHandler {
       //   boolean,
       //   string
       // ][];
-      logger.debug('Components Loaded');
-      logger.debug('');
+      this.logger.debug('Components Loaded');
+      this.logger.debug('');
 
       return compDFSs;
     }
@@ -393,8 +390,6 @@ export class EaCPreactAppHandler {
     appDFSLookup: string,
     appDFSHandler: DFSFileHandler,
   ) {
-    const logger = await getPackageLogger(import.meta);
-
     const layoutPaths = allPaths
       .filter((p) => p.endsWith('_layout.tsx'))
       .sort((a, b) => a.split('/').length - b.split('/').length);
@@ -411,9 +406,9 @@ export class EaCPreactAppHandler {
       }
     });
 
-    logger.debug('Layouts: ');
-    logger.debug(layouts.map((m) => m[0]));
-    logger.debug('');
+    this.logger.debug('Layouts: ');
+    this.logger.debug(layouts.map((m) => m[0]));
+    this.logger.debug('');
 
     return layouts;
   }
@@ -470,8 +465,6 @@ export class EaCPreactAppHandler {
     processor: EaCPreactAppProcessor,
     dfss: Record<string, EaCDistributedFileSystemAsCode>,
   ): Promise<(EaCComponentDFSHandler | undefined)[] | undefined> {
-    const logger = await getPackageLogger(import.meta);
-
     if (!processor.ComponentDFSLookups) {
       return undefined;
     }
@@ -481,7 +474,7 @@ export class EaCPreactAppHandler {
         const compDFS = dfss[compDFSLookup]?.Details;
 
         if (!compDFS) {
-          logger.warn(
+          this.logger.warn(
             `The DFS configuration for component '${compDFSLookup}' is missing, please make sure to add it to your configuration.`,
           );
 
@@ -491,7 +484,7 @@ export class EaCPreactAppHandler {
         const compFileHandler = await loadFileHandler(this.ioc, compDFS);
 
         if (!compFileHandler) {
-          logger.warn(
+          this.logger.warn(
             `The DFS file handler for component type '${compDFS.Type}' is missing, please make sure to add it to your configuration.`,
           );
 
@@ -596,8 +589,6 @@ export class EaCPreactAppHandler {
     dfss: Record<string, EaCDistributedFileSystemAsCode>,
     revision: number,
   ): Promise<PathMatch[]> {
-    const logger = await getPackageLogger(import.meta);
-
     const esbuild = await this.ioc.Resolve<ESBuild>(this.ioc.Symbol('ESBuild'));
 
     const [{ DFS: appDFS, Handler: appDFSHandler }, compDFSHandlers] = await Promise.all([
@@ -650,9 +641,9 @@ export class EaCPreactAppHandler {
       revision,
     );
 
-    logger.debug('Apps');
-    logger.debug(matches.map((m) => m.PatternText));
-    logger.debug('');
+    this.logger.debug('Apps');
+    this.logger.debug(matches.map((m) => m.PatternText));
+    this.logger.debug('');
 
     await this.setupIslandsClientSources(processor, appDFSHandler.Root);
 
@@ -665,8 +656,6 @@ export class EaCPreactAppHandler {
     appDFSLookup: string,
     appDFSHandler: DFSFileHandler,
   ) {
-    const logger = await getPackageLogger(import.meta);
-
     const middlewarePaths = allPaths
       .filter((p) => p.endsWith('_middleware.ts'))
       .sort((a, b) => a.split('/').length - b.split('/').length);
@@ -679,9 +668,9 @@ export class EaCPreactAppHandler {
       .filter((m) => m)
       .map((m) => m!);
 
-    logger.debug('Middleware: ');
-    logger.debug(middleware.map((m) => m[0]));
-    logger.debug('');
+    this.logger.debug('Middleware: ');
+    this.logger.debug(middleware.map((m) => m[0]));
+    this.logger.debug('');
 
     return middleware;
   }

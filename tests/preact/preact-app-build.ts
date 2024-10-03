@@ -12,6 +12,7 @@ import {
   esbuild,
   ESBuild,
   IoCContainer,
+  LoggingProvider,
   merge,
   preactOptions,
 } from '../test.deps.ts';
@@ -61,6 +62,7 @@ async function createEaCPreactAppHandler() {
 
   return new EaCPreactAppHandler(
     ioc,
+    new (class extends LoggingProvider {})(import.meta, {}).Package,
     new PreactRenderHandler(preactOptions),
     `./islands/client/eacIslandsClient.ts`,
     `./islands/client/client.deps.ts`,

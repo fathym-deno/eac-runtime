@@ -5,9 +5,9 @@ import { startServer } from './startServer.ts';
 
 export async function start(
   config: EaCRuntimeConfig,
-  configure?: (rt: EaCRuntime) => Promise<void>,
+  options?: Parameters<EaCRuntime['Configure']>[0],
 ): Promise<void> {
-  const logger = await getPackageLogger(import.meta);
+  const logger = config?.LoggingProvider?.Package ?? (await getPackageLogger(import.meta));
 
   logger.info(`Starting server with Deno version: ${Deno.version.deno}`);
 
@@ -18,7 +18,7 @@ export async function start(
   }
 
   if (config.Server.port) {
-    await startServer(config, configure);
+    await startServer(config, options);
   } else {
     const [startPort, endPort] = config.Server.StartRange || [8000, 8020];
 
@@ -37,7 +37,7 @@ export async function start(
 
         config.Server.port = port;
 
-        await startServer(config, configure);
+        await startServer(config, options);
 
         firstError = undefined;
 

@@ -1,4 +1,3 @@
-import { getPackageLogger } from '../../src.deps.ts';
 import { EaCRuntimeHandler } from '../../runtime/EaCRuntimeHandler.ts';
 
 export function establishTracingMiddleware(
@@ -6,7 +5,7 @@ export function establishTracingMiddleware(
   traceResp: boolean,
 ): EaCRuntimeHandler {
   return async (req, ctx) => {
-    const logger = await getPackageLogger(import.meta);
+    const logger = ctx.Runtime.Logs.Package;
 
     traceReq && logger.info({ req, ctx });
 

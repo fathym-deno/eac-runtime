@@ -1,4 +1,4 @@
-import { IoCContainer } from '../src.deps.ts';
+import { IoCContainer, LoggingProvider } from '../src.deps.ts';
 import { EaCApplicationProcessorConfig } from './processors/EaCApplicationProcessorConfig.ts';
 import { EaCProjectProcessorConfig } from './processors/EaCProjectProcessorConfig.ts';
 import { EaCRuntimeEaC } from './EaCRuntimeEaC.ts';
@@ -27,6 +27,8 @@ export type EaCRuntimeContext<
     Info: Deno.ServeHandlerInfo;
 
     IoC: IoCContainer;
+
+    Logs: LoggingProvider;
 
     ProjectProcessorConfig: EaCProjectProcessorConfig;
 

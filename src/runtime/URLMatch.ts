@@ -6,4 +6,8 @@ export type URLMatch = {
   Path: string;
 
   Search?: string;
+
+  SearchParams?: URLSearchParams;
+
+  URL: URL;
 };

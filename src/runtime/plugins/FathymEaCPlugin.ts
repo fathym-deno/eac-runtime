@@ -1,13 +1,13 @@
-import { colors, djwt, getPackageLogger, loadEaCSvc, loadJwtConfig } from '../../src.deps.ts';
+import { colors, djwt, loadEaCSvc, loadJwtConfig } from '../../src.deps.ts';
 import { EaCRuntimeConfig } from '../config/EaCRuntimeConfig.ts';
 import { EaCRuntimePluginConfig } from '../config/EaCRuntimePluginConfig.ts';
 import { EaCRuntimePlugin } from './EaCRuntimePlugin.ts';
 
 export default class FathymEaCPlugin implements EaCRuntimePlugin {
   public async Setup(
-    _config: EaCRuntimeConfig,
+    config: EaCRuntimeConfig,
   ): Promise<EaCRuntimePluginConfig> {
-    const logger = await getPackageLogger(import.meta);
+    const logger = config.LoggingProvider!.Package;
 
     const pluginConfig: EaCRuntimePluginConfig = {
       Name: 'FathymEaCPlugin',

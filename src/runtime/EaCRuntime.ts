@@ -10,7 +10,9 @@ export type EaCRuntime<TEaC = EaCRuntimeEaC> = {
 
   Revision: number;
 
-  Configure(configure?: (rt: EaCRuntime<TEaC>) => Promise<void>): Promise<void>;
+  Configure(options?: {
+    configure?: (rt: EaCRuntime<TEaC>) => Promise<void>;
+  }): Promise<void>;
 
   Handle: Deno.ServeHandler;
 };

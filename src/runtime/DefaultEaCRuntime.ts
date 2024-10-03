@@ -7,6 +7,7 @@ import {
   getPackageLogger,
   IoCContainer,
   isEverythingAsCodeApplications,
+  LoggingProvider,
   merge,
   processCacheControlHeaders,
 } from '../src.deps.ts';
@@ -63,10 +64,11 @@ export class DefaultEaCRuntime<TEaC = EaCRuntimeEaC> implements EaCRuntime<TEaC>
     }
   }
 
-  public async Configure(
-    configure?: (rt: EaCRuntime<TEaC>) => Promise<void>,
-  ): Promise<void> {
-    const logger = await getPackageLogger(import.meta);
+  public async Configure(options?: {
+    configure?: (rt: EaCRuntime<TEaC>) => Promise<void>;
+  }): Promise<void> {
+    const logger = this.config.LoggingProvider?.Package ??
+      (await getPackageLogger(import.meta));
 
     this.pluginConfigs = new Map();
 
@@ -75,6 +77,10 @@ export class DefaultEaCRuntime<TEaC = EaCRuntimeEaC> implements EaCRuntime<TEaC>
     this.EaC = this.config.EaC;
 
     this.IoC = this.config.IoC || new IoCContainer();
+
+    if (this.config.LoggingProvider) {
+      this.IoC!.Register(LoggingProvider, () => this.config.LoggingProvider);
+    }
 
     this.ModifierResolvers = this.config.ModifierResolvers || {};
 
@@ -132,8 +138,8 @@ export class DefaultEaCRuntime<TEaC = EaCRuntimeEaC> implements EaCRuntime<TEaC>
 
     await this.finalizePlugins();
 
-    if (configure) {
-      configure(this);
+    if (options?.configure) {
+      options.configure(this);
     }
 
     this.buildProjectGraph();
@@ -143,10 +149,10 @@ export class DefaultEaCRuntime<TEaC = EaCRuntimeEaC> implements EaCRuntime<TEaC>
     esbuild!.stop();
   }
 
-  public Handle(
+  public async Handle(
     request: Request,
     info: Deno.ServeHandlerInfo,
-  ): Response | Promise<Response> {
+  ): Promise<Response> {
     const projProcessorConfig = this.projectGraph!.find((node) => {
       return node.Patterns.some((pattern) => pattern.test(request.url));
     });
@@ -162,13 +168,14 @@ export class DefaultEaCRuntime<TEaC = EaCRuntimeEaC> implements EaCRuntime<TEaC>
         EaC: this.EaC,
         Info: info,
         IoC: this.IoC,
+        Logs: await this.IoC.Resolve<LoggingProvider>(LoggingProvider),
         ProjectProcessorConfig: projProcessorConfig,
         Revision: this.Revision,
       },
       State: {},
     } as unknown as EaCRuntimeContext);
 
-    return resp;
+    return await resp;
   }
 
   protected async buildApplicationGraph(): Promise<void> {

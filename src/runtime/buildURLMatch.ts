@@ -31,5 +31,14 @@ export function buildURLMatch(pattern: URLPattern, req: Request): URLMatch {
     Hash: reqUrl.hash,
     Path: path,
     Search: reqUrl.search,
+    SearchParams: reqUrl.searchParams,
+    URL: new URL(
+      {
+        hash: reqUrl.hash,
+        pathname: path,
+        search: reqUrl.search,
+      } as URL,
+      base,
+    ),
   };
 }
