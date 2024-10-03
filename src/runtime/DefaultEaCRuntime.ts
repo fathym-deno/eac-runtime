@@ -4,7 +4,6 @@ import {
   EaCModifierResolverConfiguration,
   EaCProjectAsCode,
   ESBuild,
-  EverythingAsCode,
   getPackageLogger,
   IoCContainer,
   isEverythingAsCodeApplications,
@@ -311,15 +310,7 @@ export class DefaultEaCRuntime<TEaC = EaCRuntimeEaC> implements EaCRuntime<TEaC>
 
       if (pluginConfig) {
         if (pluginConfig.EaC) {
-          console.log(`--------------------------EntLookup Before--------------------`);
-          console.log((this.EaC as EverythingAsCode).EnterpriseLookup || '');
           this.EaC = merge(this.EaC || {}, pluginConfig.EaC);
-          console.log(
-            `--------------------------EntLookup Plugin ${pluginKey}--------------------`,
-          );
-          console.log((pluginConfig.EaC as EverythingAsCode).EnterpriseLookup || '');
-          console.log(`--------------------------EntLookup After--------------------`);
-          console.log((this.EaC as EverythingAsCode).EnterpriseLookup || '');
         }
 
         if (pluginConfig.IoC) {
