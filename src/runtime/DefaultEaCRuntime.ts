@@ -314,7 +314,9 @@ export class DefaultEaCRuntime<TEaC = EaCRuntimeEaC> implements EaCRuntime<TEaC>
           console.log(`--------------------------EntLookup Before--------------------`);
           console.log((this.EaC as EverythingAsCode).EnterpriseLookup || '');
           this.EaC = merge(this.EaC || {}, pluginConfig.EaC);
-          console.log(`--------------------------EntLookup Plugin--------------------`);
+          console.log(
+            `--------------------------EntLookup Plugin ${pluginKey}--------------------`,
+          );
           console.log((pluginConfig.EaC as EverythingAsCode).EnterpriseLookup || '');
           console.log(`--------------------------EntLookup After--------------------`);
           console.log((this.EaC as EverythingAsCode).EnterpriseLookup || '');
