@@ -20,6 +20,9 @@ export default class FathymEaCPlugin implements EaCRuntimePlugin {
 
       if (eacApiEntLookup) {
         const eacApiUsername = Deno.env.get('EAC_API_USERNAME');
+        console.log('Loading the EaC API Key for:');
+        console.log(eacApiEntLookup);
+        console.log(eacApiUsername);
 
         eacApiKey = await loadJwtConfig().Create(
           {
