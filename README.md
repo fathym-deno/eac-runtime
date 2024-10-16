@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Welcome to Fathym’s Development Acceleration Program! This README serves as a guide to setting up your local environment using Fathym's Golden Path. The Golden Path is a streamlined approach designed to help developers quickly set up and accelerate their development within the Fathym ecosystem. It ensures that all necessary tools and repositories are configured correctly, allowing for a smooth development experience and efficient collaboration.
+Welcome to Fathym's Development Acceleration Program! This README serves as a guide to setting up your local environment using Fathym's Golden Path. The Golden Path is a streamlined approach designed to help developers quickly set up and accelerate their development within the Fathym ecosystem. It ensures that all necessary tools and repositories are configured correctly, allowing for a smooth development experience and efficient collaboration.
 
 ## Prerequisites
 
