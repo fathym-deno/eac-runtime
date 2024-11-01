@@ -17,7 +17,7 @@ export function establishBaseHrefMiddleware(): EaCRuntimeHandler {
 
     const contType = resp.headers.get('Content-type');
 
-    if (contType?.includes('text/html')) {
+    if (!contType || contType.includes('text/html')) {
       await initCheck;
 
       let baseHref = ctx.Runtime.URLMatch.Base;
