@@ -35,7 +35,7 @@ export function establishBaseHrefMiddleware(): EaCRuntimeHandler {
         baseScriptNode.setAttribute('href', baseHref);
 
         if (!doc.head.querySelector('base')) {
-          doc.head.appendChild(baseScriptNode);
+          doc.head.prepend(baseScriptNode);
         }
 
         const docHtml = doc.childNodes[1] as Element;

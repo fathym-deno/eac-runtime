@@ -22,7 +22,7 @@ export * as denoGraph from 'jsr:@deno/graph@0.81.2';
 
 export * from 'jsr:@fathym/ioc@0.0.12';
 
-// export * from '../reference-architecture/mod.ts';
+// export * from '../reference-architecture/src/common/.exports.ts';
 export * from 'jsr:@fathym/common@0.2.160';
 export * from 'jsr:@fathym/common@0.2.160/build';
 export * from 'jsr:@fathym/common@0.2.160/deno-kv';
