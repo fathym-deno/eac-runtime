@@ -86,7 +86,10 @@ export class PreactRenderHandler {
   };
   //#endregion
 
-  constructor(protected options: AdvancedPreactOptions) {
+  constructor(
+    protected options: AdvancedPreactOptions,
+    protected bypassEaCBase?: boolean,
+  ) {
     this.clientImports = [];
 
     this.islandsData = new IslandDataStore();
@@ -255,7 +258,7 @@ export class PreactRenderHandler {
       h(
         'head',
         this.tracking.template.headProps || {},
-        h('base', { href: baseUrl.href }),
+        !this.bypassEaCBase ? h('base', { href: baseUrl.href }) : undefined,
         h('script', {
           type: 'importmap',
           dangerouslySetInnerHTML: {
@@ -589,7 +592,7 @@ export class PreactRenderHandler {
   protected processEaCBypassNodes(
     vnode: { type: string } & VNode<Record<string, unknown>>,
   ) {
-    if (!vnode.props['data-eac-bypass-base']) {
+    if (!this.bypassEaCBase && !vnode.props['data-eac-bypass-base']) {
       if (
         typeof vnode.props.href === 'string' &&
         vnode.props.href.startsWith('/')

@@ -63,7 +63,7 @@ async function createEaCPreactAppHandler() {
   return new EaCPreactAppHandler(
     ioc,
     new (class extends LoggingProvider {})(import.meta, {}).Package,
-    new PreactRenderHandler(preactOptions),
+    new PreactRenderHandler(true, preactOptions),
     `./islands/client/eacIslandsClient.ts`,
     `./islands/client/client.deps.ts`,
     {},

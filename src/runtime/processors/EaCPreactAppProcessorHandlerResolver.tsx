@@ -21,7 +21,7 @@ export const EaCPreactAppProcessorHandlerResolver: ProcessorHandlerResolver = {
     const handler = new EaCPreactAppHandler(
       ioc,
       (await ioc.Resolve(LoggingProvider)).Package,
-      new PreactRenderHandler(preactOptions),
+      new PreactRenderHandler(preactOptions, processor.BypassEaCBase),
       `./islands/client/eacIslandsClient.ts`,
       `./islands/client/client.deps.ts`,
       undefined,
