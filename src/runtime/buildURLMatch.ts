@@ -40,5 +40,21 @@ export function buildURLMatch(pattern: URLPattern, req: Request): URLMatch {
       } as URL,
       base,
     ),
+    FromBase: (path: string | URL) => {
+      return new URL(path, base);
+    },
+    FromOrigin: (path: string | URL) => {
+      return new URL(path, new URL(base).origin);
+    },
+    ToOrigin: (origin: string | URL) => {
+      return new URL(
+        {
+          pathname: path,
+          search: reqUrl.search,
+          hash: reqUrl.hash,
+        } as URL,
+        origin,
+      );
+    },
   };
 }

@@ -1,6 +1,10 @@
 export type URLMatch = {
   Base: string;
 
+  FromBase: (path: string | URL) => URL;
+
+  FromOrigin: (path: string | URL) => URL;
+
   Hash?: string;
 
   Path: string;
@@ -8,6 +12,8 @@ export type URLMatch = {
   Search?: string;
 
   SearchParams?: URLSearchParams;
+
+  ToOrigin: (origin: string | URL) => URL;
 
   URL: URL;
 };
