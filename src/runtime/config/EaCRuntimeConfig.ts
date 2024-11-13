@@ -7,5 +7,5 @@ export type EaCRuntimeConfig<TEaC = EaCRuntimeEaC> = {
 
   Server: {
     StartRange?: [number, number];
-  } & (Deno.ServeOptions | Deno.ServeTlsOptions);
+  } & (Deno.ServeTcpOptions);
 } & EaCRuntimeSetupConfig<TEaC>;

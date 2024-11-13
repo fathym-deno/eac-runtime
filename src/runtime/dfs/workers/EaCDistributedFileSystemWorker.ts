@@ -34,7 +34,7 @@ export abstract class EaCDistributedFileSystemWorker extends FathymWorker<
     >
   >;
 
-  protected async handleInitConfig(): Promise<
+  protected override async handleInitConfig(): Promise<
     | {
       Root: string;
     }
@@ -171,7 +171,7 @@ export abstract class EaCDistributedFileSystemWorker extends FathymWorker<
 
   protected abstract loadDFSHandlerResolver(): DFSFileHandlerResolver;
 
-  protected loadWorkerMessageHandlers(): typeof this.workerMessageHandlers {
+  protected override loadWorkerMessageHandlers(): typeof this.workerMessageHandlers {
     return {
       ...super.loadWorkerMessageHandlers(),
       [EaCDistributedFileSystemWorkerMessageTypes.GetFileInfo]: this.handleWorkerGetFileInfo.bind(

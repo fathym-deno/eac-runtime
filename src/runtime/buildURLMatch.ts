@@ -3,20 +3,18 @@ import { URLMatch } from './URLMatch.ts';
 export function buildURLMatch(pattern: URLPattern, req: Request): URLMatch {
   const reqUrl = new URL(req.url);
 
-  const forwardedProto =
-    req.headers.get('x-eac-forwarded-proto') ??
+  const forwardedProto = req.headers.get('x-eac-forwarded-proto') ??
     req.headers.get('x-forwarded-proto') ??
     reqUrl.protocol;
 
-  const host =
-    req.headers.get('x-eac-forwarded-host') ??
+  const host = req.headers.get('x-eac-forwarded-host') ??
     req.headers.get('x-forwarded-host') ??
     req.headers.get('host') ??
     reqUrl.host;
 
   const reqCheckUrl = new URL(
     reqUrl.href.replace(reqUrl.origin, ''),
-    `${forwardedProto}://${host}`.replace('::', ':')
+    `${forwardedProto}://${host}`.replace('::', ':'),
   );
 
   const patternResult = pattern.exec(reqCheckUrl.href);
@@ -25,7 +23,7 @@ export function buildURLMatch(pattern: URLPattern, req: Request): URLMatch {
 
   const base = new URL(
     reqCheckUrl.pathname.slice(0, path.length > 0 ? -path.length : undefined),
-    reqCheckUrl.origin
+    reqCheckUrl.origin,
   ).href;
 
   return {
@@ -40,7 +38,7 @@ export function buildURLMatch(pattern: URLPattern, req: Request): URLMatch {
         pathname: path,
         search: reqUrl.search,
       } as URL,
-      base
+      base,
     ),
     FromBase: (path: string | URL) => {
       return new URL(path, base.endsWith('/') ? base : `${base}/`);
@@ -57,11 +55,7 @@ export function buildURLMatch(pattern: URLPattern, req: Request): URLMatch {
           search: reqUrl.search,
           hash: reqUrl.hash,
         } as URL,
-        typeof origin === 'string'
-          ? origin.endsWith('/')
-            ? origin
-            : `${origin}/`
-          : origin
+        typeof origin === 'string' ? origin.endsWith('/') ? origin : `${origin}/` : origin,
       );
     },
   };

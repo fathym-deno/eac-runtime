@@ -30,7 +30,9 @@ export function establishJwtValidationMiddleware(
 
         failureRespBody.HasError = true;
 
-        failureRespBody.Message = err.message;
+        if (err instanceof Error) {
+          failureRespBody.Message = err.message;
+        }
       }
 
       if (failureRespBody.HasError) {

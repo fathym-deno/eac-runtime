@@ -50,8 +50,6 @@
   },
   "unstable": ["kv"],
   "compilerOptions": {
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
     "jsx": "react-jsx",
     "jsxImportSource": "preact",
     "lib": [
